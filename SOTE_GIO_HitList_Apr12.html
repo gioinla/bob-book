@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOTE — GIO HIT LIST · April 12 Sessions</title>
+<style>
+  :root {
+    --bg: #0e1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3348;
+    --accent: #6366f1;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --teal: #14b8a6;
+    --pink: #ec4899;
+    --orange: #f97316;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 32px 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  h1, h2, h3 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .header {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-size: 22px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .header .sub {
+    color: var(--muted);
+    font-family: 'SF Mono', monospace;
+    font-size: 12px;
+  }
+  .header .for-tag {
+    display: inline-block;
+    background: rgba(99,102,241,0.15);
+    border: 1px solid rgba(99,102,241,0.4);
+    color: #a5b4fc;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 12px;
+    margin-top: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .stat-card .num {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: -apple-system, sans-serif;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-card .label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    white-space: nowrap;
+  }
+  .badge-mix    { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.35); color: #a5b4fc; }
+  .badge-ch1    { background: rgba(234,179,8,0.12);  border: 1px solid rgba(234,179,8,0.35);  color: #fde68a; }
+  .badge-music  { background: rgba(20,184,166,0.12); border: 1px solid rgba(20,184,166,0.35); color: #5eead4; }
+  .badge-legal  { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.35);  color: #fca5a5; }
+  .badge-done   { background: rgba(34,197,94,0.12);  border: 1px solid rgba(34,197,94,0.35);  color: #86efac; }
+  .badge-todo   { background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.35); color: #fdba74; }
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 32px;
+  }
+  th {
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr.section-header td {
+    background: var(--surface2);
+    color: var(--accent);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 8px 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
+  }
+  tr.data-row { background: var(--surface); }
+  tr.data-row:hover { background: #1c2333; }
+  tr.detail-row { background: #131823; display: none; }
+  tr.detail-row td {
+    padding: 12px 14px 14px 14px;
+    color: var(--muted);
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr.detail-row.open { display: table-row; }
+  .task-name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 13px;
+  }
+  .task-context {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 2px;
+  }
+  .expand-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    white-space: nowrap;
+  }
+  .expand-btn:hover { border-color: var(--accent); color: var(--text); }
+  .detail-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .detail-block strong { color: var(--text); }
+  .priority-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+  .dot-hot { background: var(--red); }
+  .dot-mid { background: var(--yellow); }
+  .dot-low { background: var(--green); }
+  .session-tag {
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'SF Mono', monospace;
+  }
+  .footer {
+    color: var(--muted);
+    font-size: 11px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  tr[data-cat].hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>SHAPING SOUNDS — GIO HIT LIST</h1>
+  <div class="sub">April 12, 2026 · Three Sessions · All Giorgio Bertuccelli Action Items</div>
+  <div class="for-tag">@gio — Personal Action Items Only</div>
+</div>
+
+<div class="stats">
+  <div class="stat-card"><div class="num">19</div><div class="label">Total Items</div></div>
+  <div class="stat-card"><div class="num">8</div><div class="label">Mix Tasks</div></div>
+  <div class="stat-card"><div class="num">4</div><div class="label">Ch1 Fixes</div></div>
+  <div class="stat-card"><div class="num">4</div><div class="label">Music/Sound</div></div>
+  <div class="stat-card"><div class="num">3</div><div class="label">Sessions</div></div>
+</div>
+
+<div class="legend">
+  <span class="badge badge-mix">mix task</span>
+  <span class="badge badge-ch1">chapter fix</span>
+  <span class="badge badge-music">music/sound</span>
+  <span class="badge badge-legal">legal / flag</span>
+  <span class="badge badge-todo">descript / workflow</span>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterTable('all',this)">All</button>
+  <button class="filter-btn" onclick="filterTable('mix',this)">Mix Tasks</button>
+  <button class="filter-btn" onclick="filterTable('fix',this)">Chapter Fixes</button>
+  <button class="filter-btn" onclick="filterTable('music',this)">Music/Sound</button>
+  <button class="filter-btn" onclick="filterTable('workflow',this)">Workflow</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th width="22%">Area</th>
+      <th width="36%">Task</th>
+      <th width="18%">Session</th>
+      <th width="14%">Type</th>
+      <th width="10%"></th>
+    </tr>
+  </thead>
+  <tbody id="taskTable">
+
+    <!-- SECTION: OPENING CREDITS & PROLOGUE -->
+    <tr class="section-header"><td colspan="5">Opening Credits · Prologue</td></tr>
+
+    <tr class="data-row" data-cat="mix">
+      <td><span class="task-name">Opening Credits</span><div class="task-context">V2A final mix</div></td>
+      <td><span class="priority-dot dot-hot"></span>Incorporate logo instrumental wave; print final mix as <strong>V2A</strong>. Instrumental starts at <strong>5.8s</strong> mark.</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-mix">mix task</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d1',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d1">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. Logo instrumental WAV is in Dropbox / Audio Assets / Pushkin folder. Dan confirmed location. Place instrumental so it begins exactly at <strong>5.8 seconds</strong>. Print as V2A. This was the major opening credits decision from the session.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="mix">
+      <td><span class="task-name">Prologue — Music Restore</span><div class="task-context">V3A</div></td>
+      <td><span class="priority-dot dot-hot"></span>Restore inadvertently removed music cue and sound effects to Prologue mix. Use <strong>V1</strong> mix as reference.</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-mix">mix task</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d2',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d2">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. Music cue was accidentally removed from the Prologue at some point. V1 is the reference — that version had the correct music. Restore it in V3A.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="mix">
+      <td><span class="task-name">Prologue — Narration Timing</span><div class="task-context">V3A</div></td>
+      <td><span class="priority-dot dot-mid"></span>Adjust V3A so Robert's narration comes in over music cue at <strong>1:40</strong> (1 minute 40 seconds).</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-mix">mix task</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d3',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d3">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. Narration in V3A was coming in too late. Target is narration beginning at the <strong>1:42 mark</strong> over the music cue.
+      </div></td>
+    </tr>
+
+    <!-- SECTION: CHAPTER 1 -->
+    <tr class="section-header"><td colspan="5">Chapter 1</td></tr>
+
+    <tr class="data-row" data-cat="fix">
+      <td><span class="task-name">Ch1 — Remove Shuffling</span><div class="task-context">paper sounds</div></td>
+      <td><span class="priority-dot dot-hot"></span>Check Ch1 mix for paper shuffling sounds. Remove from audio.</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-ch1">chapter fix</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d4',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d4">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. Paper/shuffling sounds audible in Chapter 1 mix. Clean these out.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="fix">
+      <td><span class="task-name">Ch1 — Insert "Grandmir"</span><div class="task-context">missing audio at 4:51</div></td>
+      <td><span class="priority-dot dot-hot"></span>Insert missing audio snippet <em>"Grandmir was a formidable woman"</em> at <strong>4:51</strong> in Chapter 1 mix.</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-ch1">chapter fix</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d5',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d5">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. This passage is missing from the current Ch1 mix. Insert at the <strong>4 minute 51 second</strong> mark.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="fix">
+      <td><span class="task-name">Ch1 — Restore "our hideout"</span><div class="task-context">missing passage</div></td>
+      <td><span class="priority-dot dot-hot"></span>Restore the <em>"our hideout"</em> passage which is missing from Chapter 1.</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-ch1">chapter fix</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d6',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d6">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. "Our hideout" passage identified as missing from Ch1. Restore from raw or pickup files.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="fix">
+      <td><span class="task-name">Ch1 — Restore "blue-collar"</span><div class="task-context">missing passage</div></td>
+      <td><span class="priority-dot dot-hot"></span>Restore the <em>"blue-collar"</em> passage which is missing from Chapter 1.</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-ch1">chapter fix</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d7',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d7">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. "Blue-collar" passage identified as missing from Ch1. Restore from raw or pickup files.
+      </div></td>
+    </tr>
+
+    <!-- SECTION: CHAPTER 3 -->
+    <tr class="section-header"><td colspan="5">Chapter 3</td></tr>
+
+    <tr class="data-row" data-cat="mix">
+      <td><span class="task-name">Ch3 — Save V2A/V2B</span><div class="task-context">after Beethoven removal</div></td>
+      <td><span class="priority-dot dot-hot"></span>After removing Beethoven "Gloria" music section, save Ch3 as <strong>V2A</strong> (or V2B if applicable).</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-mix">mix task</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d8',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d8">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. Legal flag on Beethoven recording in Ch3. Remove the Gloria section, then save the clean version as V2A or V2B. Related: see also Dan's task to investigate the Ch1 legal email — Ch3 Beethoven is an existing flagged legal issue.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="fix">
+      <td><span class="task-name">Ch3 — Audio Dip at 17:41</span><div class="task-context">sound drop</div></td>
+      <td><span class="priority-dot dot-mid"></span>Investigate and fix the sound dip occurring around <strong>17:41</strong> in Chapter 3.</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-ch1">chapter fix</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d9',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d9">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. Noticeable audio dip around the 17:41 mark in Ch3. Investigate cause (automation, clip gain, crossfade issue) and fix.
+      </div></td>
+    </tr>
+
+    <!-- SECTION: CHAPTER 4 -->
+    <tr class="section-header"><td colspan="5">Chapter 4</td></tr>
+
+    <tr class="data-row" data-cat="mix">
+      <td><span class="task-name">Ch4 — Level Narration</span><div class="task-context">consistency</div></td>
+      <td><span class="priority-dot dot-mid"></span>Ensure Chapter 4 narration audio level is even and consistent throughout.</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-mix">mix task</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d10',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d10">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. Ch4 narration noted as inconsistent in level. Even it out — likely automation or clip-gain pass.
+      </div></td>
+    </tr>
+
+    <!-- SECTION: CHAPTER 7 -->
+    <tr class="section-header"><td colspan="5">Chapter 7</td></tr>
+
+    <tr class="data-row" data-cat="music">
+      <td><span class="task-name">Ch7 — Mix Ciao / Driving Verdeo</span><div class="task-context">music authenticity fix</div></td>
+      <td><span class="priority-dot dot-hot"></span>Replace "inspired by" cue with original <strong>Ciao Music "Driving Verdeo"</strong>. Spend time mixing to get quality right.</td>
+      <td><span class="session-tag">16:40 PDT</span></td>
+      <td><span class="badge badge-music">music/sound</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d11',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d11">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 16:40 session. The current cue was Gio's own composition "based on" Gino Kazerio's work. Dan flagged this as a content integrity issue — people track these things. Decision: use the actual Ciao music, specifically "Driving Verdeo." Asset is in <em>Audio Assets / music from ciao / licensed music</em> or similar path. Take time to mix it properly.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="mix">
+      <td><span class="task-name">Ch7 — Print as V2B</span><div class="task-context">after music fix</div></td>
+      <td><span class="priority-dot dot-hot"></span>After mixing Ciao music, save/print the final Ch7 mix as <strong>V2B</strong>.</td>
+      <td><span class="session-tag">16:40 PDT</span></td>
+      <td><span class="badge badge-mix">mix task</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d12',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d12">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 16:40 session. Dan explicitly assigned this: "You're going to print this as V2B."
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="fix">
+      <td><span class="task-name">Ch7 — Resolve Noise Issues</span><div class="task-context">all noted noise</div></td>
+      <td><span class="priority-dot dot-mid"></span>Address all noted noise issues within Chapter 7.</td>
+      <td><span class="session-tag">16:40 PDT</span></td>
+      <td><span class="badge badge-ch1">chapter fix</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d13',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d13">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 16:40 session. Dan's note at end of session: "You will address any notes about noise if there's any." Review Ch7 for noise flagged in Jasmine's notes or session notes.
+      </div></td>
+    </tr>
+
+    <!-- SECTION: CHAPTER 8 -->
+    <tr class="section-header"><td colspan="5">Chapter 8 — Fire Island</td></tr>
+
+    <tr class="data-row" data-cat="music">
+      <td><span class="task-name">Ch8 — Music Volume at 5:10</span><div class="task-context">-1dB at least</div></td>
+      <td><span class="priority-dot dot-mid"></span>Lower music cue around <strong>5:10</strong> by at least <strong>1 dB</strong> so it doesn't drown out Robert's narration.</td>
+      <td><span class="session-tag">16:40 PDT</span></td>
+      <td><span class="badge badge-music">music/sound</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d14',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d14">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 16:40 session. Jasmine's note: music cue at 5:10 too loud. Gio agreed it's a little loud during review. Take it down at least 1 dB — make the final call on exact amount. This is in the V2A version of Ch8.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="music">
+      <td><span class="task-name">Ch8 — Music Removed at 1:08</span><div class="task-context">keep train + ocean SFX only</div></td>
+      <td><span class="priority-dot dot-mid"></span>Confirm music at 1:08 is muted/removed. Keep only the <strong>train and ocean sound effects</strong>.</td>
+      <td><span class="session-tag">16:40 PDT</span></td>
+      <td><span class="badge badge-music">music/sound</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d15',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d15">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 16:40 session. Music cue at 1:08 in Ch8 was deemed "not working" — unusual to run music this long under narration. Decision: remove music entirely from Ch8, keep only the train and ocean SFX for Fire Island atmosphere. Gio confirmed removal during session. Deliver as <strong>V2A</strong>.
+      </div></td>
+    </tr>
+
+    <!-- SECTION: DESCRIPT / WORKFLOW -->
+    <tr class="section-header"><td colspan="5">Descript Workflow · AI Replacement</td></tr>
+
+    <tr class="data-row" data-cat="workflow">
+      <td><span class="task-name">Descript Workflow Test</span><div class="task-context">AI pickup method</div></td>
+      <td><span class="priority-dot dot-low"></span>Test full pickup workflow in Descript: record directly into Dscript using same mic setup, select and insert passages to replace AI clips.</td>
+      <td><span class="session-tag">10:01 PDT</span></td>
+      <td><span class="badge badge-todo">descript</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d16',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d16">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 10:01 session. Team confirmed re-recordings for Ch10 AI replacement can be done directly in Descript using the same mic/preamp setup for best matching. Gio estimated 70–80% match. Strategy: record into Dscript, select passage, insert to replace the AI clip. The AI clips are very short — sometimes less than a second — so this approach should work well.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="workflow">
+      <td><span class="task-name">Pickup Scripts — Per Chapter</span><div class="task-context">joint w/ Dan</div></td>
+      <td><span class="priority-dot dot-low"></span>Work through individual chapters with Dan to generate pickup scripts for AI-replaced sections.</td>
+      <td><span class="session-tag">10:01 PDT</span></td>
+      <td><span class="badge badge-todo">descript</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d17',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d17">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 10:01 session. Dan is preparing the comprehensive shared pickup script (Google Doc, context + passages). Once that's ready, Gio and Dan go through chapters together and generate pickup scripts. Chapters with AI: Ch10 (19 files), Ch11 (40+ files), Ch25, Epilogue.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="workflow">
+      <td><span class="task-name">Jasmine's Notes Review</span><div class="task-context">joint w/ Dan</div></td>
+      <td><span class="priority-dot dot-mid"></span>Review Jasmine's notes together with Dan. Evaluate each complaint — resolve or mark for individual follow-up.</td>
+      <td><span class="session-tag">10:01 PDT</span></td>
+      <td><span class="badge badge-todo">descript</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d18',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d18">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 10:01 session. Jasmine's notes are derived from the script and are being used as the main reference throughout mixing. Work through them systematically with Dan — note that the 12:59 and 16:40 sessions were essentially doing this.
+      </div></td>
+    </tr>
+
+  </tbody>
+</table>
+
+<div class="footer">SHAPING SOUNDS · @gio Personal Hit List · April 12, 2026 · Three Sessions (10:01 / 12:59 / 16:40 PDT) · Generated April 13, 2026</div>
+
+<script>
+function filterTable(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#taskTable tr[data-cat]').forEach(row => {
+    if (cat === 'all' || row.dataset.cat === cat) {
+      row.classList.remove('hidden');
+    } else {
+      row.classList.add('hidden');
+      // Also hide its detail row
+      const btn2 = row.querySelector('.expand-btn');
+      if (btn2) {
+        const detailId = btn2.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+        if (detailId) {
+          const drow = document.getElementById(detailId);
+          if (drow) { drow.classList.remove('open'); btn2.textContent = '▸ detail'; }
+        }
+      }
+    }
+  });
+}
+
+function toggleDetail(id, btn) {
+  const row = document.getElementById(id);
+  if (row.classList.contains('open')) {
+    row.classList.remove('open');
+    btn.textContent = '▸ detail';
+  } else {
+    row.classList.add('open');
+    btn.textContent = '▾ close';
+  }
+}
+</script>
+</body>
+</html>

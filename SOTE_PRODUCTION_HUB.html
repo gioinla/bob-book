@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOTE Production Hub — Standing On The Edge</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+
+:root {
+  --bg: #08080d; --bg2: #0e0e16; --bg3: #161622; --bg4: #1e1e30;
+  --text: #e8e8f0; --text2: #8888a8; --text3: #5555708;
+  --accent: #ff3366; --accent2: #ff6699;
+  --green: #00cc88; --green-bg: rgba(0,204,136,0.12);
+  --orange: #ff9500; --orange-bg: rgba(255,149,0,0.12);
+  --red: #ff2244; --red-bg: rgba(255,34,68,0.12);
+  --blue: #4488ff; --blue-bg: rgba(68,136,255,0.12);
+  --purple: #aa66ff; --purple-bg: rgba(170,102,255,0.12);
+  --yellow: #ffcc00; --yellow-bg: rgba(255,204,0,0.12);
+  --border: #1a1a2e;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+
+/* ── Tab System ── */
+.tab-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; height: 56px;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+.tab-logo {
+  font-size: 13px; font-weight: 800; color: var(--accent);
+  letter-spacing: 2px; text-transform: uppercase; margin-right: 32px;
+  white-space: nowrap;
+}
+.tab-btn {
+  padding: 16px 20px; font-size: 13px; font-weight: 500; color: var(--text2);
+  cursor: pointer; border: none; background: none; position: relative;
+  transition: color 0.2s; white-space: nowrap;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--text); }
+.tab-btn.active::after {
+  content: ''; position: absolute; bottom: 0; left: 16px; right: 16px;
+  height: 2px; background: var(--accent); border-radius: 1px;
+}
+
+.tab-content { display: none; padding-top: 56px; min-height: 100vh; }
+.tab-content.active { display: block; }
+
+.section { padding: 40px 48px; max-width: 1200px; margin: 0 auto; }
+.section-title {
+  font-size: 28px; font-weight: 800; margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff, var(--accent));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.section-sub { font-size: 14px; color: var(--text2); margin-bottom: 32px; }
+
+/* ── Cards ── */
+.card-grid { display: grid; gap: 16px; }
+.card-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.card-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.card-grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+.stat-card {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px; position: relative; overflow: hidden;
+}
+.stat-card .label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+.stat-card .value { font-size: 32px; font-weight: 900; margin-top: 6px; line-height: 1; }
+.stat-card .detail { font-size: 12px; color: var(--text2); margin-top: 6px; }
+
+/* ── Timeline ── */
+.timeline { position: relative; padding-left: 40px; }
+.timeline::before {
+  content: ''; position: absolute; left: 15px; top: 0; bottom: 0;
+  width: 2px; background: linear-gradient(to bottom, var(--accent), var(--blue), var(--green));
+}
+.tl-item { position: relative; margin-bottom: 28px; }
+.tl-dot {
+  position: absolute; left: -33px; top: 6px; width: 12px; height: 12px;
+  border-radius: 50%; border: 2px solid var(--bg);
+}
+.tl-dot.recording { background: var(--blue); box-shadow: 0 0 10px rgba(68,136,255,0.4); }
+.tl-dot.editing { background: var(--purple); box-shadow: 0 0 10px rgba(170,102,255,0.4); }
+.tl-dot.mixing { background: var(--orange); box-shadow: 0 0 10px rgba(255,149,0,0.4); }
+.tl-dot.audit { background: var(--red); box-shadow: 0 0 10px rgba(255,34,68,0.4); }
+.tl-dot.remediation { background: var(--yellow); box-shadow: 0 0 10px rgba(255,204,0,0.4); }
+.tl-dot.strategy { background: var(--green); box-shadow: 0 0 10px rgba(0,204,136,0.4); }
+.tl-dot.delivery { background: var(--accent2); box-shadow: 0 0 10px rgba(255,102,153,0.4); }
+.tl-date { font-family: 'JetBrains Mono'; font-size: 12px; color: var(--accent); font-weight: 600; }
+.tl-event { font-size: 16px; font-weight: 700; color: var(--text); margin: 4px 0; }
+.tl-detail { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.tl-phase {
+  display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px;
+  border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 8px;
+}
+
+/* ── Chapter Table ── */
+.ch-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.ch-table th {
+  text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text2); padding: 12px 16px; border-bottom: 1px solid var(--border);
+  position: sticky; top: 56px; background: var(--bg); z-index: 10;
+}
+.ch-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 13px; vertical-align: top; }
+.ch-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.status-pill {
+  display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 10px;
+  border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+}
+.pill-clean { background: var(--green-bg); color: var(--green); }
+.pill-spot { background: var(--orange-bg); color: var(--orange); }
+.pill-rework { background: var(--red-bg); color: var(--red); }
+.pill-critical { background: var(--red-bg); color: var(--red); animation: pulse 2s infinite; }
+.pill-conditional { background: var(--blue-bg); color: var(--blue); }
+.pill-unverifiable { background: var(--purple-bg); color: var(--purple); }
+
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+
+.ai-bar { display: inline-flex; align-items: center; gap: 6px; }
+.ai-bar-track { width: 60px; height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.ai-bar-fill { height: 100%; border-radius: 3px; }
+.ai-pct { font-family: 'JetBrains Mono'; font-size: 11px; }
+
+/* ── Team Cards ── */
+.team-card {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+}
+.team-name { font-size: 16px; font-weight: 700; }
+.team-role { font-size: 12px; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 4px 0 8px; }
+.team-note { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+/* ── Deadlines ── */
+.deadline-item {
+  display: flex; align-items: center; gap: 16px; padding: 16px 20px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;
+}
+.dl-date { font-family: 'JetBrains Mono'; font-size: 14px; font-weight: 600; min-width: 80px; }
+.dl-event { font-size: 14px; flex: 1; }
+.dl-status { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 10px; text-transform: uppercase; }
+
+/* ── Decisions Panel ── */
+.decision-card {
+  background: var(--bg3); border-left: 3px solid var(--orange);
+  border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 12px;
+}
+.decision-card.critical { border-left-color: var(--red); }
+.decision-card.resolved { border-left-color: var(--green); opacity: 0.7; }
+.decision-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.decision-detail { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.decision-owner { font-size: 11px; color: var(--accent); font-weight: 600; margin-top: 6px; }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .card-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .card-grid-3 { grid-template-columns: 1fr; }
+  .section { padding: 24px 16px; }
+  .tab-logo { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <div class="tab-logo">SOTE Hub</div>
+  <button class="tab-btn active" onclick="showTab('overview')">Overview</button>
+  <button class="tab-btn" onclick="showTab('timeline')">Timeline</button>
+  <button class="tab-btn" onclick="showTab('chapters')">Chapters</button>
+  <button class="tab-btn" onclick="showTab('audit')">AI Audit</button>
+  <button class="tab-btn" onclick="showTab('team')">Team & Decisions</button>
+  <button class="tab-btn" onclick="showTab('deadlines')">Deadlines</button>
+</div>
+
+<!-- ═══════════ OVERVIEW TAB ═══════════ -->
+<div id="overview" class="tab-content active">
+<div class="section">
+  <div class="section-title">Standing On The Edge</div>
+  <div class="section-sub">Shaping Sounds: Stevie Wonder, DEVO, The Synth Revolution — by Robert Margouleff &bull; Pushkin Industries &bull; Release: May 19, 2026</div>
+
+  <div class="card-grid card-grid-4" style="margin-bottom:32px;">
+    <div class="stat-card">
+      <div class="label">Total Chapters</div>
+      <div class="value">31</div>
+      <div class="detail">Opening Credits through End Credits</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Clean Chapters</div>
+      <div class="value" style="color:var(--green);">16</div>
+      <div class="detail">Ready for final mix</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Need Work</div>
+      <div class="value" style="color:var(--orange);">11</div>
+      <div class="detail">8 spot fixes, 3 reworks</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">AI Files Found</div>
+      <div class="value" style="color:var(--red);">272</div>
+      <div class="detail">Across all scanned projects</div>
+    </div>
+  </div>
+
+  <div class="card-grid card-grid-4" style="margin-bottom:32px;">
+    <div class="stat-card">
+      <div class="label">Audit Scans</div>
+      <div class="value">65</div>
+      <div class="detail">Descript Underlord v3/v4</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Awaiting Dan</div>
+      <div class="value" style="color:var(--blue);">4</div>
+      <div class="detail">Project confirmation needed</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Sessions Logged</div>
+      <div class="value">69</div>
+      <div class="detail">Cowork sessions on this project</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Days to Compliance</div>
+      <div class="value" style="color:var(--accent);">5</div>
+      <div class="detail">SAG-AFTRA deadline: Apr 15</div>
+    </div>
+  </div>
+
+  <!-- Quick chapter status bars -->
+  <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;">Chapter Status Overview</h3>
+  <div style="display:flex;gap:3px;height:40px;border-radius:8px;overflow:hidden;margin-bottom:8px;">
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Opening Credits: CLEAN"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Foreword: CLEAN"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Preface: CLEAN"></div>
+    <div style="flex:1;background:var(--orange);opacity:0.7;" title="Prologue: SPOT FIX"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 1: CLEAN"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 2: CLEAN"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 3: CLEAN"></div>
+    <div style="flex:1;background:var(--orange);opacity:0.7;" title="Chapter 4: SPOT FIX"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 5: NEAR-CLEAN"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 6: CLEAN"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 7: CLEAN"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 8: NEAR-CLEAN"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 9: CLEAN"></div>
+    <div style="flex:1;background:var(--red);opacity:0.7;" title="Chapter 10: CRITICAL"></div>
+    <div style="flex:1;background:var(--red);opacity:0.7;" title="Chapter 11: REWORK"></div>
+    <div style="flex:1;background:var(--blue);opacity:0.7;" title="Chapter 12: CONFIRM"></div>
+    <div style="flex:1;background:var(--red);opacity:0.7;" title="Chapter 13: RE-RECORDED"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 14: CLEAN"></div>
+    <div style="flex:1;background:var(--blue);opacity:0.7;" title="Chapter 15: CONFIRM"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 16: NEAR-CLEAN"></div>
+    <div style="flex:1;background:var(--orange);opacity:0.7;" title="Chapter 17: SPOT FIX"></div>
+    <div style="flex:1;background:var(--orange);opacity:0.7;" title="Chapter 18: SPOT FIX"></div>
+    <div style="flex:1;background:var(--orange);opacity:0.7;" title="Chapter 19: SPOT FIX"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 20: CLEAN"></div>
+    <div style="flex:1;background:var(--purple);opacity:0.7;" title="Chapter 21: REBUILD"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 22: CLEAN"></div>
+    <div style="flex:1;background:var(--orange);opacity:0.7;" title="Chapter 23: SPOT FIX"></div>
+    <div style="flex:1;background:var(--blue);opacity:0.7;" title="Chapter 24: USE RAW"></div>
+    <div style="flex:1;background:var(--green);opacity:0.7;" title="Chapter 25: CLEAN"></div>
+    <div style="flex:1;background:var(--orange);opacity:0.7;" title="Epilogue: SPOT FIX"></div>
+    <div style="flex:1;background:var(--orange);opacity:0.7;" title="End Credits: SPOT FIX"></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);">
+    <span>Opening Credits</span><span>End Credits</span>
+  </div>
+  <div style="display:flex;gap:16px;margin-top:12px;font-size:11px;">
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--green);"></span> Clean (16)</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--orange);"></span> Spot Fix (8)</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--red);"></span> Rework (3)</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--blue);"></span> Confirm (4)</span>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ TIMELINE TAB ═══════════ -->
+<div id="timeline" class="tab-content">
+<div class="section">
+  <div class="section-title">Production Timeline</div>
+  <div class="section-sub">Reverse-engineered from 69 sessions, project files, and team communications</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot recording"></div>
+      <div class="tl-date">Jul 21, 2025 <span class="tl-phase" style="background:var(--blue-bg);color:var(--blue);">Recording</span></div>
+      <div class="tl-event">Recording Day 3 with Bob Margouleff</div>
+      <div class="tl-detail">Full-day session captured to WAV. Bob narrating from manuscript. Source file: BOB Book Day 3.wav (713MB).</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot recording"></div>
+      <div class="tl-date">Jul 23, 2025 <span class="tl-phase" style="background:var(--blue-bg);color:var(--blue);">Recording</span></div>
+      <div class="tl-event">Prologue sample cut + Descript test</div>
+      <div class="tl-detail">First Descript edit test (Book Edit Descript TEST1.m4a). Prologue sample exported as MP3 for review.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot recording"></div>
+      <div class="tl-date">Jul 25, 2025 <span class="tl-phase" style="background:var(--blue-bg);color:var(--blue);">Recording</span></div>
+      <div class="tl-event">Recording Day 4 — Chapter 4 session</div>
+      <div class="tl-detail">Full session folder captured: SOTE_Day4_(Chapter4)_07-25-2025. Multi-take recording of Chapter 4.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot editing"></div>
+      <div class="tl-date">Jul 28, 2025 <span class="tl-phase" style="background:var(--purple-bg);color:var(--purple);">Editing</span></div>
+      <div class="tl-event">First full rough assembly (V1)</div>
+      <div class="tl-detail">SOTE_28072025_V1.mp3 exported — first complete rough cut of the audiobook (112MB MP3).</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot editing"></div>
+      <div class="tl-date">Aug–Nov 2025 <span class="tl-phase" style="background:var(--purple-bg);color:var(--purple);">Editing</span></div>
+      <div class="tl-event">Descript editing phase</div>
+      <div class="tl-detail">Dan Kavanaugh and Gio editing chapters in Descript. ElevenLabs 'BOB new pro' voice clone created for fill-in passages. Descript TTS and regeneration used for gap-filling. Studio Sound enabled on some compositions. No AI compliance framework in place yet.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot editing"></div>
+      <div class="tl-date">Nov 12, 2025 <span class="tl-phase" style="background:var(--purple-bg);color:var(--purple);">Editing</span></div>
+      <div class="tl-event">Manuscript script finalized</div>
+      <div class="tl-detail">AI Standing on the Edge Audiobook Text November 12 2025.docx — the final script with editorial markup from Danny and Pushkin producer (499 comments, 1,390 tracked changes).</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot editing"></div>
+      <div class="tl-date">Nov 13, 2025 <span class="tl-phase" style="background:var(--purple-bg);color:var(--purple);">Editing</span></div>
+      <div class="tl-event">RAW audio archive created</div>
+      <div class="tl-detail">Full RAW audio directory (114 files) archived from recording Mac. Source material preserved for potential rebuilds.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot editing"></div>
+      <div class="tl-date">Nov–Dec 2025 <span class="tl-phase" style="background:var(--purple-bg);color:var(--purple);">Editing</span></div>
+      <div class="tl-event">Music and sound design</div>
+      <div class="tl-detail">Music folder populated (23 items). Sound design folder created (9 items). Logic Pro sessions for chapter scoring.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot editing"></div>
+      <div class="tl-date">Feb 28, 2026 <span class="tl-phase" style="background:var(--purple-bg);color:var(--purple);">Editing</span></div>
+      <div class="tl-event">BOB BOOK SPOT sessions</div>
+      <div class="tl-detail">Spot recording sessions for pickups and fixes. Multiple takes captured.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot mixing"></div>
+      <div class="tl-date">Mar 26, 2026 <span class="tl-phase" style="background:var(--orange-bg);color:var(--orange);">Mixing</span></div>
+      <div class="tl-event">Clean bounces from Descript + mix begins</div>
+      <div class="tl-detail">34 clean bounces exported from Descript. Ch22 RAW and Ch23 Dan Edit exported. Mix folder created with 66 items. First round of mixing begins.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot mixing"></div>
+      <div class="tl-date">Mar 27, 2026 <span class="tl-phase" style="background:var(--orange-bg);color:var(--orange);">Mixing</span></div>
+      <div class="tl-event">New mix demo created</div>
+      <div class="tl-detail">Mix demo folder with updated treatment approach. Testing EQ/compression/RX chain per Pushkin's direction.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot audit"></div>
+      <div class="tl-date">Mar 29, 2026 <span class="tl-phase" style="background:var(--red-bg);color:var(--red);">AI Audit</span></div>
+      <div class="tl-event">SAG-AFTRA AI audit begins</div>
+      <div class="tl-detail">AI compliance concern surfaces. Created Underlord audit prompt v1, v2, v3. First audit reports generated (XLSX). Descript Underlord scanning tool deployed for forensic analysis of every chapter.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot audit"></div>
+      <div class="tl-date">Mar 30, 2026 <span class="tl-phase" style="background:var(--red-bg);color:var(--red);">AI Audit</span></div>
+      <div class="tl-event">Full audit scorecard completed</div>
+      <div class="tl-detail">SOTE_AUDIT_SCORECARD.md finalized — all 29 chapters scanned. 65 total scans. 14 clean, 7 spot fixes, 4 need significant rework. Underlord prompt v4 created. SAG-AFTRA audit report HTML generated.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot strategy"></div>
+      <div class="tl-date">Mar 31, 2026 <span class="tl-phase" style="background:var(--green-bg);color:var(--green);">Strategy</span></div>
+      <div class="tl-event">NOAI conference outreach drafted</div>
+      <div class="tl-detail">Message to Blake drafted — proposing to share the AI audit workflow openly as a reproducible model for producer collaboration. Landing page concept (anewdawn) created.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot remediation"></div>
+      <div class="tl-date">Apr 1, 2026 <span class="tl-phase" style="background:var(--yellow-bg);color:var(--yellow);">Remediation</span></div>
+      <div class="tl-event">Pushkin response plan + Ch6 rebuild</div>
+      <div class="tl-detail">Response plan for Pushkin created addressing mixing approach, Neve vs M88 mic choice, and Descript project sharing concerns. Chapter 6 RAW rebuild completed — 235 matched chunks, zero AI patches, 0.2% variance from reference.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot remediation"></div>
+      <div class="tl-date">Apr 3, 2026 <span class="tl-phase" style="background:var(--yellow-bg);color:var(--yellow);">Remediation</span></div>
+      <div class="tl-event">Pickup recording sessions</div>
+      <div class="tl-detail">Chapter 13 re-recorded (full 1.2GB WAV). Logic sessions created for Ch6, Ch9, Ch15, Ch19 pickups. Hit list document updated with remaining work.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot remediation"></div>
+      <div class="tl-date">Apr 7, 2026 <span class="tl-phase" style="background:var(--yellow-bg);color:var(--yellow);">Remediation</span></div>
+      <div class="tl-event">Chapter 6 editorial review + Pro Tools work</div>
+      <div class="tl-detail">Dan's 11 editorial notes on Ch6 reviewed. Breath fixes, timing corrections, fade adjustments logged. Pro Tools version tracker created. Underlord edit prompt refined. Descript files organized for Dan.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot remediation"></div>
+      <div class="tl-date">Apr 8, 2026 <span class="tl-phase" style="background:var(--yellow-bg);color:var(--yellow);">Remediation</span></div>
+      <div class="tl-event">Hit list + audit scorecard HTML</div>
+      <div class="tl-detail">Visual hit list created (Gio_HitList_Wed_Apr8.html). Audit scorecard converted to HTML format. Chapter 13 recording imported into Logic.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot delivery"></div>
+      <div class="tl-date">Apr 9, 2026 <span class="tl-phase" style="background:rgba(255,102,153,0.12);color:var(--accent2);">Delivery</span></div>
+      <div class="tl-event">Weekend hit list + deliverable analysis for Dan</div>
+      <div class="tl-detail">FOR_DAN folder prepared with 4 key documents. Weekend hit list prioritized. AI analysis report finalized. Multiple highlighted manuscript attempts (HTML). Script highlights with cross-referencing built.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot delivery"></div>
+      <div class="tl-date">Apr 10, 2026 <span class="tl-phase" style="background:rgba(255,102,153,0.12);color:var(--accent2);">Delivery</span></div>
+      <div class="tl-event">Production status update + final manuscript highlights</div>
+      <div class="tl-detail">18 of 31 chapters ready for 3rd mix. 7 need spot fixes (~64s AI total). 3 need significant rework (Ch10, Ch11, Ch13). Clean highlighted Word doc created — 499 comments stripped, all AI passages marked. Fancy HTML audit manuscript built with full cross-referencing. Saturday pickup session confirmed (1-5pm) with Bob, Dan, Mark Allen Hall.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ CHAPTERS TAB ═══════════ -->
+<div id="chapters" class="tab-content">
+<div class="section">
+  <div class="section-title">Chapter Status</div>
+  <div class="section-sub">All 31 chapters — status, AI content, and required action</div>
+  <div style="overflow-x:auto;">
+  <table class="ch-table">
+    <thead><tr>
+      <th>#</th><th>Chapter</th><th>Status</th><th>AI %</th><th>AI Files</th><th>Action Required</th><th>Notes</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">1</td>
+        <td style="font-weight:600;">Opening Credits</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Ready for mix</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;"></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">2</td>
+        <td style="font-weight:600;">Foreword</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Ready for mix</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;"></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">3</td>
+        <td style="font-weight:600;">Preface</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Ready for mix</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;"></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">4</td>
+        <td style="font-weight:600;">Prologue</td>
+        <td><span class="status-pill pill-spot">SPOT FIX</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:7.5%;background:var(--orange);"></div></div><span class="ai-pct" style="color:var(--orange);">1.5%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">4</td>
+        <td style="font-size:12px;max-width:280px;">Remove 4 Descript TTS segments (~5.2s)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Dan EDIT2: 'gigs. The' @1:02, 'a baseline' @4:26, 'So' @4:28, 'our door. He made' @4:47</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">5</td>
+        <td style="font-weight:600;">Chapter 1</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Disable Studio Sound</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">SS ON on early recording comp</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">6</td>
+        <td style="font-weight:600;">Chapter 2</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Quarantine test comps</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">1 ElevenLabs in test comp only</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">7</td>
+        <td style="font-weight:600;">Chapter 3</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Quarantine Dr Ross comps</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">24 ElevenLabs in test comps only</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">8</td>
+        <td style="font-weight:600;">Chapter 4</td>
+        <td><span class="status-pill pill-spot">SPOT FIX</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:12.5%;background:var(--orange);"></div></div><span class="ai-pct" style="color:var(--orange);">2.5%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">2</td>
+        <td style="font-size:12px;max-width:280px;">Part B: Remove ElevenLabs 7.4s @8:18 + overdub 0.9s @2:12</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Part A is CLEAN</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">9</td>
+        <td style="font-weight:600;">Chapter 5</td>
+        <td><span class="status-pill pill-clean">NEAR-CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0.5%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0.1%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">2</td>
+        <td style="font-size:12px;max-width:280px;">Optional: Remove 2 scratch fills (0.8s)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;"></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">10</td>
+        <td style="font-weight:600;">Chapter 6</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Rebuilt from RAW — finalize v4c edits</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Dan's 11 editorial notes being addressed</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">11</td>
+        <td style="font-weight:600;">Chapter 7</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Ready for mix</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;"></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">12</td>
+        <td style="font-weight:600;">Chapter 8</td>
+        <td><span class="status-pill pill-clean">NEAR-CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:1.5%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0.3%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">1</td>
+        <td style="font-size:12px;max-width:280px;">Optional: Remove 1 scratch (1.65s)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;"></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">13</td>
+        <td style="font-weight:600;">Chapter 9</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Ready for mix</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Confirm if 9B exists</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">14</td>
+        <td style="font-weight:600;">Chapter 10</td>
+        <td><span class="status-pill pill-critical">CRITICAL</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:90%;background:var(--red);"></div></div><span class="ai-pct" style="color:var(--red);">18%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">55</td>
+        <td style="font-size:12px;max-width:280px;">REBUILD from original sessions (4h11m source)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">17 ElevenLabs + 19 Descript regens. Saturday pickup priority.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">15</td>
+        <td style="font-weight:600;">Chapter 11</td>
+        <td><span class="status-pill pill-rework">REWORK</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:85%;background:var(--red);"></div></div><span class="ai-pct" style="color:var(--red);">17%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">20</td>
+        <td style="font-size:12px;max-width:280px;">Use 'Chapter11_Duplicates_Removed' (zero AI)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Guy Edit: 17 ElevenLabs + 3 regens. Alt comp is clean.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">16</td>
+        <td style="font-weight:600;">Chapter 12</td>
+        <td><span class="status-pill pill-conditional">CONFIRM</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:100%;background:var(--blue);"></div></div><span class="ai-pct" style="color:var(--blue);">20%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">44</td>
+        <td style="font-size:12px;max-width:280px;">CONFIRM which project is deliverable</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Project A clean. Project B: 42 ElevenLabs + 2 regens. Waiting on Dan.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">17</td>
+        <td style="font-weight:600;">Chapter 13</td>
+        <td><span class="status-pill pill-rework">RE-RECORDED</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:90%;background:var(--red);"></div></div><span class="ai-pct" style="color:var(--red);">18%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">63</td>
+        <td style="font-size:12px;max-width:280px;">April 3 re-record completed — edit + mix pending</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Original had 18% AI. Full re-record done.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">18</td>
+        <td style="font-weight:600;">Chapter 14</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Ready for mix</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">AI in library only</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">19</td>
+        <td style="font-weight:600;">Chapter 15</td>
+        <td><span class="status-pill pill-conditional">CONFIRM</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:75%;background:var(--blue);"></div></div><span class="ai-pct" style="color:var(--blue);">15%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">59</td>
+        <td style="font-size:12px;max-width:280px;">CONFIRM which project is deliverable</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Project A 100% clean. Project B: 39 EL + 20 regens. Waiting on Dan.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">20</td>
+        <td style="font-weight:600;">Chapter 16</td>
+        <td><span class="status-pill pill-clean">NEAR-CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:1.0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0.2%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">1</td>
+        <td style="font-size:12px;max-width:280px;">Trivial — 1 sub-1s fix</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">99.81% original</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">21</td>
+        <td style="font-weight:600;">Chapter 17</td>
+        <td><span class="status-pill pill-spot">SPOT FIX</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:13.5%;background:var(--orange);"></div></div><span class="ai-pct" style="color:var(--orange);">2.7%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">4</td>
+        <td style="font-size:12px;max-width:280px;">Remove 4 ElevenLabs clips (34.9s)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Use 'chapter17_Edit- Guy'. @8:02-8:32, @10:04-10:10</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">22</td>
+        <td style="font-weight:600;">Chapter 18</td>
+        <td><span class="status-pill pill-spot">SPOT FIX</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:5%;background:var(--orange);"></div></div><span class="ai-pct" style="color:var(--orange);">1%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">1</td>
+        <td style="font-size:12px;max-width:280px;">Use RAW project (1 regen, 10.77s)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Do NOT use Gio version (18.1% AI)</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">23</td>
+        <td style="font-weight:600;">Chapter 19</td>
+        <td><span class="status-pill pill-spot">SPOT FIX</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:1.5%;background:var(--orange);"></div></div><span class="ai-pct" style="color:var(--orange);">0.3%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">3</td>
+        <td style="font-size:12px;max-width:280px;">Remove TTS @5:19 + regen @10:36 (2.8s total)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;"></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">24</td>
+        <td style="font-weight:600;">Chapter 20</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Use Copy of SOTE_chapter20_EDIT- Guy</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">17 EL in library, NOT on timeline</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">25</td>
+        <td style="font-weight:600;">Chapter 21</td>
+        <td><span class="status-pill pill-unverifiable">REBUILD</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:75%;background:var(--purple);"></div></div><span class="ai-pct" style="color:var(--purple);">15%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">8</td>
+        <td style="font-size:12px;max-width:280px;">Rebuild from RAW (98 min source)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Flattened — cannot verify if 8 EL baked in</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">26</td>
+        <td style="font-weight:600;">Chapter 22</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Main edit clean — use as deliverable</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Copy comp has 5 EL (not deliverable)</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">27</td>
+        <td style="font-weight:600;">Chapter 23</td>
+        <td><span class="status-pill pill-spot">SPOT FIX</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:7.5%;background:var(--orange);"></div></div><span class="ai-pct" style="color:var(--orange);">1.5%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">3</td>
+        <td style="font-size:12px;max-width:280px;">Use Copy #1 (RAW files) — Dan Edit has 3 EL (5s)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;"></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">28</td>
+        <td style="font-weight:600;">Chapter 24</td>
+        <td><span class="status-pill pill-conditional">USE RAW</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--blue);"></div></div><span class="ai-pct" style="color:var(--blue);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Use RAW project (100% clean)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;">Edited project has 6 EL — do NOT use</td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">29</td>
+        <td style="font-weight:600;">Chapter 25</td>
+        <td><span class="status-pill pill-clean">CLEAN</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0%;background:var(--green);"></div></div><span class="ai-pct" style="color:var(--green);">0%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">0</td>
+        <td style="font-size:12px;max-width:280px;">Ready for mix</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;"></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">30</td>
+        <td style="font-weight:600;">Epilogue</td>
+        <td><span class="status-pill pill-spot">SPOT FIX</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0.5%;background:var(--orange);"></div></div><span class="ai-pct" style="color:var(--orange);">0.1%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">1</td>
+        <td style="font-size:12px;max-width:280px;">Replace 1 AI clip @0:47 (~1.8s)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;"></td>
+      </tr>
+      <tr>
+        <td style="color:var(--text2);font-family:'JetBrains Mono';font-size:12px;">31</td>
+        <td style="font-weight:600;">End Credits</td>
+        <td><span class="status-pill pill-spot">SPOT FIX</span></td>
+        <td><div class="ai-bar"><div class="ai-bar-track"><div class="ai-bar-fill" style="width:8.5%;background:var(--orange);"></div></div><span class="ai-pct" style="color:var(--orange);">1.7%</span></div></td>
+        <td style="font-family:'JetBrains Mono';font-size:12px;color:var(--text2);">1</td>
+        <td style="font-size:12px;max-width:280px;">Replace 'Edited by Dan' EL voice clone (~2s)</td>
+        <td style="font-size:12px;color:var(--text2);max-width:200px;"></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ AI AUDIT TAB ═══════════ -->
+<div id="audit" class="tab-content">
+<div class="section">
+  <div class="section-title">AI Compliance Audit</div>
+  <div class="section-sub">SAG-AFTRA zero-AI-words policy &bull; Descript Underlord forensic scanning &bull; 65 scans completed</div>
+
+  <div class="card-grid card-grid-3" style="margin-bottom:32px;">
+    <div class="stat-card">
+      <div class="label">Audit Tool</div>
+      <div class="value" style="font-size:20px;">Descript Underlord</div>
+      <div class="detail">Custom v3/v4 forensic prompt. Scans composition metadata, WAV headers, clip origins, AI speech flags.</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">AI Types Detected</div>
+      <div class="value" style="font-size:18px;">3 Types</div>
+      <div class="detail">
+        <span style="color:var(--red);">&#9632;</span> ElevenLabs "BOB new pro" voice clone<br>
+        <span style="color:var(--orange);">&#9632;</span> Descript TTS / scratch fills<br>
+        <span style="color:var(--yellow);">&#9632;</span> Descript regeneration (isAISpeech=true)
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Compliance Standard</div>
+      <div class="value" style="font-size:18px;">SAG-AFTRA</div>
+      <div class="detail">Zero AI-generated full words or lines in deliverable audio. No exceptions. Pushkin Industries enforcement.</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;">Severity Breakdown</h3>
+  <div class="card-grid card-grid-4" style="margin-bottom:32px;">
+    <div class="stat-card" style="border-left:3px solid var(--green);">
+      <div class="label">Minor (&lt;2s)</div>
+      <div class="value" style="color:var(--green);">12</div>
+      <div class="detail">Quick replacement from RAW takes</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid var(--orange);">
+      <div class="label">Major (2-10s)</div>
+      <div class="value" style="color:var(--orange);">5</div>
+      <div class="detail">Targeted re-record or alt comp</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid var(--red);">
+      <div class="label">Critical (10-60s)</div>
+      <div class="value" style="color:var(--red);">4</div>
+      <div class="detail">Section rebuild required</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid var(--accent);">
+      <div class="label">Critical-Full (&gt;60s)</div>
+      <div class="value" style="color:var(--accent);">3</div>
+      <div class="detail">Ch10, Ch11, Ch13 — full chapter rework</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;">Audio Treatment Standard (Pushkin Directive)</h3>
+  <div class="decision-card resolved" style="border-left-color:var(--green);">
+    <div class="decision-title">Gold Standard: Chapters 16 &amp; 25</div>
+    <div class="decision-detail">Light EQ &bull; Light compression &bull; Minimal RX Voice De-noise &bull; Room tone preserved &bull; Studio Sound OFF &bull; "Paul McCartney vibe" — intimate, authentic, not over-processed.</div>
+    <div class="decision-owner">Set by: Jasmine / Sarah (Pushkin Industries)</div>
+  </div>
+
+  <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;margin-top:24px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;">Underlord Prompt Evolution</h3>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 16px;flex:1;min-width:200px;">
+      <div style="font-family:'JetBrains Mono';font-size:12px;color:var(--accent);">v1 — Mar 29</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;">Initial forensic prompt. Basic AI detection.</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 16px;flex:1;min-width:200px;">
+      <div style="font-family:'JetBrains Mono';font-size:12px;color:var(--accent);">v2 — Mar 29</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;">Added ElevenLabs voice clone detection.</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 16px;flex:1;min-width:200px;">
+      <div style="font-family:'JetBrains Mono';font-size:12px;color:var(--accent);">v3 — Mar 29</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;">Full forensic: metadata, WAV headers, clip origins, severity scoring.</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 16px;flex:1;min-width:200px;">
+      <div style="font-family:'JetBrains Mono';font-size:12px;color:var(--accent);">v4 — Mar 30</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;">Refined for paste-and-scan workflow. Standardized output format.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ TEAM & DECISIONS TAB ═══════════ -->
+<div id="team" class="tab-content">
+<div class="section">
+  <div class="section-title">Team & Decisions</div>
+  <div class="section-sub">Key people, pending decisions, and blocking items</div>
+
+  <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;">Team</h3>
+  <div class="card-grid card-grid-3" style="margin-bottom:32px;">
+    <div class="team-card">
+      <div class="team-name">Robert Margouleff</div>
+      <div class="team-role">Author / Narrator</div>
+      <div class="team-note">Bob. Legendary synth pioneer. Original voice on all recordings.</div>
+    </div>
+    <div class="team-card">
+      <div class="team-name">Dan Kavanaugh</div>
+      <div class="team-role">Producer / Editor</div>
+      <div class="team-note">Danny. Managing the edit, making delivery decisions. Ch6 editorial notes, Ch12/15 project confirmation pending.</div>
+    </div>
+    <div class="team-card">
+      <div class="team-name">Gio Bertuccelli</div>
+      <div class="team-role">Audio Engineer / AI Compliance</div>
+      <div class="team-note">Running the audit, mixing, managing Descript/Pro Tools/Logic workflow. Built the Underlord scanning system.</div>
+    </div>
+    <div class="team-card">
+      <div class="team-name">Mark Allen Hall</div>
+      <div class="team-role">Recording Engineer</div>
+      <div class="team-note">Saturday pickup session participant.</div>
+    </div>
+    <div class="team-card">
+      <div class="team-name">Jasmine / Sarah</div>
+      <div class="team-role">Pushkin Industries Producer</div>
+      <div class="team-note">Set the gold standard (Ch16/Ch25): light EQ, light compression, minimal RX, no Studio Sound. 'Paul McCartney vibe.'</div>
+    </div>
+    <div class="team-card">
+      <div class="team-name">Pushkin Industries</div>
+      <div class="team-role">Publisher</div>
+      <div class="team-note">Book release May 19, 2026. SAG-AFTRA zero-AI-words policy. Requested Descript project sharing.</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;">Pending Decisions</h3>
+
+  <div class="decision-card critical">
+    <div class="decision-title">Chapter 12: Which Descript project is the deliverable?</div>
+    <div class="decision-detail">Project A ('SOTE_chapter12_EDIT__08-11-25') is 100% clean. Project B has 42 ElevenLabs + 2 regens. If Project A → ready immediately. If Project B → significant rework.</div>
+    <div class="decision-owner">Owner: Dan Kavanaugh</div>
+  </div>
+
+  <div class="decision-card critical">
+    <div class="decision-title">Chapter 15: Which Descript project is the deliverable?</div>
+    <div class="decision-detail">Project A ('SOTE_chapter15_EDIT') is 100% clean. Project B ('v0b FIX') has 39 ElevenLabs + 20 regens. Same situation as Ch12.</div>
+    <div class="decision-owner">Owner: Dan Kavanaugh</div>
+  </div>
+
+  <div class="decision-card">
+    <div class="decision-title">Chapter 21: Accept with disclosure or full rebuild?</div>
+    <div class="decision-detail">Both compositions use flattened sources. 8 ElevenLabs files (~2:10) may be baked in. 98 min of clean RAW available for rebuild. Business/legal risk decision.</div>
+    <div class="decision-owner">Owner: Dan Kavanaugh / Pushkin</div>
+  </div>
+
+  <div class="decision-card">
+    <div class="decision-title">Descript project sharing with Pushkin</div>
+    <div class="decision-detail">Pushkin requested access (itaccounts@pushkin.fm). Risk: exposes AI edit history in Descript composition metadata. Need to decide what level of transparency.</div>
+    <div class="decision-owner">Owner: Dan Kavanaugh / Gio</div>
+  </div>
+
+  <div class="decision-card resolved">
+    <div class="decision-title">Chapter 13: Re-record decision</div>
+    <div class="decision-detail">18% AI content (111 seconds). Full re-record completed April 3, 2026. 1.2GB WAV captured. Awaiting edit + mix.</div>
+    <div class="decision-owner">RESOLVED — April 3, 2026</div>
+  </div>
+
+  <div class="decision-card resolved">
+    <div class="decision-title">Audio treatment standard established</div>
+    <div class="decision-detail">Ch16/Ch25 as gold standard: light EQ, light compression, minimal RX, room tone preserved, Studio Sound OFF.</div>
+    <div class="decision-owner">RESOLVED — Set by Pushkin (Jasmine/Sarah)</div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ DEADLINES TAB ═══════════ -->
+<div id="deadlines" class="tab-content">
+<div class="section">
+  <div class="section-title">Deadlines & Milestones</div>
+  <div class="section-sub">Critical path to May 19 release</div>
+  <div class="deadline-item">
+    <div class="dl-date" style="color:var(--blue);">Apr 11</div>
+    <div class="dl-event">Saturday pickup session (1-5pm LA)</div>
+    <div class="dl-status" style="background:var(--blue-bg);color:var(--blue);">upcoming</div>
+  </div>
+  <div class="deadline-item">
+    <div class="dl-date" style="color:var(--blue);">Apr 13</div>
+    <div class="dl-event">3rd mix deliverables due</div>
+    <div class="dl-status" style="background:var(--blue-bg);color:var(--blue);">upcoming</div>
+  </div>
+  <div class="deadline-item">
+    <div class="dl-date" style="color:var(--red);">Apr 15</div>
+    <div class="dl-event">SAG-AFTRA compliance deadline</div>
+    <div class="dl-status" style="background:var(--red-bg);color:var(--red);">critical</div>
+  </div>
+  <div class="deadline-item">
+    <div class="dl-date" style="color:var(--blue);">Apr 17-18</div>
+    <div class="dl-event">Mastering sessions</div>
+    <div class="dl-status" style="background:var(--blue-bg);color:var(--blue);">upcoming</div>
+  </div>
+  <div class="deadline-item">
+    <div class="dl-date" style="color:var(--blue);">Apr 24</div>
+    <div class="dl-event">Final masters delivery</div>
+    <div class="dl-status" style="background:var(--blue-bg);color:var(--blue);">upcoming</div>
+  </div>
+  <div class="deadline-item">
+    <div class="dl-date" style="color:var(--blue);">May 19</div>
+    <div class="dl-event">Book release date</div>
+    <div class="dl-status" style="background:var(--blue-bg);color:var(--blue);">upcoming</div>
+  </div>
+
+  <div style="margin-top:32px;">
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;">Saturday Pickup Session — April 11</h3>
+    <div class="card-grid card-grid-2">
+      <div class="stat-card" style="border-left:3px solid var(--red);">
+        <div class="label">Priority 1</div>
+        <div class="value" style="font-size:18px;">Chapter 10</div>
+        <div class="detail">55 AI files, 15-20% AI content. Must rebuild from 4h11m of original sessions. Highest priority for re-records.</div>
+      </div>
+      <div class="stat-card" style="border-left:3px solid var(--orange);">
+        <div class="label">Priority 2</div>
+        <div class="value" style="font-size:18px;">Spot Fixes</div>
+        <div class="detail">Prologue (5.2s), Ch17 (34.9s), Ch19 (2.8s), Epilogue (1.8s), End Credits (2s). Total: ~47 seconds.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ SCRIPT ═══════════ -->
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

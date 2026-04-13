@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shaping Sounds — Hit List</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: #0f0f0f;
+    color: #e8e8e8;
+    padding: 40px 24px;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+  .header .subtitle {
+    font-size: 13px;
+    color: #666;
+    letter-spacing: 0.3px;
+  }
+  .header .subtitle span {
+    color: #e85555;
+    font-weight: 600;
+  }
+
+  /* SECTIONS */
+  .section {
+    margin-bottom: 28px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid transparent;
+  }
+
+  .section-header {
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: default;
+  }
+  .section-header .label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .section-header h2 {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+  }
+
+  .section-body {
+    padding: 20px 20px;
+    background: rgba(255,255,255,0.03);
+  }
+
+  /* RED */
+  .red {
+    border-color: #5a1a1a;
+    background: #1a0a0a;
+  }
+  .red .section-header {
+    background: #2d1010;
+  }
+  .red .section-header h2 { color: #ff6b6b; }
+  .red .section-header .label { color: #ff6b6b; }
+
+  /* ORANGE */
+  .orange {
+    border-color: #4a2e0a;
+    background: #1a0f04;
+  }
+  .orange .section-header {
+    background: #2a1a08;
+  }
+  .orange .section-header h2 { color: #ffaa44; }
+  .orange .section-header .label { color: #ffaa44; }
+
+  /* YELLOW */
+  .yellow {
+    border-color: #3a3010;
+    background: #141006;
+  }
+  .yellow .section-header {
+    background: #1e1808;
+  }
+  .yellow .section-header h2 { color: #ffe066; }
+  .yellow .section-header .label { color: #ffe066; }
+
+  /* GREEN */
+  .green {
+    border-color: #0f2e14;
+    background: #060f08;
+  }
+  .green .section-header {
+    background: #0a1e0d;
+  }
+  .green .section-header h2 { color: #5dba6e; }
+  .green .section-header .label { color: #5dba6e; }
+
+  /* CHECKLIST */
+  .checklist-section {
+    border-color: #1e2a3a;
+    background: #060c14;
+  }
+  .checklist-section .section-header {
+    background: #0a1422;
+  }
+  .checklist-section .section-header h2 { color: #66aaff; }
+  .checklist-section .section-header .label { color: #66aaff; }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+  thead th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #888;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  tbody tr {
+    border-bottom: 1px solid #1e1e1e;
+    transition: background 0.1s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.03); }
+  tbody td {
+    padding: 10px 12px;
+    vertical-align: top;
+  }
+  tbody td:first-child {
+    font-weight: 700;
+    white-space: nowrap;
+    color: #ffffff;
+    width: 120px;
+  }
+  tbody td:last-child {
+    color: #c8c8c8;
+  }
+
+  /* LISTS */
+  ul, ol {
+    padding-left: 20px;
+    font-size: 14px;
+    color: #c0c0c0;
+  }
+  li { margin: 5px 0; }
+  li strong { color: #ffffff; }
+
+  /* SUBHEAD */
+  .subhead {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #777;
+    margin: 20px 0 10px;
+  }
+  .subhead:first-child { margin-top: 0; }
+
+  /* CALLOUT */
+  .callout {
+    background: rgba(255,255,255,0.04);
+    border-left: 3px solid #444;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 14px;
+    color: #c0c0c0;
+    font-style: italic;
+  }
+  .callout.red-accent { border-left-color: #e85555; }
+  .callout.orange-accent { border-left-color: #ff9933; }
+
+  /* TIMECODES */
+  .timecodes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0;
+  }
+  .tc {
+    background: #2a1010;
+    border: 1px solid #5a2020;
+    color: #ff8888;
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  /* PILL TAGS */
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0;
+  }
+  .pill {
+    font-size: 13px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .pill-clean {
+    background: #0d2214;
+    border: 1px solid #1e5530;
+    color: #5dba6e;
+  }
+
+  /* CHECKLIST ITEMS */
+  .checklist {
+    list-style: none;
+    padding: 0;
+  }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #1e2a3a;
+    font-size: 14px;
+    color: #b0c8e8;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #3a5070;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* WARNING BADGE */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .badge-red { background: #5a1a1a; color: #ff6b6b; }
+  .badge-orange { background: #3a2008; color: #ffaa44; }
+
+  /* CHAPTER CHIPS */
+  .chapter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 6px 0;
+  }
+  .chip {
+    background: #1a1a2a;
+    border: 1px solid #333355;
+    color: #aaaacc;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 11px;
+    border-radius: 5px;
+  }
+
+  p { font-size: 14px; color: #b8b8b8; margin: 6px 0; }
+  strong { color: #e8e8e8; }
+
+  .note {
+    font-size: 12px;
+    color: #555;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #1a1a1a;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Shaping Sounds — Gio's Hit List</h1>
+    <div class="subtitle">
+      Updated April 3, 2026 &nbsp;·&nbsp; Book release: <span>May 19, 2026</span> &nbsp;·&nbsp; 3rd Mixes due week of April 13
+    </div>
+  </div>
+
+  <!-- RED 1: AI COMPLIANCE -->
+  <div class="section red">
+    <div class="section-header">
+      <div class="label">🔴 Fire Now</div>
+      <h2>AI Compliance — SAG-AFTRA (Non-Negotiable)</h2>
+    </div>
+    <div class="section-body">
+      <table>
+        <thead>
+          <tr><th>Chapter</th><th>Issue</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Prologue</td><td>4 TTS segments detected</td><td>Remove AI speech, replace with Bob re-record</td></tr>
+          <tr><td>Ch4B</td><td>ElevenLabs "BOB new pro" voice + overdub</td><td>Full clean — strip all AI, rebuild from RAW</td></tr>
+          <tr><td>Ch10</td><td>55 AI files (massive)</td><td>Full rebuild from RAW project — nothing salvageable</td></tr>
+          <tr><td>Ch13</td><td>63 AI files / 18% AI contamination (~111s of 619s)</td><td>Rebuild from RAW or re-record ~111s — see details below</td></tr>
+          <tr><td>Ch24</td><td>AI present in edited version</td><td>Use RAW project ONLY — do not use edited version</td></tr>
+        </tbody>
+      </table>
+
+      <div class="subhead" style="margin-top:24px;">Ch13 — Full Breakdown</div>
+
+      <p><strong>AI timecodes in timeline:</strong></p>
+      <div class="timecodes">
+        <span class="tc">0:04–0:17</span>
+        <span class="tc">0:59–1:10</span>
+        <span class="tc">1:47–1:48</span>
+        <span class="tc">3:06–3:32</span>
+        <span class="tc">6:34–6:35</span>
+        <span class="tc">6:59–7:00</span>
+      </div>
+
+      <p style="margin-top:12px;"><strong>AI file inventory (63 total):</strong></p>
+      <ul>
+        <li>6 ElevenLabs clips (~103s)</li>
+        <li>3 Descript regeneration segments (~3s)</li>
+        <li>1 "BOB external AI" clip (~5s)</li>
+        <li>46 "BOB new pro" files in library</li>
+        <li>2× 10-hour ElevenLabs full-audiobook files in library</li>
+      </ul>
+
+      <p style="margin-top:12px;"><strong>Source material available:</strong></p>
+      <ul>
+        <li>1h 16m of RAW recordings</li>
+        <li>8 compositions</li>
+      </ul>
+
+      <p style="margin-top:12px;"><strong>Remediation options:</strong></p>
+      <ol>
+        <li>Rebuild from 1h 16m RAW — remove all AI, re-edit from clean source</li>
+        <li>Re-record the ~111s of AI content with Bob</li>
+      </ol>
+
+      <div class="callout red-accent" style="margin-top:14px;">
+        ⚠️ Dan has already flagged Ch13 for possible full re-record — discuss with Dan before starting.
+      </div>
+    </div>
+  </div>
+
+  <!-- RED 2: DAN DECISIONS -->
+  <div class="section red">
+    <div class="section-header">
+      <div class="label">🔴 Fire Now</div>
+      <h2>Dan Decisions Needed — Blocking</h2>
+    </div>
+    <div class="section-body">
+      <p style="margin-bottom:14px; color:#ff8888;">Nothing ships until Dan confirms these:</p>
+      <table>
+        <thead>
+          <tr><th>Chapter</th><th>Question</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Ch12</td><td>Two projects exist. Which one is the deliverable?</td></tr>
+          <tr><td>Ch15</td><td>Two projects exist. Which one is the deliverable?</td></tr>
+          <tr><td>Ch21</td><td>Flattened source — unverifiable AI status. Rebuild from RAW recommended.</td></tr>
+          <tr><td>Ch11</td><td>Check the "Duplicates_Removed" comp — confirm it's clean before delivery</td></tr>
+          <tr><td>Ch9</td><td>Is there a 9B? Scorecard flags this as an open question</td></tr>
+          <tr><td>Ch13</td><td>Full re-record vs. rebuild from RAW — which approach?</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RED 3: SPOT AI FIXES -->
+  <div class="section red">
+    <div class="section-header">
+      <div class="label">🔴 Fire Now</div>
+      <h2>Spot AI Fixes — Targeted Removal</h2>
+    </div>
+    <div class="section-body">
+      <p style="margin-bottom:12px;">Isolated AI segments — targeted removal, not full rebuilds:</p>
+      <table>
+        <thead>
+          <tr><th>Chapter</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Ch17</td><td>Minor AI segments — remove</td></tr>
+          <tr><td>Ch18</td><td>Minor AI segments — remove</td></tr>
+          <tr><td>Ch19</td><td>Minor AI segments — remove</td></tr>
+          <tr><td>Ch23</td><td>3 ElevenLabs clips on "Dan Edit" comp (5s total) → <strong>Use Copy #1 instead of Dan Edit</strong></td></tr>
+          <tr><td>Epilogue</td><td>Minor AI segments — remove</td></tr>
+          <tr><td>End Credits</td><td>Minor AI segments — remove</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RED 4: STUDIO SOUND -->
+  <div class="section red">
+    <div class="section-header">
+      <div class="label">🔴 Fire Now</div>
+      <h2>Turn Off Studio Sound in Descript</h2>
+    </div>
+    <div class="section-body">
+      <p style="margin-bottom:12px; color:#ff8888; font-weight:600;">Studio Sound MUST be OFF — Pushkin directive.</p>
+      <p style="margin-bottom:10px;">Check and disable in these chapters:</p>
+      <div class="chapter-chips">
+        <span class="chip">Ch1</span><span class="chip">Ch5</span><span class="chip">Ch7</span>
+        <span class="chip">Ch9</span><span class="chip">Ch10</span><span class="chip">Ch11</span>
+        <span class="chip">Ch15</span><span class="chip">Ch18</span><span class="chip">Ch20</span>
+        <span class="chip">Ch24</span>
+      </div>
+      <p style="margin-top:10px; font-size:13px; color:#888;">Ch24 — turn off in RAW project before bounce.</p>
+    </div>
+  </div>
+
+  <!-- ORANGE 1: AUDIO TREATMENT -->
+  <div class="section orange">
+    <div class="section-header">
+      <div class="label">🟠 Audio Treatment</div>
+      <h2>All Chapters Must Match Ch16 / Ch25</h2>
+    </div>
+    <div class="section-body">
+      <p style="margin-bottom:10px;">Sarah's direction (April 2): Ch16 and Ch25 are the gold standard. Every chapter must sound like those.</p>
+
+      <div class="subhead">The Approach</div>
+      <ul>
+        <li>Light EQ + light compression + limited RX Voice De-noise</li>
+        <li>"Tiny Desk" vibe — natural, intimate, present</li>
+        <li>Room tone is <strong>ACCEPTABLE and PREFERRED</strong> — do not over-clean</li>
+      </ul>
+
+      <div class="callout orange-accent" style="margin-top:14px;">
+        "I'd rather have the room tone in there, and be a part of the book, rather than try to create an environment that is inaccurate." — Sarah
+      </div>
+
+      <div class="subhead" style="margin-top:18px;">Special Case — Ch6</div>
+      <ul>
+        <li>v4 has too many artifacts — Sarah does NOT like it</li>
+        <li>Reprocess from Descript Raw + add only a tiny bit of noise reduction</li>
+        <li><strong>Do NOT use the over-processed version</strong></li>
+      </ul>
+
+      <div class="subhead" style="margin-top:18px;">Edit Quality Fixes — All Chapters</div>
+      <ul>
+        <li>Remove up-cut breaths</li>
+        <li>Remove double breaths</li>
+        <li>Fix sharp fade-outs (smooth them)</li>
+        <li>Keep room tone steady under edits — no dropout gaps</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ORANGE 2: JASMINE -->
+  <div class="section orange">
+    <div class="section-header">
+      <div class="label">🟠 Must Incorporate</div>
+      <h2>Jasmine's Notes</h2>
+    </div>
+    <div class="section-body">
+      <p>Jasmine's production notes are in the <strong>Comments in the shared manuscript Google Doc</strong>. Go through chapter by chapter and incorporate all edits before 3rd Mix delivery.</p>
+    </div>
+  </div>
+
+  <!-- YELLOW 1: ADMIN -->
+  <div class="section yellow">
+    <div class="section-header">
+      <div class="label">🟡 Admin</div>
+      <h2>Do This Week</h2>
+    </div>
+    <div class="section-body">
+      <ol>
+        <li><strong>Reply to Jasmine</strong> — confirm Sarah's Ch16/Ch25 treatment instructions are doable for all chapters</li>
+        <li><strong>Share Descript projects</strong> with itaccounts@pushkin.fm (Pushkin's request)</li>
+        <li><strong>Deliver 3rd Mixes to LucidLink</strong> — all chapters, week of April 13</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- YELLOW 2: LIBRARY CLEANUP -->
+  <div class="section yellow">
+    <div class="section-header">
+      <div class="label">🟡 After Fixes</div>
+      <h2>Library Cleanup</h2>
+    </div>
+    <div class="section-body">
+      <p style="margin-bottom:12px;">After timeline fixes are done, purge AI files from Descript project libraries:</p>
+      <table>
+        <thead>
+          <tr><th>Chapter</th><th>What to Remove</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Ch4B</td><td>Remove ElevenLabs / "BOB new pro" files from library</td></tr>
+          <tr><td>Ch10</td><td>Remove all AI source files from library</td></tr>
+          <tr><td>Ch13</td><td>Remove 46 "BOB new pro" files + 2× 10-hour ElevenLabs audiobook files</td></tr>
+          <tr><td>Ch24</td><td>Remove any AI files from library</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GREEN: ALREADY CLEAN -->
+  <div class="section green">
+    <div class="section-header">
+      <div class="label">✅ Already Clean</div>
+      <h2>AI Audit — No Action Needed</h2>
+    </div>
+    <div class="section-body">
+      <div class="pills">
+        <span class="pill pill-clean">Ch2</span>
+        <span class="pill pill-clean">Ch3</span>
+        <span class="pill pill-clean">Ch5</span>
+        <span class="pill pill-clean">Ch6A</span>
+        <span class="pill pill-clean">Ch6B</span>
+        <span class="pill pill-clean">Ch7</span>
+        <span class="pill pill-clean">Ch8</span>
+        <span class="pill pill-clean">Ch9</span>
+        <span class="pill pill-clean">Ch14</span>
+        <span class="pill pill-clean">Ch16</span>
+        <span class="pill pill-clean">Ch20</span>
+        <span class="pill pill-clean">Ch22</span>
+        <span class="pill pill-clean">Ch25</span>
+        <span class="pill pill-clean">Ch25 / Epilogue (AI VOX)</span>
+        <span class="pill pill-clean">Foreword</span>
+        <span class="pill pill-clean">Preface</span>
+        <span class="pill pill-clean">Part Headers</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="section checklist-section">
+    <div class="section-header">
+      <div class="label">📋 Delivery</div>
+      <h2>Before Uploading Any Chapter to LucidLink</h2>
+    </div>
+    <div class="section-body">
+      <ul class="checklist">
+        <li><span class="check-box"></span>Studio Sound = OFF</li>
+        <li><span class="check-box"></span>No ElevenLabs / AI voice anywhere in the file</li>
+        <li><span class="check-box"></span>No AI files remaining in project library</li>
+        <li><span class="check-box"></span>Matches Ch16/Ch25 treatment (natural, room tone OK, not over-processed)</li>
+        <li><span class="check-box"></span>Jasmine's notes incorporated</li>
+        <li><span class="check-box"></span>Edit artifacts fixed (breaths, fades, room tone consistency)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    Source: Pushkin emails (Sarah Apr 2, Jasmine threads), SAG-AFTRA AI audit scorecard (Mar 30), Dan's notes, project memory
+  </div>
+
+</div>
+</body>
+</html>

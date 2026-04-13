@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gio's Hit List — Wed April 8, 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0a0a0f;
+    color: #e8e6e3;
+    min-height: 100vh;
+    padding: 40px 24px;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #f0c27f 0%, #fc5c7d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .date-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #888;
+    background: rgba(255,255,255,0.04);
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-top: 8px;
+    font-weight: 400;
+  }
+
+  .pub-countdown {
+    display: inline-block;
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #fc5c7d;
+    background: rgba(252,92,125,0.08);
+    border: 1px solid rgba(252,92,125,0.15);
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+
+  /* Priority Label */
+  .priority-label {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+  }
+  .priority-label.fire { background: rgba(255,80,60,0.12); color: #ff6b57; border: 1px solid rgba(255,80,60,0.2); }
+  .priority-label.work { background: rgba(100,180,255,0.10); color: #6ab4ff; border: 1px solid rgba(100,180,255,0.15); }
+  .priority-label.collab { background: rgba(160,120,255,0.10); color: #b08dff; border: 1px solid rgba(160,120,255,0.15); }
+
+  /* Section */
+  .section {
+    margin-bottom: 32px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 16px;
+    padding-left: 2px;
+  }
+
+  /* Task Card */
+  .task {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+  .task:hover {
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  .task-num {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #333;
+    font-weight: 500;
+  }
+
+  .task-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.35;
+    padding-right: 40px;
+  }
+
+  .task-detail {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.6;
+  }
+
+  .task-detail strong {
+    color: #bbb;
+    font-weight: 500;
+  }
+
+  .task-meta {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .meta-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: #777;
+  }
+
+  .meta-chip.file { color: #f0c27f; border-color: rgba(240,194,127,0.2); background: rgba(240,194,127,0.06); }
+  .meta-chip.blocker { color: #ff6b57; border-color: rgba(255,107,87,0.2); background: rgba(255,107,87,0.06); }
+  .meta-chip.with { color: #b08dff; border-color: rgba(176,141,255,0.2); background: rgba(176,141,255,0.06); }
+
+  /* Sound Direction Callout */
+  .callout {
+    background: rgba(252,92,125,0.04);
+    border-left: 3px solid rgba(252,92,125,0.4);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #c8a0a0;
+    line-height: 1.55;
+  }
+  .callout strong { color: #e8b0b0; }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: rgba(255,255,255,0.04);
+    margin: 36px 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding-top: 20px;
+    font-size: 12px;
+    color: #333;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Milestone row */
+  .milestone {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    background: rgba(240,194,127,0.04);
+    border: 1px dashed rgba(240,194,127,0.15);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #f0c27f;
+  }
+  .milestone .icon { font-size: 16px; }
+
+  /* Checkbox style */
+  .checkbox {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 5px;
+    margin-right: 12px;
+    vertical-align: middle;
+    flex-shrink: 0;
+    position: relative;
+    top: -1px;
+  }
+
+  .upcoming-section {
+    margin-top: 40px;
+    padding: 20px 22px;
+    background: rgba(255,255,255,0.015);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 12px;
+  }
+  .upcoming-section .section-title { margin-bottom: 12px; }
+  .upcoming-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 13px;
+    color: #555;
+  }
+  .upcoming-item:last-child { border-bottom: none; }
+  .upcoming-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #444;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <h1>Gio's Hit List</h1>
+      <span class="date-badge">WED APR 8</span>
+    </div>
+    <div class="subtitle">Shaping Sounds Audiobook — Production Day</div>
+    <div class="pub-countdown">41 DAYS TO PUBLICATION (05/19)</div>
+  </div>
+
+  <!-- 🔥 PRIORITY: CH 6 REWORK -->
+  <div class="section">
+    <span class="priority-label fire">🔥 Priority — Deliver Today</span>
+
+    <div class="task">
+      <span class="task-num">#11</span>
+      <div class="task-title"><span class="checkbox"></span>Finish Ch 6 — Edit, Sound Treatment, Mix</div>
+      <div class="task-detail">
+        Address Dan's notes on v4b. Print new mix as <strong>010_SOTE_chapter6_v4c</strong>. This is the Pushkin review deliverable.
+      </div>
+      <div class="callout">
+        <strong>Sarah's sound direction:</strong> v4 was flagged for artifacts and over-processing. Emulate the treatment on Ch 16 and Ch 25 — natural, authentic, preserve room tone. Light touch on noise reduction, no audible processing artifacts.
+      </div>
+      <div class="task-meta">
+        <span class="meta-chip file">010_SOTE_chapter6_v4c</span>
+        <span class="meta-chip">Pushkin review</span>
+      </div>
+    </div>
+
+    <div class="milestone">
+      <span class="icon">◆</span>
+      Re-deliver Ch 6 sound sample — milestone today
+    </div>
+  </div>
+
+  <!-- SOLO TASKS -->
+  <div class="section">
+    <span class="priority-label work">Solo Tasks</span>
+
+    <div class="task">
+      <span class="task-num">#17</span>
+      <div class="task-title"><span class="checkbox"></span>Replace AI Voice with Raw</div>
+      <div class="task-detail">
+        After Dan decides on item #16 (replace vs. re-record), swap out AI-generated voice segments with raw recordings.
+      </div>
+      <div class="task-meta">
+        <span class="meta-chip blocker">Blocked by Dan's #16 decision</span>
+      </div>
+    </div>
+
+    <div class="task">
+      <span class="task-num">#21</span>
+      <div class="task-title"><span class="checkbox"></span>Stevie Wonder Music Timings</div>
+      <div class="task-detail">
+        Verify and adjust all Stevie Wonder music cues — each cue must be <strong>≤ 1 minute</strong>. Check all chapters.
+      </div>
+      <div class="task-meta">
+        <span class="meta-chip">Legal requirement</span>
+      </div>
+    </div>
+
+    <div class="task">
+      <span class="task-num">#22</span>
+      <div class="task-title"><span class="checkbox"></span>Mix New Ch 13</div>
+      <div class="task-detail">
+        Dan edited the new Ch 13 recording yesterday. Pick up and mix. Half-day task per schedule.
+      </div>
+      <div class="task-meta">
+        <span class="meta-chip">0.5 day</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLLAB WITH DAN -->
+  <div class="section">
+    <span class="priority-label collab">With Dan</span>
+
+    <div class="task">
+      <span class="task-num">#19</span>
+      <div class="task-title"><span class="checkbox"></span>Organize Descript & Invite Pushkin</div>
+      <div class="task-detail">
+        Do together with Dan. Clean up overall directory, review chapter-by-chapter. Invite Pushkin: <strong>itaccounts@pushkin.fm</strong>
+      </div>
+      <div class="task-meta">
+        <span class="meta-chip with">w/ Dan</span>
+        <span class="meta-chip">2-day task (today + tomorrow)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- UPCOMING -->
+  <div class="upcoming-section">
+    <div class="section-title">Coming Up Next</div>
+    <div class="upcoming-item">
+      <span>Address all Jasmine notes, Dan pickup edits Ch 6, 9, 15</span>
+      <span class="upcoming-date">04/09–10</span>
+    </div>
+    <div class="upcoming-item">
+      <span>Record pickups w/ Dan (per Jasmine & DK notes)</span>
+      <span class="upcoming-date">SAT 04/11</span>
+    </div>
+    <div class="upcoming-item">
+      <span>Sound treatment all chapters</span>
+      <span class="upcoming-date">04/13–15</span>
+    </div>
+    <div class="upcoming-item">
+      <span>Mastering</span>
+      <span class="upcoming-date">04/17–18</span>
+    </div>
+    <div class="upcoming-item">
+      <span>Deliver Masters</span>
+      <span class="upcoming-date">04/24</span>
+    </div>
+  </div>
+
+  <div class="footer">SHAPING SOUNDS — PUSHKIN INDUSTRIES — PUB 05/19/26</div>
+
+</div>
+</body>
+</html>

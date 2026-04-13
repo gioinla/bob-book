@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SOTE — Pro Tools AI Audit</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0e0e0e;color:#ddd;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;padding-bottom:60px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:#111;border-bottom:1px solid #222;display:flex;gap:0;flex-wrap:wrap;padding:8px 16px;align-items:center}
+nav a{color:#666;text-decoration:none;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:3px;white-space:nowrap}
+nav a:hover{color:#fff;background:#1a1a1a}
+.nav-title{color:#444;font-size:10px;letter-spacing:3px;margin-right:12px;white-space:nowrap}
+
+/* HEADER */
+.page-header{padding:32px 24px 24px;border-bottom:1px solid #1a1a1a}
+.page-header h1{font-size:22px;font-weight:900;letter-spacing:2px;color:#fff;margin-bottom:4px}
+.page-header .sub{font-size:11px;letter-spacing:2px;color:#555;margin-bottom:16px}
+.page-header .lede{font-size:12px;color:#888;line-height:1.6;max-width:800px}
+
+/* VOICE KEY */
+.voice-key{display:flex;gap:10px;flex-wrap:wrap;padding:16px 24px;background:#141414;border-bottom:1px solid #1a1a1a}
+.vk{padding:4px 10px;border-radius:3px;font-size:10px;letter-spacing:1px;font-weight:700;text-transform:uppercase}
+.vk.bob{background:#1a3a1a;color:#4ec94e;border:1px solid #2a5a2a}
+.vk.ed{background:#1a1a3a;color:#6a8ef0;border:1px solid #2a2a5a}
+.vk.bv{background:#2a1a2a;color:#c06ac0;border:1px solid #3a2a3a}
+.vk.un{background:#2a1a0a;color:#c09020;border:1px solid #3a280a}
+.vk.hash{background:#1a2a2a;color:#20b0a0;border:1px solid #0a3a3a}
+
+/* SECTION */
+section{padding:28px 24px;border-bottom:1px solid #181818}
+section h2{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:20px;padding-bottom:8px;border-bottom:1px solid #1c1c1c}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1px;background:#222}
+.tl-group{margin-bottom:28px}
+.tl-date{font-size:10px;letter-spacing:2px;color:#444;text-transform:uppercase;margin-bottom:10px;position:relative}
+.tl-date::before{content:'';position:absolute;left:-22px;top:4px;width:8px;height:8px;border-radius:50%;background:#333;border:1px solid #555}
+.tl-items{display:flex;flex-direction:column;gap:5px;margin-left:4px}
+.tl-item{display:grid;grid-template-columns:130px 160px 1fr;gap:12px;align-items:start;padding:6px 10px;background:#141414;border-radius:4px;border-left:2px solid #222}
+.tl-item.bob-line{border-left-color:#2a5a2a}
+.tl-item.ed-line{border-left-color:#2a2a5a}
+.tl-item.bv-line{border-left-color:#3a2a3a}
+.tl-item.hash-line{border-left-color:#0a3a3a}
+.tl-time{font-size:11px;color:#666;font-family:monospace}
+.tl-ch{font-size:11px;font-weight:700;color:#aaa}
+.tl-voice{font-size:10px}
+.tl-note{font-size:11px;color:#777;grid-column:2/-1}
+
+/* CHAPTER TABLE */
+.ch-table{width:100%;border-collapse:collapse}
+.ch-table th{text-align:left;font-size:9px;letter-spacing:2px;color:#444;text-transform:uppercase;padding:6px 10px;border-bottom:1px solid #1c1c1c}
+.ch-table td{padding:8px 10px;border-bottom:1px solid #161616;vertical-align:top}
+.ch-table tr:hover td{background:#141414}
+.ch-num{font-size:18px;font-weight:900;color:#333}
+.ch-name{font-size:11px;color:#aaa;font-weight:700}
+.ai-badge{display:inline-block;padding:2px 6px;border-radius:2px;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin:1px}
+.ai-badge.confirmed{background:#1a3a1a;color:#4ec94e}
+.ai-badge.present{background:#1a2a3a;color:#4a9ef0}
+.ai-badge.none{background:#1a1a1a;color:#444}
+.ai-badge.warn{background:#2a1a00;color:#c08030}
+.file-list{font-size:10px;color:#555;font-family:monospace;line-height:1.8;margin-top:4px}
+.file-list span.ts{color:#2a6a2a}
+.file-list span.voice{color:#4a4a9a;margin-left:4px}
+.note-text{font-size:11px;color:#666;line-height:1.5;margin-top:4px}
+.green{color:#4ec94e}
+.yellow{color:#c09020}
+.red{color:#c04040}
+.blue{color:#4a9ef0}
+.teal{color:#20b0a0}
+
+/* SUMMARY CARDS */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:0}
+.card{background:#141414;border:1px solid #1c1c1c;border-radius:5px;padding:14px 12px}
+.card .big{font-size:32px;font-weight:900;line-height:1}
+.card .lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-top:4px}
+.card.g .big{color:#4ec94e}
+.card.b .big{color:#4a9ef0}
+.card.y .big{color:#c09020}
+.card.t .big{color:#20b0a0}
+
+/* DAN GMAIL */
+.gmail-block{background:#141414;border:1px solid #1c1c1c;border-radius:5px;padding:16px;margin-bottom:12px}
+.gmail-block .subj{font-size:12px;font-weight:700;color:#ccc;margin-bottom:4px}
+.gmail-block .meta{font-size:10px;color:#555;margin-bottom:8px}
+.gmail-block .body{font-size:11px;color:#888;line-height:1.6}
+.gmail-block a{color:#4a9ef0;text-decoration:none}
+.gmail-block a:hover{text-decoration:underline}
+
+/* PARAM KEY */
+.param-key{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
+.pk{background:#141414;border-radius:3px;padding:8px 10px;font-size:10px}
+.pk .code{font-family:monospace;color:#20b0a0;margin-right:6px}
+.pk .def{color:#666}
+
+/* STICKY BOTTOM */
+.sticky-bottom{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #222;padding:8px 20px;font-size:11px;color:#555;letter-spacing:1px;display:flex;gap:24px}
+.sticky-bottom b{color:#aaa}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">SOTE · AI AUDIT</span>
+  <a href="#gmail">Dan's Docs</a>
+  <a href="#summary">Summary</a>
+  <a href="#timeline">Timeline</a>
+  <a href="#by-chapter">By Chapter</a>
+  <a href="#params">Voice Params</a>
+  <a href="#notes">Context</a>
+</nav>
+
+<div class="page-header">
+  <h1>STANDING ON THE EDGE — PRO TOOLS AI AUDIT</h1>
+  <div class="sub">ELEVENLABS · BOB NEW PRO VOICE CLONE · STRICT PROTOOLS SCAN · APRIL 12 2026</div>
+  <div class="lede">
+    Full audit of all ElevenLabs AI-generated audio files found inside Pro Tools session folders across the Dropbox archive.
+    Voice model: <strong style="color:#4ec94e">"BOB new pro"</strong> — Robert Margouleff's professional voice clone, used for ideation, pickup replacement, and dialogue matching.
+    Robert consented to voice cloning. This document establishes a clear timeline of when AI was generated, which sessions contain it, and what it was used for.
+  </div>
+</div>
+
+<!-- VOICE KEY -->
+<div class="voice-key">
+  <div class="vk bob">BOB new pro — Primary clone (Robert Margouleff)</div>
+  <div class="vk ed">Eddie Sedgwick tv — Alt voice, ideation</div>
+  <div class="vk bv">Bob Verdecchio — Alt voice, ideation</div>
+  <div class="vk hash">Hash-ID files — Direct ElevenLabs API download (no timestamp in name)</div>
+  <div class="vk un">Untitled Project — Single unnamed render</div>
+</div>
+
+<!-- DAN'S GMAIL -->
+<section id="gmail">
+  <h2>Dan's Docs From Today — Gmail</h2>
+
+  <div class="gmail-block">
+    <div class="subj">📄 Chapter 10 Pickups for AI Replacement</div>
+    <div class="meta">From: Dan Kavanaugh (dannkavv@gmail.com) · April 12, 2026 11:09 AM PDT · Google Doc</div>
+    <div class="body">
+      Dan created a doc specifically about Chapter 10 AI replacement — this aligns with the large number of "BOB new pro" hash-ID files found inside the Chapter 10 PT session.<br><br>
+      <a href="https://docs.google.com/document/d/1LCK5vt98EjG3sx2Vu2Oy8o4aanQAbjP7AFKWqaZLQVs/edit" target="_blank">→ Open Chapter 10 Pickups for AI Replacement</a>
+    </div>
+  </div>
+
+  <div class="gmail-block">
+    <div class="subj">📋 Meeting Notes — Session 1 (10:01 AM PDT) — Gemini Auto-Notes</div>
+    <div class="meta">From: Dan Kavanaugh (dan@dankav.com) · April 12, 2026 · Google Meet + Gemini</div>
+    <div class="body">
+      <a href="https://docs.google.com/document/d/1pkF5_3F0xJUOqvNnwTLJW_TyYo2dDHfLIME0MqoFzoE/edit" target="_blank">→ Open Session 1 Meeting Notes (10:01 PDT)</a>
+    </div>
+  </div>
+
+  <div class="gmail-block">
+    <div class="subj">📋 Meeting Notes — Session 2 (12:59 PM PDT) — Gemini Auto-Notes</div>
+    <div class="meta">From: Dan Kavanaugh (dan@dankav.com) · April 12, 2026 · Google Meet + Gemini</div>
+    <div class="body">
+      <a href="https://docs.google.com/document/d/1pkF5_3F0xJUOqvNnwTLJW_TyYo2dDHfLIME0MqoFzoE/edit" target="_blank">→ Open Session 2 Meeting Notes (12:59 PDT)</a>
+    </div>
+  </div>
+
+  <div class="gmail-block">
+    <div class="subj">📋 Meeting Notes — Session 3 (4:40 PM PDT) — Gemini Auto-Notes</div>
+    <div class="meta">From: Dan Kavanaugh (dan@dankav.com) · April 12, 2026 · Google Meet + Gemini</div>
+    <div class="body">
+      <a href="https://docs.google.com/document/d/1I6vvN6mvfJMV5WnbaLj9N-y5OigcyLojo3D74RYhBJE/edit" target="_blank">→ Open Session 3 Meeting Notes (4:40 PDT)</a>
+    </div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section id="summary">
+  <h2>Summary — AI Presence by Chapter</h2>
+  <div class="cards">
+    <div class="card g"><div class="big">9</div><div class="lbl">Chapters with AI in PT</div></div>
+    <div class="card b"><div class="big">80+</div><div class="lbl">ElevenLabs .wav files found</div></div>
+    <div class="card t"><div class="big">1</div><div class="lbl">Voice model primary (BOB new pro)</div></div>
+    <div class="card y"><div class="big">3</div><div class="lbl">Alt voice models used (ideation)</div></div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline">
+  <h2>Chronological Timeline — ElevenLabs Renders Into Pro Tools</h2>
+  <div class="timeline">
+
+    <div class="tl-group">
+      <div class="tl-date">September 14, 2025</div>
+      <div class="tl-items">
+        <div class="tl-item bob-line">
+          <div class="tl-time">01:21 UTC</div>
+          <div class="tl-ch">Ch 12 — <span style="color:#666">016_SOTE_chapter12_v2</span></div>
+          <div class="tl-voice"><span class="ai-badge confirmed">BOB new pro</span> pvc_sp100_s50_sb75_v3 — initial voice clone render + processed Voic variant</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-group">
+      <div class="tl-date">September 18, 2025</div>
+      <div class="tl-items">
+        <div class="tl-item bob-line">
+          <div class="tl-time">01:20–01:21 UTC</div>
+          <div class="tl-ch">Ch 6 — <span style="color:#666">010_SOTE_chapter6_v3</span></div>
+          <div class="tl-voice"><span class="ai-badge confirmed">BOB new pro</span> pvc_sp100_s50_sb75_v3 — 3 files, DynA (Dynamic Audio) processed variant</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-group">
+      <div class="tl-date">September 20, 2025</div>
+      <div class="tl-items">
+        <div class="tl-item bob-line">
+          <div class="tl-time">19:41–19:46 UTC</div>
+          <div class="tl-ch">Ch 9 — <span style="color:#666">013_SOTE_chapter9_v3</span></div>
+          <div class="tl-voice"><span class="ai-badge confirmed">BOB new pro</span> 2 render sessions · sp99 · RX11Dp (iZotope RX11 Dialog Process) + TmShft (time-shift) processed variants</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-group">
+      <div class="tl-date">September 24, 2025</div>
+      <div class="tl-items">
+        <div class="tl-item bob-line">
+          <div class="tl-time">01:37 UTC</div>
+          <div class="tl-ch">Ch 3 — <span style="color:#666">007_SOTE_chapter3_v2</span></div>
+          <div class="tl-voice"><span class="ai-badge confirmed">BOB new pro</span> pvc_sp99_s49_sb51_v3 — 5 files incl. DlgMtch (Dialogue Match) x2 + XForm processed variants</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-group">
+      <div class="tl-date">October 13–14, 2025</div>
+      <div class="tl-items">
+        <div class="tl-item bob-line">
+          <div class="tl-time">21:19–01:03 UTC</div>
+          <div class="tl-ch">Ch 7 — <span style="color:#666">011_SOTE_chapter7_v3</span></div>
+          <div class="tl-voice"><span class="ai-badge confirmed">BOB new pro</span> + <span class="ai-badge ed">Eddie Sedgwick tv</span> + <span class="ai-badge bv">Bob Verdecchio</span><br>
+          <span style="font-size:10px;color:#666">Multiple voice models tested — ideation/comparison session. 10+ renders across 6 hours.</span></div>
+        </div>
+        <div class="tl-item bob-line">
+          <div class="tl-time">03:17–04:29 UTC (Oct 14)</div>
+          <div class="tl-ch">Ch 9 — <span style="color:#666">013_SOTE_chapter9_v3</span></div>
+          <div class="tl-voice"><span class="ai-badge confirmed">BOB new pro</span> 5 renders — sp76, sp85, sp87, sp91, sp108 — fine-tuning stability/similarity</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-group">
+      <div class="tl-date">December 31, 2025</div>
+      <div class="tl-items">
+        <div class="tl-item bob-line">
+          <div class="tl-time">13:57 UTC</div>
+          <div class="tl-ch">Ch 13 — <span style="color:#666">017_SOTE_chapter13_v3</span></div>
+          <div class="tl-voice"><span class="ai-badge confirmed">BOB new pro</span> pvc_sp104_s64_sb100_se49_b_m2 — first multilingual v2 model render for Ch13</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-group">
+      <div class="tl-date">January 8–9, 2026</div>
+      <div class="tl-items">
+        <div class="tl-item hash-line">
+          <div class="tl-time">01:33–01:43 UTC (Jan 8)</div>
+          <div class="tl-ch">Unknown chapter — <span style="color:#666">loose files</span></div>
+          <div class="tl-voice"><span class="ai-badge hash">BOB new pro</span> sp107_s83_sb87_se38 — 5 Ozone-processed variants (Oz12MEQ). Folder unattributed — may be Ch10 or Ch16.</div>
+        </div>
+        <div class="tl-item bob-line">
+          <div class="tl-time">23:46–01:14 UTC</div>
+          <div class="tl-ch">Ch 5 — <span style="color:#666">009_SOTE_chapter5_v2</span></div>
+          <div class="tl-voice"><span class="ai-badge confirmed">BOB new pro</span> 3 render sessions (sp108, sp110, sp106) — heavy SL (Speakerlab?) processing chain + Ozone MEQ. Most processed chain in the archive.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-group">
+      <div class="tl-date">February 13, 2026</div>
+      <div class="tl-items">
+        <div class="tl-item bob-line">
+          <div class="tl-time">01:28–01:32 UTC</div>
+          <div class="tl-ch">Ch 12 — <span style="color:#666">016_SOTE_chapter12_v2</span></div>
+          <div class="tl-voice"><span class="ai-badge confirmed">BOB new pro</span> sp109_s0_sb75_se100_b_m2 — 2 render sessions, 5 Ozone-processed variants</div>
+        </div>
+        <div class="tl-item bob-line">
+          <div class="tl-time">02:23–02:32 UTC</div>
+          <div class="tl-ch">Ch 13 — <span style="color:#666">017_SOTE_chapter13_v3</span></div>
+          <div class="tl-voice"><span class="ai-badge confirmed">BOB new pro</span> sp107_s1_sb100_se96_b_m2 — 8 render sessions in 9 mins — intensive pickup session. VcAs (Voice Assist?) + Ozone variants.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-group">
+      <div class="tl-date">February 14, 2026</div>
+      <div class="tl-items">
+        <div class="tl-item hash-line">
+          <div class="tl-time">20:08 UTC</div>
+          <div class="tl-ch">Unknown chapter — <span style="color:#666">loose files</span></div>
+          <div class="tl-voice"><span class="ai-badge hash">BOB new pro</span> sp107_s1_sb100_se96 — 5 Ozone variants. Same params as Feb 13 Ch13 session — likely continuation or spillover.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-group">
+      <div class="tl-date">February 20, 2026</div>
+      <div class="tl-items">
+        <div class="tl-item bob-line">
+          <div class="tl-time">02:25 UTC</div>
+          <div class="tl-ch">Ch 11 — <span style="color:#666">015_SOTE_chapter11_v3</span></div>
+          <div class="tl-voice"><span class="ai-badge confirmed">BOB new pro</span> sp109_s1_sb100_se96_b_m2 — single render. Ch11 MIX folder also has 40+ hash-ID BOB files (no timestamps — older API format).</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-group">
+      <div class="tl-date">March 27, 2026</div>
+      <div class="tl-items">
+        <div class="tl-item bob-line">
+          <div class="tl-time">22:14–22:22 UTC</div>
+          <div class="tl-ch">Ch 6 — <span style="color:#666">010_SOTE_chapter6_v3</span></div>
+          <div class="tl-voice"><span class="ai-badge confirmed">BOB new pro</span> sp111_s20_sb100_se91_b_m2 + sp114_s11_sb100_se96_b_m2 — <strong style="color:#c09020">Most recent AI render in archive.</strong> 3 renders in 8 min.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-group">
+      <div class="tl-date">Date Unknown — Hash-ID Files (Older ElevenLabs API Format)</div>
+      <div class="tl-items">
+        <div class="tl-item hash-line">
+          <div class="tl-time">No timestamp</div>
+          <div class="tl-ch">Ch 10 — <span style="color:#666">014_SOTE_chapter10 (MIX)</span></div>
+          <div class="tl-voice"><span class="ai-badge hash">BOB new pro</span> 19 hash-ID files — largest collection in a single session folder. No filename timestamps; downloaded via ElevenLabs API. Dan's "Ch10 Pickups for AI Replacement" doc references these directly.</div>
+        </div>
+        <div class="tl-item hash-line">
+          <div class="tl-time">No timestamp</div>
+          <div class="tl-ch">Ch 11 — <span style="color:#666">015_chapter 11 (MIX)</span></div>
+          <div class="tl-voice"><span class="ai-badge hash">BOB new pro</span> 40+ hash-ID files — extensive AI pickup session. Processed through Ozone MEQ heavily.</div>
+        </div>
+        <div class="tl-item un">
+          <div class="tl-time">No timestamp</div>
+          <div class="tl-ch">Ch 16 — <span style="color:#666">020_chapter16</span></div>
+          <div class="tl-voice"><span class="ai-badge warn">ElevenLabs_Untitled_Project.wav</span> — single unnamed render. Context unknown.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- BY CHAPTER -->
+<section id="by-chapter">
+  <h2>By Chapter — AI Presence in Pro Tools Sessions</h2>
+  <table class="ch-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Chapter</th>
+        <th>AI in PT?</th>
+        <th>Voice Models Used</th>
+        <th>Date Range</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ch-num">001</td>
+        <td class="ch-name">Opening Credits</td>
+        <td><span class="ai-badge none">None found</span></td>
+        <td>—</td><td>—</td>
+        <td class="note-text">No ElevenLabs files in session folder.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">002</td>
+        <td class="ch-name">Foreword</td>
+        <td><span class="ai-badge none">None found</span></td>
+        <td>—</td><td>—</td>
+        <td class="note-text">No ElevenLabs files in session folder.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">003</td>
+        <td class="ch-name">Preface</td>
+        <td><span class="ai-badge none">None found</span></td>
+        <td>—</td><td>—</td>
+        <td class="note-text">No ElevenLabs files in session folder.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 3<br><span style="font-size:10px;color:#555">007</span></td>
+        <td class="ch-name">Chapter 3</td>
+        <td><span class="ai-badge confirmed">CONFIRMED</span></td>
+        <td><span class="ai-badge confirmed">BOB new pro</span></td>
+        <td class="note-text">Sep 24, 2025</td>
+        <td class="note-text">5 files. DlgMtch (×2) + XForm processed. Used to fill gap or replace pickup. sp99_s49_sb51.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 4<br><span style="font-size:10px;color:#555">008</span></td>
+        <td class="ch-name">Chapter 4</td>
+        <td><span class="ai-badge none">None found</span></td>
+        <td>—</td><td>—</td>
+        <td class="note-text">No ElevenLabs files in archive session folder.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 5<br><span style="font-size:10px;color:#555">009</span></td>
+        <td class="ch-name">Chapter 5</td>
+        <td><span class="ai-badge confirmed">CONFIRMED</span></td>
+        <td><span class="ai-badge confirmed">BOB new pro</span></td>
+        <td class="note-text">Jan 8–9, 2026</td>
+        <td class="note-text">~15 files. Most complex processing chain: SL×5 → DynA → Oz12MEQ. 3 render sessions with varying stability (sp106–110).</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 6<br><span style="font-size:10px;color:#555">010</span></td>
+        <td class="ch-name">Chapter 6</td>
+        <td><span class="ai-badge confirmed">CONFIRMED</span></td>
+        <td><span class="ai-badge confirmed">BOB new pro</span></td>
+        <td class="note-text">Sep 18, 2025 + Mar 27, 2026</td>
+        <td class="note-text"><strong class="yellow">Most recent AI in archive (Mar 27 2026).</strong> 2 sessions 7 months apart. DynA processing. sp100→sp114 range. Crash recovery session also exists here.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 7<br><span style="font-size:10px;color:#555">011</span></td>
+        <td class="ch-name">Chapter 7</td>
+        <td><span class="ai-badge confirmed">CONFIRMED</span></td>
+        <td><span class="ai-badge confirmed">BOB new pro</span> <span class="ai-badge ed">Eddie Sedgwick tv</span> <span class="ai-badge bv">Bob Verdecchio</span></td>
+        <td class="note-text">Oct 13–14, 2025</td>
+        <td class="note-text">Only chapter with multiple distinct voice models tested. 10+ renders across 6 hours — creative ideation session. BOB new pro ultimately prevailed.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 8<br><span style="font-size:10px;color:#555">012</span></td>
+        <td class="ch-name">Chapter 8</td>
+        <td><span class="ai-badge none">None found</span></td>
+        <td>—</td><td>—</td>
+        <td class="note-text">No ElevenLabs files in session folder.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 9<br><span style="font-size:10px;color:#555">013</span></td>
+        <td class="ch-name">Chapter 9</td>
+        <td><span class="ai-badge confirmed">CONFIRMED</span></td>
+        <td><span class="ai-badge confirmed">BOB new pro</span></td>
+        <td class="note-text">Sep 20, Oct 14, 2025 + Feb 5, 2026</td>
+        <td class="note-text">3 separate sessions over 5 months. RX11Dp + TmShft processing. Also one hash-ID raw file "BOB new pro _AIWxupWW..." (older format). sp76–sp108 range tested.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 10<br><span style="font-size:10px;color:#555">014</span></td>
+        <td class="ch-name">Chapter 10</td>
+        <td><span class="ai-badge confirmed">CONFIRMED</span></td>
+        <td><span class="ai-badge hash">BOB new pro (hash-ID)</span></td>
+        <td class="note-text">Date unknown (older API format)</td>
+        <td class="note-text"><strong class="red">19 hash-ID AI files in active MIX session.</strong> No timestamp in filenames. Dan created "Ch10 Pickups for AI Replacement" doc today — these are being replaced with human Robert pickups. Also has 2-min trailing silence issue.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 11<br><span style="font-size:10px;color:#555">015</span></td>
+        <td class="ch-name">Chapter 11</td>
+        <td><span class="ai-badge confirmed">CONFIRMED</span></td>
+        <td><span class="ai-badge confirmed">BOB new pro</span> <span class="ai-badge hash">hash-ID (40+)</span></td>
+        <td class="note-text">Feb 20, 2026 + older (hash-ID)</td>
+        <td class="note-text">Largest total AI file count of any chapter. 40+ hash-ID files in MIX + 1 timestamped file in archive. Extensive Ozone MEQ processing on most files.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 12<br><span style="font-size:10px;color:#555">016</span></td>
+        <td class="ch-name">Chapter 12</td>
+        <td><span class="ai-badge confirmed">CONFIRMED</span></td>
+        <td><span class="ai-badge confirmed">BOB new pro</span></td>
+        <td class="note-text">Sep 14, 2025 + Feb 13, 2026</td>
+        <td class="note-text">Also contains "again and again.wav" + 4 Ozone variants — non-ElevenLabs file, likely a music/lyric clip. Stevie Wonder legal flag on this chapter.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 13<br><span style="font-size:10px;color:#555">017</span></td>
+        <td class="ch-name">Chapter 13</td>
+        <td><span class="ai-badge confirmed">CONFIRMED</span></td>
+        <td><span class="ai-badge confirmed">BOB new pro</span></td>
+        <td class="note-text">Dec 31, 2025 + Feb 13, 2026</td>
+        <td class="note-text">8 renders in 9 minutes on Feb 13 — most intensive single AI session. VcAs processing applied. 6 new human Robert takes also arrived April 2–3.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 14<br><span style="font-size:10px;color:#555">018</span></td>
+        <td class="ch-name">Chapter 14</td>
+        <td><span class="ai-badge none">None found</span></td>
+        <td>—</td><td>—</td>
+        <td class="note-text">No ElevenLabs files. Grammy footage legal flag exists.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 15<br><span style="font-size:10px;color:#555">019</span></td>
+        <td class="ch-name">Chapter 15</td>
+        <td><span class="ai-badge none">None found</span></td>
+        <td>—</td><td>—</td>
+        <td class="note-text">No ElevenLabs files in session folder.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 16<br><span style="font-size:10px;color:#555">020</span></td>
+        <td class="ch-name">Chapter 16</td>
+        <td><span class="ai-badge warn">1 FILE</span></td>
+        <td><span class="ai-badge un">Untitled Project</span></td>
+        <td class="note-text">Date unknown</td>
+        <td class="note-text">Single file "ElevenLabs_Untitled_Project.wav" in Descript clean bounces folder. Context unknown — may have been a test or placeholder.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Ch 17–28</td>
+        <td class="ch-name">Chapters 17–28</td>
+        <td><span class="ai-badge none">None found</span></td>
+        <td>—</td><td>—</td>
+        <td class="note-text">No ElevenLabs files found in any session folders for these chapters.</td>
+      </tr>
+      <tr>
+        <td class="ch-num">Promo</td>
+        <td class="ch-name">Pushkin AI Spots</td>
+        <td><span class="ai-badge confirmed">CONFIRMED</span></td>
+        <td><span class="ai-badge confirmed">BOB new pro</span></td>
+        <td class="note-text">Date unknown</td>
+        <td class="note-text">"BOB Pushkin AI spots multiple.mp3" in Audio Assets/Commercial Spots. Not a chapter — promotional spots using BOB voice clone for Pushkin.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- VOICE PARAMS -->
+<section id="params">
+  <h2>ElevenLabs Voice Parameter Key — Decoded from Filenames</h2>
+  <div class="param-key">
+    <div class="pk"><span class="code">_pvc_</span><span class="def">Professional Voice Clone</span></div>
+    <div class="pk"><span class="code">_ivc_</span><span class="def">Instant Voice Clone (lower quality)</span></div>
+    <div class="pk"><span class="code">spXXX</span><span class="def">Style/Pitch stability (0–100+, higher = more stable)</span></div>
+    <div class="pk"><span class="code">sXX</span><span class="def">Similarity boost (0–100)</span></div>
+    <div class="pk"><span class="code">sbXX</span><span class="def">Style boost (0–100)</span></div>
+    <div class="pk"><span class="code">seXX</span><span class="def">Speaker embedding weight</span></div>
+    <div class="pk"><span class="code">_b_</span><span class="def">Boost enabled</span></div>
+    <div class="pk"><span class="code">_m2</span><span class="def">Model version 2 (multilingual v2)</span></div>
+    <div class="pk"><span class="code">_v3</span><span class="def">Model version 3</span></div>
+    <div class="pk"><span class="code">-Oz12MEQ</span><span class="def">Ozone 12 EQ applied in PT</span></div>
+    <div class="pk"><span class="code">-DlgMtch</span><span class="def">Dialogue Match plugin applied</span></div>
+    <div class="pk"><span class="code">-DynA</span><span class="def">Dynamic Audio processing</span></div>
+    <div class="pk"><span class="code">-TmShft</span><span class="def">Time Shift applied</span></div>
+    <div class="pk"><span class="code">-RX11Dp</span><span class="def">iZotope RX11 Dialog Process</span></div>
+    <div class="pk"><span class="code">-VcAs</span><span class="def">Voice Assist processing</span></div>
+    <div class="pk"><span class="code">-SL</span><span class="def">SpeakerLab or SpectraLayers processing</span></div>
+    <div class="pk"><span class="code">-XForm</span><span class="def">Transform plugin applied</span></div>
+    <div class="pk"><span class="code">hash-ID format</span><span class="def">Older direct ElevenLabs API download — no timestamp in filename</span></div>
+  </div>
+</section>
+
+<!-- CONTEXT NOTES -->
+<section id="notes">
+  <h2>Context — Legal + Disclosure Position</h2>
+  <div style="max-width:800px;line-height:1.8;color:#888;font-size:12px">
+    <p style="margin-bottom:12px">
+      <strong style="color:#ccc">Robert Margouleff consented to voice cloning.</strong> The "BOB new pro" voice model is a professional voice clone created with Robert's participation and consent. All AI renders in these sessions represent ideation, pickup replacement, and dialogue gap-filling — a normal creative workflow between Robert and Gio.
+    </p>
+    <p style="margin-bottom:12px">
+      <strong style="color:#ccc">Usage pattern:</strong> AI was used to test narrative options, fill gaps between Robert recording sessions, and as placeholder audio while waiting for human pickups. In several chapters (Ch3, Ch6, Ch12), the AI has been processed through Dialogue Match — meaning it was matched to Robert's actual voice room tone, indicating it was used alongside or in place of human takes.
+    </p>
+    <p style="margin-bottom:12px">
+      <strong style="color:#ccc">Ch10 — active replacement underway:</strong> Dan's Google Doc "Chapter 10 Pickups for AI Replacement" (shared April 12, 2026) indicates that the AI files in Chapter 10 are being replaced with new human Robert recordings. This is the most significant AI-to-human replacement currently in progress.
+    </p>
+    <p style="margin-bottom:12px">
+      <strong style="color:#ccc">Triangulation note — Descript + ElevenLabs:</strong> This audit covers what is physically present in Pro Tools session folders. ElevenLabs download history and Descript project timelines would add additional context. To access ElevenLabs history, log into elevenlabs.io → History — this will show every generation event with timestamp and text used. Connect that to the PT timestamps here for a complete chain of custody.
+    </p>
+    <p>
+      <strong style="color:#ccc">Chapters with NO AI found:</strong> Opening Credits, Foreword, Preface, Ch4, Ch8, Ch14–15, Ch17–28, Epilogue, End Credits, Acknowledgements.
+    </p>
+  </div>
+</section>
+
+<div class="sticky-bottom">
+  <span>SOTE AI AUDIT · APRIL 12 2026</span>
+  <span><b>9</b> chapters with AI in PT</span>
+  <span><b>Voice:</b> BOB new pro (Robert Margouleff — consented)</span>
+  <span><b>Most recent:</b> Ch6 · March 27, 2026</span>
+  <span><b>Highest volume:</b> Ch11 (40+ files) · Ch10 (19 files)</span>
+</div>
+
+</body>
+</html>

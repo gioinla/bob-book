@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 10 — AI Replacement Pickups</title>
+<style>
+  :root {
+    --bg: #0e1117; --surface: #161b27; --surface2: #1e2535; --border: #2a3348;
+    --text: #e2e8f0; --text-dim: #94a3b8; --text-muted: #64748b;
+    --green: #22c55e; --green-bg: #052e16; --green-border: #166534;
+    --amber: #f59e0b; --amber-bg: #1c1205; --amber-border: #78350f;
+    --red: #ef4444; --red-bg: #1c0505; --red-border: #7f1d1d;
+    --blue: #3b82f6; --blue-bg: #0c1a3a; --blue-border: #1e3a8a;
+    --teal: #14b8a6; --teal-bg: #042322; --teal-border: #0f766e;
+    --accent: #6366f1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'SF Mono','JetBrains Mono','Fira Code','Courier New',monospace; min-height: 100vh; padding: 32px 24px; }
+  .header { max-width: 1280px; margin: 0 auto 40px; border-bottom: 1px solid var(--border); padding-bottom: 28px; }
+  .header-eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .header h1 { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 36px; font-weight: 700; letter-spacing: -0.5px; color: #fff; margin-bottom: 6px; }
+  .header h1 span { color: var(--red); }
+  .header-sub { font-family: -apple-system, sans-serif; font-size: 15px; color: var(--text-dim); margin-bottom: 20px; }
+  .header-meta { display: flex; gap: 24px; flex-wrap: wrap; }
+  .meta-chip { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+  .meta-chip strong { color: var(--text-dim); }
+  .stats { max-width: 1280px; margin: 0 auto 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .stat-card .num { font-size: 28px; font-weight: 700; font-family: -apple-system, sans-serif; line-height: 1; margin-bottom: 6px; }
+  .stat-card .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }
+  .badge-done   { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .badge-todo   { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .badge-urgent { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-border); }
+  .badge-spec   { background: var(--teal-bg);  color: var(--teal);  border: 1px solid var(--teal-border); }
+  .table-wrap { max-width: 1280px; margin: 0 auto 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--surface2); border-bottom: 2px solid var(--border); }
+  th { padding: 12px 16px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+  th:first-child { padding-left: 20px; } th:last-child { padding-right: 20px; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+  tbody tr.hidden { display: none; }
+  tr.section-header td { background: var(--bg); padding: 8px 20px 6px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); font-weight: 700; border-top: 2px solid var(--border); border-bottom: 1px solid var(--border); }
+  tr.section-header:first-child td { border-top: none; }
+  td { padding: 12px 16px; vertical-align: top; }
+  td:first-child { padding-left: 20px; } td:last-child { padding-right: 20px; }
+  .ts-main { font-family: 'SF Mono', monospace; font-size: 15px; font-weight: 700; color: var(--red); }
+  .ts-exact { font-family: 'SF Mono', monospace; font-size: 12px; color: var(--amber); margin-top: 3px; }
+  .ts-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+  .note { font-family: -apple-system, sans-serif; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+  .detail-row td { padding: 0; background: rgba(99,102,241,0.04); }
+  .detail-content { padding: 16px 20px 20px; border-top: 1px solid rgba(99,102,241,0.2); display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .detail-group h4 { font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 8px; }
+  .detail-group p { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--text-dim); line-height: 1.7; }
+  .expand-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); font-family: inherit; font-size: 11px; padding: 3px 8px; border-radius: 4px; cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+  .expand-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .expand-btn.open { border-color: var(--accent); color: var(--accent); background: rgba(99,102,241,0.08); }
+  .workflow-card { max-width: 1280px; margin: 0 auto 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+  .workflow-card h3 { font-family: -apple-system, sans-serif; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; letter-spacing: 0; }
+  .steps { display: flex; flex-direction: column; gap: 10px; }
+  .step { display: flex; gap: 14px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; align-items: flex-start; }
+  .step-num { font-size: 18px; font-weight: 700; color: var(--accent); font-family: -apple-system, sans-serif; min-width: 24px; line-height: 1.2; }
+  .step-body { flex: 1; }
+  .step-body strong { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--text); display: block; margin-bottom: 3px; }
+  .step-body span { font-family: -apple-system, sans-serif; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+  .spec-card { max-width: 1280px; margin: 0 auto 32px; background: var(--teal-bg); border: 1px solid var(--teal-border); border-radius: 12px; padding: 20px 24px; }
+  .spec-card h3 { font-family: -apple-system, sans-serif; font-size: 13px; font-weight: 700; color: var(--teal); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
+  .spec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .spec-item { background: rgba(20,184,166,0.08); border: 1px solid var(--teal-border); border-radius: 6px; padding: 10px 14px; }
+  .spec-item .spec-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--teal); margin-bottom: 4px; }
+  .spec-item .spec-val { font-size: 14px; font-weight: 700; color: var(--text); font-family: -apple-system, sans-serif; }
+  .footer { max-width: 1280px; margin: 32px auto 0; padding-top: 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  @media (max-width: 900px) { .detail-content { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) { body { padding: 16px 12px; } .header h1 { font-size: 24px; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">AI Replacement Pickup Sheet · Chapter 10 · Shaping Sounds</div>
+  <h1>Chapter 10 <span>AI Pickups</span></h1>
+  <div class="header-sub">Electric Lady Studio — 9 sections where Robert must re-record to replace AI narration</div>
+  <div class="header-meta">
+    <div class="meta-chip"><span>📅</span> Source doc: <strong>Dan Kavanaugh, April 12, 2026</strong></div>
+    <div class="meta-chip"><span>🤖</span> AI files in session: <strong>19 hash-ID "BOB new pro" files</strong></div>
+    <div class="meta-chip"><span>⚠️</span> Also: <strong>~2 min trailing silence — Audible rejection risk</strong></div>
+    <div class="meta-chip"><span>📁</span> Session: <strong>014_SOTE_chapter10 (MIX)</strong></div>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card"><div class="num" style="color:var(--red)">9</div><div class="label">Sections to Re-record</div></div>
+  <div class="stat-card"><div class="num" style="color:var(--teal)">19</div><div class="label">AI files to remove</div></div>
+  <div class="stat-card"><div class="num" style="color:var(--amber)">~2 min</div><div class="label">Trailing silence to trim</div></div>
+  <div class="stat-card"><div class="num" style="color:var(--green)">192k</div><div class="label">CBR target (kbps)</div></div>
+</div>
+
+<!-- PICKUP TABLE -->
+<div class="table-wrap">
+<table id="pickupTable">
+  <thead>
+    <tr>
+      <th>Timestamp Range</th>
+      <th>AI Overdub At</th>
+      <th>Passage (start)</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <tr data-detail="p1">
+      <td><div class="ts-main">18:08–18:23</div></td>
+      <td><div class="ts-label">Overdub at</div><div class="ts-exact">18:18–18:20</div></td>
+      <td class="note">…Malcolm's wife Polly and their son Milton arrived from Toronto, Canada. The immigration process was insane…</td>
+      <td><span class="badge badge-todo">Re-record</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('p1', this)">▾ Full Text</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-p1">
+      <td colspan="5"><div class="detail-content">
+        <div class="detail-group"><h4>Full Passage</h4><p>…setting up the studios, upgrading and installing new equipment. A month or so before we started working with Stevie, Malcolm's wife Polly and their son Milton arrived from Toronto, Canada. The immigration process was insane and Malcolm spent a lot of time sorting it out on the phone.</p></div>
+        <div class="detail-group"><h4>Engineering Notes</h4><p>Single AI overdub zone 18:18–18:20. Robert reads from "…Malcolm's wife Polly…" through "…sorting it out on the phone." Capture a few seconds on either side for clean editing. Short passage — should be a quick take.</p></div>
+      </div></td>
+    </tr>
+
+    <tr data-detail="p2">
+      <td><div class="ts-main">25:28–25:47</div></td>
+      <td><div class="ts-label">Overdub at</div><div class="ts-exact">25:38, 25:44</div></td>
+      <td class="note">We moved into Electric Lady in November and December of 1971 and immediately picked up where we had left off…</td>
+      <td><span class="badge badge-todo">Re-record</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('p2', this)">▾ Full Text</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-p2">
+      <td colspan="5"><div class="detail-content">
+        <div class="detail-group"><h4>Full Passage</h4><p>We moved into Electric Lady in November and December of 1971 and immediately picked up where we had left off at Media Sound. There were two studios, Studio A where we set up shop and Studio B. They shared a lounge with a barber's chair and a couch, some playback equipment and a pair of speakers and a reception coffee area, which was triangular and had a huge round column in the center, maybe eight feet in diameter with a bench built around it. Stevie quickly learned the studio layout and the hallways where Studio B was, where the stairs were. The layout of Studio A, the control room doors, the lounge, the bathrooms, and so on.</p></div>
+        <div class="detail-group"><h4>Engineering Notes</h4><p>Two AI overdubs at 25:38 and 25:44 — six seconds apart. Robert reads the full paragraph for best editing flexibility. Target is the "Stevie quickly learned the layout…" section. 19-second window total.</p></div>
+      </div></td>
+    </tr>
+
+    <tr data-detail="p3">
+      <td><div class="ts-main">25:51–26:10</div></td>
+      <td><div class="ts-label">Overdub at</div><div class="ts-exact">26:01, 26:06</div></td>
+      <td class="note">It wasn't long before he was moving around happily and confidently on his own…</td>
+      <td><span class="badge badge-todo">Re-record</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('p3', this)">▾ Full Text</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-p3">
+      <td colspan="5"><div class="detail-content">
+        <div class="detail-group"><h4>Full Passage</h4><p>It wasn't long before he was moving around happily and confidently on his own. Malcolm and I made sure that we gave him an auditory picture anytime we made changes to the studio and that he knew where any microphone stands were. As always, we kept the mic booms high so that he wouldn't walk into them and get clobbered by those or any other unpredictable obstructions. The studio's architecture played a part.</p></div>
+        <div class="detail-group"><h4>Engineering Notes</h4><p>Two overdubs at 26:01 and 26:06 — five seconds apart. Full passage is 19 seconds. Read completely; edit in the needed section. Note this section immediately follows the previous pickup (25:28–25:47) — they can be done together as one continuous read.</p></div>
+      </div></td>
+    </tr>
+
+    <tr data-detail="p4">
+      <td><div class="ts-main">26:31–26:47</div></td>
+      <td><div class="ts-label">Overdub at</div><div class="ts-exact">26:41</div></td>
+      <td class="note">The studio glass disappeared, and I could see that Stevie felt right at home…</td>
+      <td><span class="badge badge-todo">Re-record</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('p4', this)">▾ Full Text</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-p4">
+      <td colspan="5"><div class="detail-content">
+        <div class="detail-group"><h4>Full Passage</h4><p>The studio glass disappeared, and I could see that Stevie felt right at home, as did Malcolm and I. There were no restrictions at Electric Lady. I never felt tired. It didn't matter if we needed to work three days in a row, leave a mix on the console or stay set up in the studio. They bent over backwards to make it happen. Eddie Kramer had installed an off-brand data mix recording console, some great studio monitors, and a ton of custom equipment.</p></div>
+        <div class="detail-group"><h4>Engineering Notes</h4><p>Single AI overdub at 26:41 in a 16-second window. Read the whole passage for context; cut in cleanly around the 26:41 mark.</p></div>
+      </div></td>
+    </tr>
+
+    <tr data-detail="p5">
+      <td><div class="ts-main">27:35–27:49</div></td>
+      <td><div class="ts-label">Overdub at</div><div class="ts-exact">27:45</div></td>
+      <td class="note">We kept several of our own clients, mostly commercials and acts on Richie Havens' record label…</td>
+      <td><span class="badge badge-todo">Re-record</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('p5', this)">▾ Full Text</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-p5">
+      <td colspan="5"><div class="detail-content">
+        <div class="detail-group"><h4>Full Passage</h4><p>We kept several of our own clients, mostly commercials and acts on Richie Havens' record label, but we were employed mainly by Stevie. By good fortune, Malcolm and I both found spacious two-bedroom apartments in a lovely pre-World War II building at the corner of 72nd Street and Broadway. My second bedroom and living room became our new production offices.</p></div>
+        <div class="detail-group"><h4>Engineering Notes</h4><p>Single overdub at 27:45 in a 14-second window. Short, clean passage — read it completely in one take. Easy pickup.</p></div>
+      </div></td>
+    </tr>
+
+    <tr data-detail="p6">
+      <td><div class="ts-main">28:20–28:41</div></td>
+      <td><div class="ts-label">Overdub at</div><div class="ts-exact">28:30 · 28:33 · 28:38</div></td>
+      <td class="note" style="color:var(--amber)">⚠ 3 overdubs in 21 sec — most complex section</td>
+      <td><span class="badge badge-urgent">⚠ Complex</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('p6', this)">▾ Full Text</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-p6">
+      <td colspan="5"><div class="detail-content">
+        <div class="detail-group"><h4>Full Passage</h4><p>Women were relegated to the front desk, business offices and public relations roles. Joan became one of the first female engineers in the studio world and went on to have a very successful career long after her work with us. The other blessing was that we never heard a word from Stevie about being over budget or anything like that. He allowed us to concentrate on the music without worrying about whether or not we'd be able to pay the bills or put food on the table. After we moved into the lady and established ourselves there, John Stork showed up and introduced himself. That night began a friendship that has endured for more than 50 years.</p></div>
+        <div class="detail-group"><h4>Engineering Notes</h4><p>Most complex pickup — three AI overdubs at 28:30, 28:33, and 28:38 clustered in a 21-second window. The "Joan" paragraph is where all three hits land. Robert should read the entire passage in one take for maximum editing flexibility. Pay close attention to matching breath and pacing around the 28:30–28:38 zone when editing.</p></div>
+      </div></td>
+    </tr>
+
+    <tr data-detail="p7">
+      <td><div class="ts-main">28:48–29:02</div></td>
+      <td><div class="ts-label">Overdub at</div><div class="ts-exact">28:58</div></td>
+      <td class="note">To this day, I often think of music from an architectural perspective…</td>
+      <td><span class="badge badge-todo">Re-record</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('p7', this)">▾ Full Text</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-p7">
+      <td colspan="5"><div class="detail-content">
+        <div class="detail-group"><h4>Full Passage</h4><p>To this day, I often think of music from an architectural perspective and compare creating a recording to designing a house. Each sound is like a separate room with its own form, furnishing and colors. Once you piece that together, the house itself takes shape. Then you need to think about how the recording fits with everything else you'd ask.</p></div>
+        <div class="detail-group"><h4>Engineering Notes</h4><p>Single overdub at 28:58 in a 14-second window. Short philosophical passage — read completely in one take.</p></div>
+      </div></td>
+    </tr>
+
+    <tr data-detail="p8">
+      <td><div class="ts-main">29:02–29:25</div></td>
+      <td><div class="ts-label">ElevenLabs at</div><div class="ts-exact" style="color:var(--red)">29:13</div></td>
+      <td class="note">John Stork is an incredible pianist… influenced by Gaudí and Keisler…</td>
+      <td><span class="badge badge-todo">Re-record</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('p8', this)">▾ Full Text</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-p8">
+      <td colspan="5"><div class="detail-content">
+        <div class="detail-group"><h4>Full Passage</h4><p>John Stork is an incredible pianist, for example, and I know that his musical ear was invaluable to his success designing recording studios. We were impressed with John's design of the studio. As our friendship grew, he told us how he was influenced by classical architects like Antonio Gaudí and Frederick Keisler, who by coincidence had designed the facade and the auditorium of the theater that occupied the ground floor above Electric Lady. The studio was in the basement and took up three additional floors above the theater.</p></div>
+        <div class="detail-group"><h4>Engineering Notes</h4><p>Note: labeled as "ElevenLabs" rather than "overdub" — same thing, slightly different notation in Dan's doc. AI insert at 29:13 in a 23-second window. John Stork / Electric Lady architecture passage. Read fully for a clean single-take replacement.</p></div>
+      </div></td>
+    </tr>
+
+    <tr data-detail="p9">
+      <td><div class="ts-main">30:25–30:39</div></td>
+      <td><div class="ts-label">Overdub at</div><div class="ts-exact">30:35</div></td>
+      <td class="note">We were there for Music of My Mind, Talking Book, Inner Visions…</td>
+      <td><span class="badge badge-todo">Re-record</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('p9', this)">▾ Full Text</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-p9">
+      <td colspan="5"><div class="detail-content">
+        <div class="detail-group"><h4>Full Passage</h4><p>We were there for Music of My Mind, Talking Book, Inner Visions, and Fulfillingness' First Finale. Parts of our work together ended up on songs in The Key of Life too, but we were never credited. The best way for me to share the stories from that time is to look first at the processes and the way we pushed musical boundaries together. After that, I'll let my highlights from each of the records we created take center stage.</p></div>
+        <div class="detail-group"><h4>Engineering Notes</h4><p>Final pickup of the chapter — single overdub at 30:35. This passage names the Stevie Wonder albums and closes the chapter arc. Read the full closing paragraph in one take for a natural chapter ending feel.</p></div>
+      </div></td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<!-- WORKFLOW -->
+<div class="workflow-card">
+  <h3>Recording + Editing Workflow</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Book studio time with Robert</strong><span>9 passages across Ch10 — probably 1–2 sessions. Have Robert warm up on each section before the take. Consider recording sections 25:28–26:10 as one continuous read.</span></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Open session: 014_SOTE_chapter10 (MIX)</strong><span>Locate each AI region by timestamp. Solo/mute to confirm you're hearing the AI files. The 19 hash-ID files will be BOB new pro format (no timestamp in filename — just a hash).</span></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Record Robert's pickups on a new track</strong><span>Record with lead-in and lead-out for each passage. Use the same mic/chain as the rest of Ch10 narration. Keep takes rolling — Robert can do multiple reads of each passage.</span></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Edit human pickups into place</strong><span>Comp the best take. Match room tone, breath timing, and processing (RX, EQ, compression) to surrounding narration. The AI files may have Dialogue Match or Ozone processing — apply equivalent treatment.</span></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Remove all 19 AI hash-ID files</strong><span>After confirming human pickups are in and sounding correct, delete all 19 AI files from the session. Back up the session with AI files still in before removing — keep for chain of custody.</span></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><strong>Trim ~2 min of trailing silence at end of file</strong><span>Audible will auto-reject the file if it ends with excessive silence. Trim to ≤ 1 second of trailing silence.</span></div></div>
+    <div class="step"><div class="step-num">7</div><div class="step-body"><strong>Print final bounce → FINAL PRINTS folder</strong><span>192 kbps CBR MP3 · –3 dBFS peak · –18 LUFS integrated. Destination: BOB BOOK / FINAL PRINTS /</span></div></div>
+    <div class="step"><div class="step-num">8</div><div class="step-body"><strong>Archive session properly</strong><span>Ch10 archive folder (014_SOTE_chapter10 in Audio Assets/ProTools) is currently empty. After print, copy session into the archive folder.</span></div></div>
+  </div>
+</div>
+
+<!-- DELIVERY SPECS -->
+<div class="spec-card">
+  <h3>Delivery Specs — Audible Requirements</h3>
+  <div class="spec-grid">
+    <div class="spec-item"><div class="spec-label">Format</div><div class="spec-val">MP3 CBR</div></div>
+    <div class="spec-item"><div class="spec-label">Bit Rate</div><div class="spec-val">192 kbps</div></div>
+    <div class="spec-item"><div class="spec-label">Peak Level</div><div class="spec-val">–3 dBFS</div></div>
+    <div class="spec-item"><div class="spec-label">Integrated Loudness</div><div class="spec-val">–18 LUFS</div></div>
+    <div class="spec-item"><div class="spec-label">Trailing Silence</div><div class="spec-val">≤ 1 sec</div></div>
+    <div class="spec-item"><div class="spec-label">Output Folder</div><div class="spec-val">FINAL PRINTS /</div></div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>CH10 PICKUPS · Source: Dan Kavanaugh Google Doc, April 12, 2026 · Rebuilt April 13, 2026</span>
+  <span>9 sections · 19 AI files to remove · ~2 min trailing silence to trim</span>
+</div>
+
+<script>
+function toggleDetail(id, btn) {
+  const row = document.getElementById('detail-' + id);
+  if (!row) return;
+  const isHidden = row.classList.contains('hidden');
+  row.classList.toggle('hidden', !isHidden);
+  btn.classList.toggle('open', isHidden);
+  btn.textContent = isHidden ? '▴ Full Text' : '▾ Full Text';
+}
+</script>
+</body>
+</html>

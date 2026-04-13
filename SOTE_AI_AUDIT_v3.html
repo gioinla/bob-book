@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shaping Sounds — AI Audit</title>
+<style>
+  :root {
+    --bg: #0e1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3348;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-muted: #64748b;
+    --green: #22c55e;
+    --green-bg: #052e16;
+    --green-border: #166534;
+    --amber: #f59e0b;
+    --amber-bg: #1c1205;
+    --amber-border: #78350f;
+    --red: #ef4444;
+    --red-bg: #1c0505;
+    --red-border: #7f1d1d;
+    --blue: #3b82f6;
+    --blue-bg: #0c1a3a;
+    --blue-border: #1e3a8a;
+    --purple: #a855f7;
+    --purple-bg: #1a0c2e;
+    --purple-border: #581c87;
+    --orange: #f97316;
+    --orange-bg: #1c0e05;
+    --orange-border: #7c2d12;
+    --teal: #14b8a6;
+    --teal-bg: #042322;
+    --teal-border: #0f766e;
+    --accent: #6366f1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'SF Mono','JetBrains Mono','Fira Code','Courier New',monospace; min-height: 100vh; padding: 32px 24px; }
+  .header { max-width: 1280px; margin: 0 auto 40px; border-bottom: 1px solid var(--border); padding-bottom: 28px; }
+  .header-eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .header h1 { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 36px; font-weight: 700; letter-spacing: -0.5px; color: #fff; margin-bottom: 6px; }
+  .header h1 span { color: var(--accent); }
+  .header-sub { font-family: -apple-system, sans-serif; font-size: 15px; color: var(--text-dim); margin-bottom: 20px; }
+  .header-meta { display: flex; gap: 24px; flex-wrap: wrap; }
+  .meta-chip { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+  .meta-chip strong { color: var(--text-dim); }
+  .stats { max-width: 1280px; margin: 0 auto 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .stat-card .num { font-size: 28px; font-weight: 700; font-family: -apple-system, sans-serif; line-height: 1; margin-bottom: 6px; }
+  .stat-card .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .stat-green .num { color: var(--green); }
+  .stat-amber .num { color: var(--amber); }
+  .stat-red .num { color: var(--red); }
+  .stat-blue .num { color: var(--blue); }
+  .stat-purple .num { color: var(--purple); }
+  .legend { max-width: 1280px; margin: 0 auto 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+  .legend-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-right: 4px; }
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }
+  .badge-confirmed { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .badge-critical   { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-border); }
+  .badge-warn       { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-border); }
+  .badge-hash       { background: var(--teal-bg);   color: var(--teal);   border: 1px solid var(--teal-border); }
+  .badge-fullai     { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+  .badge-none       { background: var(--surface2);  color: var(--text-muted); border: 1px solid var(--border); }
+  .filter-bar { max-width: 1280px; margin: 0 auto 20px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .filter-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-right: 4px; }
+  .filter-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); font-family: inherit; font-size: 12px; padding: 5px 14px; border-radius: 20px; cursor: pointer; transition: all 0.15s; }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .table-wrap { max-width: 1280px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--surface2); border-bottom: 2px solid var(--border); }
+  th { padding: 12px 16px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+  th:first-child { padding-left: 20px; } th:last-child { padding-right: 20px; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; cursor: default; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+  tbody tr.hidden { display: none; }
+  tr.section-header td { background: var(--bg); padding: 8px 20px 6px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); font-weight: 700; border-top: 2px solid var(--border); border-bottom: 1px solid var(--border); }
+  tr.section-header:first-child td { border-top: none; }
+  td { padding: 12px 16px; vertical-align: top; }
+  td:first-child { padding-left: 20px; } td:last-child { padding-right: 20px; }
+  .seq { font-size: 13px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+  .ch-num { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
+  .ch-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
+  .session-file { font-size: 12px; font-family: 'SF Mono', monospace; color: var(--text-dim); background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; margin: 2px 0; display: inline-block; line-height: 1.5; word-break: break-all; }
+  .note { font-family: -apple-system, sans-serif; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+  .note-warn { color: var(--amber); } .note-crit { color: var(--red); } .note-ok { color: var(--green); } .note-ai { color: var(--purple); } .note-teal { color: var(--teal); }
+  .detail-row td { padding: 0; background: rgba(99,102,241,0.04); }
+  .detail-content { padding: 16px 20px 20px; border-top: 1px solid rgba(99,102,241,0.2); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .detail-group h4 { font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 8px; }
+  .detail-group ul { list-style: none; }
+  .detail-group ul li { font-size: 12px; font-family: 'SF Mono', monospace; color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; margin-bottom: 4px; word-break: break-all; }
+  .detail-group p { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+  .expand-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); font-family: inherit; font-size: 11px; padding: 3px 8px; border-radius: 4px; cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+  .expand-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .expand-btn.open { border-color: var(--accent); color: var(--accent); background: rgba(99,102,241,0.08); }
+  .footer { max-width: 1280px; margin: 32px auto 0; padding-top: 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  @media (max-width: 900px) { .detail-content { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) { body { padding: 16px 12px; } .header h1 { font-size: 24px; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">ElevenLabs AI Audit · Shaping Sounds Audiobook</div>
+  <h1>Shaping Sounds <span>AI Audit</span></h1>
+  <div class="header-sub">Robert Margouleff with Jim Reilly · Voice clone: "BOB new pro" (consented) · Rebuilt April 13, 2026</div>
+  <div class="header-meta">
+    <div class="meta-chip"><span>📅</span> Audit: <strong>April 12–13, 2026</strong></div>
+    <div class="meta-chip"><span>🎙️</span> Primary voice: <strong>BOB new pro (Robert Margouleff)</strong></div>
+    <div class="meta-chip"><span>📁</span> 80+ ElevenLabs .wav files found</div>
+    <div class="meta-chip"><span>⚡</span> Timeline: <strong>Sep 2025 → Mar 27, 2026</strong></div>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card stat-amber"><div class="num">9</div><div class="label">Chapters w/ AI in PT</div></div>
+  <div class="stat-card stat-blue"><div class="num">80+</div><div class="label">ElevenLabs .wav files</div></div>
+  <div class="stat-card stat-red"><div class="num">2</div><div class="label">Full AI Sessions</div></div>
+  <div class="stat-card" style=""><div class="num" style="color:var(--teal)">19</div><div class="label">Ch10 AI files (replacing)</div></div>
+  <div class="stat-card" style=""><div class="num" style="color:var(--orange)">40+</div><div class="label">Ch11 hash-ID files</div></div>
+  <div class="stat-card stat-green"><div class="num">1</div><div class="label">Voice model (BOB new pro)</div></div>
+</div>
+
+<div class="legend">
+  <span class="legend-title">AI Status:</span>
+  <span class="badge badge-critical">⛔ Full AI Session</span>
+  <span class="badge badge-warn">⚠ Partial AI / Replacing</span>
+  <span class="badge badge-confirmed">✓ Confirmed AI (ideation/pickup)</span>
+  <span class="badge badge-hash">◈ Hash-ID files (no timestamp)</span>
+  <span class="badge badge-none">— None found</span>
+</div>
+
+<div class="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" onclick="filterTable('all', this)">All Chapters</button>
+  <button class="filter-btn" onclick="filterTable('critical', this)">⛔ Critical</button>
+  <button class="filter-btn" onclick="filterTable('ai', this)">✓ Has AI</button>
+  <button class="filter-btn" onclick="filterTable('none', this)">— No AI</button>
+  <button class="filter-btn" onclick="filterTable('action', this)">🚨 Action Needed</button>
+</div>
+
+<div class="table-wrap">
+<table id="mainTable">
+  <thead>
+    <tr>
+      <th>Seq #</th>
+      <th>Chapter</th>
+      <th>AI Status</th>
+      <th>Voice / Files</th>
+      <th>Date Range</th>
+      <th>Notes</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <tr class="section-header"><td colspan="7">Critical Flags — Action Required Before Delivery</td></tr>
+
+    <!-- Ch 25 + Epilogue -->
+    <tr data-status="critical action" data-detail="ch25">
+      <td><div class="seq">029</div></td>
+      <td><div class="ch-num">Chapter 25 + Epilogue</div><div class="ch-title">Full AI Sessions — Do Not Deliver</div></td>
+      <td><span class="badge badge-critical">⛔ Full AI Session</span></td>
+      <td class="note note-ai">BOB new pro — "allAI" session + AIVOX session</td>
+      <td class="note" style="color:var(--text-muted)">Unknown</td>
+      <td class="note note-crit">⛔ Must NOT be delivered as human narration. Confirm re-record plan with Gio.</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch25', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch25">
+      <td colspan="7"><div class="detail-content">
+        <div class="detail-group"><h4>Sessions Found</h4><ul><li>SOTE CHapter25+Epologue(allAI).ptx ← 4 backups (.bak.000–.003)</li><li>SOTE_CHapter25_Epologue_v1_AIVOX.ptx ← 1 backup</li></ul></div>
+        <div class="detail-group"><h4>Status</h4><p>Both Pro Tools sessions are fully AI-generated and labeled as such in the filenames. The "allAI" version has 4 backup iterations suggesting active revision. No human narration session found for the Epilogue — only SpectraLayers .slp files + WAV bounces.</p></div>
+        <div class="detail-group"><h4>⛔ Action Required</h4><p>Must NOT be delivered to Audible or Pushkin as human narration. Confirm with Gio: is Ch25 + Epilogue being re-recorded by Robert, or is AI delivery intentional and cleared with SAG-AFTRA and Pushkin?</p></div>
+      </div></td>
+    </tr>
+
+    <!-- Ch 10 -->
+    <tr data-status="critical action ai" data-detail="ch10">
+      <td><div class="seq">014</div></td>
+      <td><div class="ch-num">Chapter 10</div><div class="ch-title">Electric Lady — AI Replacement in Progress</div></td>
+      <td><span class="badge badge-warn">⚠ Replacing AI</span></td>
+      <td class="note note-teal">BOB new pro — 19 hash-ID files in active MIX</td>
+      <td class="note" style="color:var(--text-muted)">Unknown (older API)</td>
+      <td class="note note-crit">⛔ 19 AI files to replace. ~2 min trailing silence. Do not print until done.</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch10', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch10">
+      <td colspan="7"><div class="detail-content">
+        <div class="detail-group"><h4>AI Files Present</h4><ul><li>19 × "BOB new pro" hash-ID files</li><li>Older ElevenLabs API format — no timestamp in filename</li><li>In: 014_SOTE_chapter10 (MIX)</li></ul></div>
+        <div class="detail-group"><h4>Replacement Plan</h4><p>Dan Kavanaugh's "Chapter 10 Pickups for AI Replacement" doc (Apr 12) identifies 9 specific timestamp ranges where Robert must re-record. See SOTE_Ch10_Pickups.html for the full pickup sheet with all timestamps and passage text.</p></div>
+        <div class="detail-group"><h4>⛔ Blockers</h4><p>1. All 9 pickup sections must be re-recorded by Robert.<br>2. Human takes must be edited in and AI files removed.<br>3. ~2 minutes of trailing silence must be trimmed — Audible will reject the file.<br>4. Archive folder for Ch10 is empty — archive after print.</p></div>
+      </div></td>
+    </tr>
+
+    <tr class="section-header"><td colspan="7">Chapters With AI Present in Pro Tools Sessions</td></tr>
+
+    <!-- Ch 3 -->
+    <tr data-status="ai" data-detail="ch3">
+      <td><div class="seq">007</div></td>
+      <td><div class="ch-num">Chapter 3</div><div class="ch-title">First Studio Days</div></td>
+      <td><span class="badge badge-confirmed">✓ Confirmed AI</span></td>
+      <td class="note" style="color:var(--green)">BOB new pro · 5 files</td>
+      <td class="note" style="color:var(--text-muted)">Sep 24, 2025</td>
+      <td class="note note-warn">⚠ DlgMtch ×2 + XForm processed. Beethoven legal flag also on this chapter.</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch3', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch3">
+      <td colspan="7"><div class="detail-content">
+        <div class="detail-group"><h4>AI Files</h4><ul><li>5 × BOB new pro files</li><li>pvc_sp99_s49_sb51_v3</li><li>DlgMtch ×2 (Dialogue Match)</li><li>XForm (Transform plugin)</li></ul></div>
+        <div class="detail-group"><h4>Session</h4><p>007_SOTE_chapter3_v2 · Sep 24, 2025 01:37 UTC. Dialogue Match processing means the AI was matched to Robert's actual voice room tone — indicates it was used alongside or in place of human takes.</p></div>
+        <div class="detail-group"><h4>Notes</h4><p>Beethoven "Gloria" music clip on this chapter has a separate legal flag. Apr 12 meeting: section removed and saved as V2A/V2B — confirm and log as resolved.</p></div>
+      </div></td>
+    </tr>
+
+    <!-- Ch 5 -->
+    <tr data-status="ai" data-detail="ch5">
+      <td><div class="seq">009</div></td>
+      <td><div class="ch-num">Chapter 5</div><div class="ch-title">Moog & The Machine</div></td>
+      <td><span class="badge badge-confirmed">✓ Confirmed AI</span></td>
+      <td class="note" style="color:var(--green)">BOB new pro · ~15 files</td>
+      <td class="note" style="color:var(--text-muted)">Jan 8–9, 2026</td>
+      <td class="note">Most complex processing chain in archive: SL×5 → DynA → Oz12MEQ</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch5', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch5">
+      <td colspan="7"><div class="detail-content">
+        <div class="detail-group"><h4>AI Files</h4><ul><li>~15 × BOB new pro files</li><li>3 render sessions: sp108, sp110, sp106</li><li>SL×5 → DynA → Oz12MEQ chain</li></ul></div>
+        <div class="detail-group"><h4>Session</h4><p>009_SOTE_chapter5_v2 · Jan 8–9, 2026 23:46–01:14 UTC. Most heavily processed AI chain in the entire archive.</p></div>
+        <div class="detail-group"><h4>Notes</h4><p>No new human pickup in the April 2026 folder for Ch5. Confirm whether AI is still in the active mix or was replaced.</p></div>
+      </div></td>
+    </tr>
+
+    <!-- Ch 6 -->
+    <tr data-status="ai action" data-detail="ch6">
+      <td><div class="seq">010</div></td>
+      <td><div class="ch-num">Chapter 6</div><div class="ch-title">First Days With Stevie</div></td>
+      <td><span class="badge badge-confirmed">✓ Confirmed AI</span></td>
+      <td class="note" style="color:var(--green)">BOB new pro · 2 sessions</td>
+      <td class="note note-warn">Sep 18, 2025 + <strong>Mar 27, 2026</strong></td>
+      <td class="note note-warn">⚠ Most recent AI in archive (Mar 27). New human pickup also exists — confirm which is in mix.</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch6', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch6">
+      <td colspan="7"><div class="detail-content">
+        <div class="detail-group"><h4>AI Files</h4><ul><li>Sep 18, 2025: pvc_sp100_s50_sb75_v3 + DynA</li><li>Mar 27, 2026: sp111_s20_sb100_se91_b_m2 + sp114_s11_sb100_se96_b_m2</li><li>3 renders in 8 min (Mar 27 session)</li></ul></div>
+        <div class="detail-group"><h4>Session</h4><p>010_SOTE_chapter6_v3 · Most recent AI timestamp in the entire archive is March 27, 2026 — only ~2 weeks before current date. Active mix is v4d in Mixes folder. v4c RECOVERD also exists alongside it.</p></div>
+        <div class="detail-group"><h4>⚠ Action Needed</h4><p>New human recording also exists in Pick Ups April 2026 folder — not yet imported. Confirm whether the Mar 27 AI renders are still in the v4d mix or have been replaced. Confirm v4d is clean and v4c RECOVERD can be discarded.</p></div>
+      </div></td>
+    </tr>
+
+    <!-- Ch 7 -->
+    <tr data-status="ai" data-detail="ch7">
+      <td><div class="seq">011</div></td>
+      <td><div class="ch-num">Chapter 7</div><div class="ch-title">The Moog Sessions</div></td>
+      <td><span class="badge badge-confirmed">✓ Confirmed AI</span></td>
+      <td class="note" style="color:var(--green)">BOB new pro + 2 alt voices (ideation)</td>
+      <td class="note" style="color:var(--text-muted)">Oct 13–14, 2025</td>
+      <td class="note">Only chapter with multiple voice models tested. Creative comparison session only.</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch7', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch7">
+      <td colspan="7"><div class="detail-content">
+        <div class="detail-group"><h4>Voice Models Tested</h4><ul><li>BOB new pro (primary — prevailed)</li><li>Eddie Sedgwick tv (ideation only)</li><li>Bob Verdecchio (ideation only)</li></ul></div>
+        <div class="detail-group"><h4>Session</h4><p>011_SOTE_chapter7_v3 · Oct 13–14, 2025 21:19–01:03 UTC. 10+ renders across 6 hours. Only chapter in the project where multiple voice models were compared head-to-head.</p></div>
+        <div class="detail-group"><h4>Notes</h4><p>This was a creative ideation session. BOB new pro was selected. Alt voice files (Eddie Sedgwick, Bob Verdecchio) are reference only and should not be in any deliverable.</p></div>
+      </div></td>
+    </tr>
+
+    <!-- Ch 9 -->
+    <tr data-status="ai" data-detail="ch9">
+      <td><div class="seq">013</div></td>
+      <td><div class="ch-num">Chapter 9</div><div class="ch-title">Music of My Mind</div></td>
+      <td><span class="badge badge-confirmed">✓ Confirmed AI</span></td>
+      <td class="note" style="color:var(--green)">BOB new pro · 3 sessions</td>
+      <td class="note" style="color:var(--text-muted)">Sep 20, Oct 14, 2025</td>
+      <td class="note">RX11Dp + TmShft processing. sp76–sp108 range. New human pickup in April 2026 folder.</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch9', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch9">
+      <td colspan="7"><div class="detail-content">
+        <div class="detail-group"><h4>AI Files</h4><ul><li>Sep 20, 2025: 2 render sessions, sp99, RX11Dp + TmShft</li><li>Oct 14, 2025: 5 renders sp76/sp85/sp87/sp91/sp108</li><li>Older format hash-ID file also present</li></ul></div>
+        <div class="detail-group"><h4>Session</h4><p>013_SOTE_chapter9_v3 (v2f latest). 3 separate sessions over 5 months. iZotope RX11 Dialog Process and Time Shift processing applied.</p></div>
+        <div class="detail-group"><h4>Notes</h4><p>New human recording in Pick Ups April 2026 folder — not yet imported into session. Import and confirm AI files are replaced before print.</p></div>
+      </div></td>
+    </tr>
+
+    <!-- Ch 11 -->
+    <tr data-status="ai action" data-detail="ch11">
+      <td><div class="seq">015</div></td>
+      <td><div class="ch-num">Chapter 11</div><div class="ch-title">Talking Book</div></td>
+      <td><span class="badge badge-warn">⚠ 40+ Hash-ID Files</span></td>
+      <td class="note note-teal">BOB new pro hash-ID · 40+ files in MIX</td>
+      <td class="note" style="color:var(--text-muted)">Feb 20, 2026 + older</td>
+      <td class="note note-warn">⚠ Largest AI count in any chapter. Review status vs. human takes before delivery.</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch11', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch11">
+      <td colspan="7"><div class="detail-content">
+        <div class="detail-group"><h4>AI Files</h4><ul><li>40+ hash-ID "BOB new pro" files in MIX folder</li><li>1 timestamped file in archive (Feb 20, 2026)</li><li>sp109_s1_sb100_se96_b_m2</li><li>Heavy Ozone 12 MEQ processing on most files</li></ul></div>
+        <div class="detail-group"><h4>Session</h4><p>015_SOTE_chapter11_v3 (archive) + 015_chapter 11 (MIX). Most AI files are hash-ID format (older API) — no filename timestamps. This is the largest total AI file count of any chapter.</p></div>
+        <div class="detail-group"><h4>⚠ Action Needed</h4><p>Review Ch11 MIX session: are the 40+ hash-ID files still active in the mix, or have they been replaced by human takes? Status unclear — needs verification before delivery. No human pickup in April 2026 folder for Ch11.</p></div>
+      </div></td>
+    </tr>
+
+    <!-- Ch 12 -->
+    <tr data-status="ai" data-detail="ch12">
+      <td><div class="seq">016</div></td>
+      <td><div class="ch-num">Chapter 12</div><div class="ch-title">Inner Visions</div></td>
+      <td><span class="badge badge-confirmed">✓ Confirmed AI</span></td>
+      <td class="note" style="color:var(--green)">BOB new pro · 2 sessions</td>
+      <td class="note" style="color:var(--text-muted)">Sep 14, 2025 + Feb 13, 2026</td>
+      <td class="note note-warn">⚠ Also: "again and again.wav" non-ElevenLabs file. Stevie Wonder legal flag.</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch12', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch12">
+      <td colspan="7"><div class="detail-content">
+        <div class="detail-group"><h4>AI Files</h4><ul><li>Sep 14, 2025: pvc_sp100_s50_sb75_v3</li><li>Feb 13, 2026: sp109_s0_sb75_se100_b_m2 · 2 sessions, 5 Ozone variants</li><li>"again and again.wav" — non-ElevenLabs, likely music/lyric clip</li></ul></div>
+        <div class="detail-group"><h4>Session</h4><p>016_SOTE_chapter12_v2. Two AI sessions 5 months apart. Second session adds multilingual v2 model with heavy Ozone processing.</p></div>
+        <div class="detail-group"><h4>Notes</h4><p>Stevie Wonder clips in this chapter must stay under 60 seconds per song — legal flag separate from AI issue. The "again and again.wav" and its Ozone variants are not ElevenLabs audio but should be identified (likely a Stevie clip).</p></div>
+      </div></td>
+    </tr>
+
+    <!-- Ch 13 -->
+    <tr data-status="ai" data-detail="ch13">
+      <td><div class="seq">017</div></td>
+      <td><div class="ch-num">Chapter 13</div><div class="ch-title">Fulfillingness' First Finale</div></td>
+      <td><span class="badge badge-confirmed">✓ Confirmed AI</span></td>
+      <td class="note" style="color:var(--green)">BOB new pro · most intensive session</td>
+      <td class="note" style="color:var(--text-muted)">Dec 31, 2025 + Feb 13, 2026</td>
+      <td class="note">8 renders in 9 min (Feb 13). 6 new human takes arrived Apr 2–3 — pick best.</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch13', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch13">
+      <td colspan="7"><div class="detail-content">
+        <div class="detail-group"><h4>AI Files</h4><ul><li>Dec 31, 2025: pvc_sp104_s64_sb100_se49_b_m2</li><li>Feb 13, 2026: sp107_s1_sb100_se96_b_m2 — 8 renders in 9 min</li><li>VcAs (Voice Assist) processing applied</li></ul></div>
+        <div class="detail-group"><h4>Session</h4><p>017_SOTE_chapter13_v3. Feb 13 session is the most intensive single AI session in the project (8 renders in 9 minutes). Two archived versions: v2b and v2c.</p></div>
+        <div class="detail-group"><h4>Action</h4><p>6 new human Robert takes arrived April 2–3 and are in the Pick Ups April 2026 folder — not yet imported. Pick the best take, edit in, print as v3 or v4.</p></div>
+      </div></td>
+    </tr>
+
+    <!-- Ch 16 -->
+    <tr data-status="ai" data-detail="ch16">
+      <td><div class="seq">020</div></td>
+      <td><div class="ch-num">Chapter 16</div><div class="ch-title">Songs in the Key of Life</div></td>
+      <td><span class="badge badge-warn">⚠ 1 File (Untitled)</span></td>
+      <td class="note note-warn">ElevenLabs_Untitled_Project.wav</td>
+      <td class="note" style="color:var(--text-muted)">Date unknown</td>
+      <td class="note">Single unnamed ElevenLabs file in Descript bounces folder. Context unknown — likely test.</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch16', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch16">
+      <td colspan="7"><div class="detail-content">
+        <div class="detail-group"><h4>AI File</h4><ul><li>ElevenLabs_Untitled_Project.wav</li><li>Located in Descript clean bounces folder for Ch16</li></ul></div>
+        <div class="detail-group"><h4>Status</h4><p>Single unnamed render — "Untitled Project" is the ElevenLabs project name, meaning no named voice clone was used (or it wasn't saved under a project). Context is unknown — may have been a one-off test or placeholder. Crash recovery session also exists for Ch16.</p></div>
+        <div class="detail-group"><h4>Action</h4><p>Confirm whether this file is in the active mix or just in the Descript folder as an unused export. Verify Ch16 current session (V3a) is intact and all audio regions are present.</p></div>
+      </div></td>
+    </tr>
+
+    <tr class="section-header"><td colspan="7">Chapters With No AI Found</td></tr>
+
+    <tr data-status="none" data-detail="none1">
+      <td><div class="seq" style="color:var(--text-muted)">001–003</div></td>
+      <td><div class="ch-num">Opening Credits / Foreword / Preface</div><div class="ch-title">Front Matter</div></td>
+      <td><span class="badge badge-none">— None Found</span></td>
+      <td class="note" style="color:var(--text-muted)">—</td>
+      <td class="note" style="color:var(--text-muted)">—</td>
+      <td class="note note-ok">✓ No ElevenLabs files in session folders</td>
+      <td></td>
+    </tr>
+    <tr data-status="none" data-detail="none2">
+      <td><div class="seq" style="color:var(--text-muted)">008, 012</div></td>
+      <td><div class="ch-num">Ch 4 / Ch 8</div><div class="ch-title">No AI in Session Folders</div></td>
+      <td><span class="badge badge-none">— None Found</span></td>
+      <td class="note" style="color:var(--text-muted)">—</td>
+      <td class="note" style="color:var(--text-muted)">—</td>
+      <td class="note note-ok">✓ No ElevenLabs files. Ch8 has no standalone archive session (covered by combined Ch6-7-8-9 session).</td>
+      <td></td>
+    </tr>
+    <tr data-status="none" data-detail="none3">
+      <td><div class="seq" style="color:var(--text-muted)">018–019<br>021–028</div></td>
+      <td><div class="ch-num">Ch 14, 15, 17, 18, 19, 21, 22, 23, 24</div><div class="ch-title">No AI in Session Folders</div></td>
+      <td><span class="badge badge-none">— None Found</span></td>
+      <td class="note" style="color:var(--text-muted)">—</td>
+      <td class="note" style="color:var(--text-muted)">—</td>
+      <td class="note note-ok">✓ No ElevenLabs files. Note: Ch14 has Grammy legal flag. Ch24 has trailing silence Audible issue.</td>
+      <td></td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<div class="footer">
+  <span>SOTE AI AUDIT v3 · Rebuilt April 13, 2026 · Sources: PT folder scan + Dan's Google Drive + Apr 12 meeting notes</span>
+  <span>Voice: BOB new pro (Robert Margouleff — consented) · Most recent render: Ch6 Mar 27, 2026</span>
+</div>
+
+<script>
+function filterTable(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const rows = document.querySelectorAll('#mainTable tbody tr[data-status]');
+  rows.forEach(row => {
+    if (filter === 'all') { row.classList.remove('hidden'); return; }
+    const status = row.getAttribute('data-status') || '';
+    row.classList.toggle('hidden', !status.includes(filter));
+  });
+}
+
+function toggleDetail(id, btn) {
+  const row = document.getElementById('detail-' + id);
+  if (!row) return;
+  const isHidden = row.classList.contains('hidden');
+  row.classList.toggle('hidden', !isHidden);
+  btn.classList.toggle('open', isHidden);
+  btn.textContent = isHidden ? '▴ Detail' : '▾ Detail';
+}
+</script>
+</body>
+</html>

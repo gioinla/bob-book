@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOTE — DAN HIT LIST · April 12 Sessions</title>
+<style>
+  :root {
+    --bg: #0e1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3348;
+    --accent: #14b8a6;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --teal: #14b8a6;
+    --pink: #ec4899;
+    --orange: #f97316;
+    --purple: #a855f7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 32px 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  h1, h2, h3 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .header {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-size: 22px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .header .sub {
+    color: var(--muted);
+    font-family: 'SF Mono', monospace;
+    font-size: 12px;
+  }
+  .header .for-tag {
+    display: inline-block;
+    background: rgba(20,184,166,0.12);
+    border: 1px solid rgba(20,184,166,0.35);
+    color: #5eead4;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 12px;
+    margin-top: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .stat-card .num {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: -apple-system, sans-serif;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-card .label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    white-space: nowrap;
+  }
+  .badge-script  { background: rgba(20,184,166,0.12); border: 1px solid rgba(20,184,166,0.35); color: #5eead4; }
+  .badge-legal   { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.35);  color: #fca5a5; }
+  .badge-files   { background: rgba(234,179,8,0.12);  border: 1px solid rgba(234,179,8,0.35);  color: #fde68a; }
+  .badge-sched   { background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.35); color: #d8b4fe; }
+  .badge-admin   { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.35); color: #a5b4fc; }
+  .badge-joint   { background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.35); color: #fdba74; }
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 32px;
+  }
+  th {
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr.section-header td {
+    background: var(--surface2);
+    color: var(--accent);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 8px 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
+  }
+  tr.data-row { background: var(--surface); }
+  tr.data-row:hover { background: #1c2333; }
+  tr.detail-row { background: #131823; display: none; }
+  tr.detail-row td {
+    padding: 12px 14px 14px 14px;
+    color: var(--muted);
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr.detail-row.open { display: table-row; }
+  .task-name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 13px;
+  }
+  .task-context {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 2px;
+  }
+  .expand-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    white-space: nowrap;
+  }
+  .expand-btn:hover { border-color: var(--accent); color: var(--text); }
+  .detail-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .detail-block strong { color: var(--text); }
+  .priority-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+  .dot-hot { background: var(--red); }
+  .dot-mid { background: var(--yellow); }
+  .dot-low { background: var(--green); }
+  .session-tag {
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'SF Mono', monospace;
+  }
+
+  /* Context card for Dan */
+  .context-card {
+    background: rgba(20,184,166,0.06);
+    border: 1px solid rgba(20,184,166,0.2);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 24px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .context-card strong { color: var(--text); }
+  .context-card .ctx-title {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #5eead4;
+    margin-bottom: 8px;
+  }
+
+  .footer {
+    color: var(--muted);
+    font-size: 11px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  tr[data-cat].hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>SHAPING SOUNDS — DAN HIT LIST</h1>
+  <div class="sub">April 12, 2026 · Three Sessions · All Dan Kavanaugh Action Items</div>
+  <div class="for-tag">@dan — Personal Action Items Only</div>
+</div>
+
+<div class="context-card">
+  <div class="ctx-title">Context for Dan</div>
+  This hit list consolidates everything assigned to Dan across the three April 12 sessions (10:01 PDT, 12:59 PDT, 16:40 PDT). The sessions covered: AI audit finalization, the main working mix session (Opening Credits through Ch4), and the afternoon music cue session (Ch7–Ch8). No action items were assigned to Dan in the 16:40 session — all items were Gio's mixes. Dan's key parallel tasks are the <strong>re-recording script prep</strong> and <strong>sourcing missing takes</strong> while Gio handles the ProTools/mix work.
+</div>
+
+<div class="stats">
+  <div class="stat-card"><div class="num">8</div><div class="label">Total Items</div></div>
+  <div class="stat-card"><div class="num">2</div><div class="label">Script / AI</div></div>
+  <div class="stat-card"><div class="num">2</div><div class="label">Files / Takes</div></div>
+  <div class="stat-card"><div class="num">2</div><div class="label">Legal / Admin</div></div>
+  <div class="stat-card"><div class="num">2</div><div class="label">Sched / Coord</div></div>
+</div>
+
+<div class="legend">
+  <span class="badge badge-script">ai / script</span>
+  <span class="badge badge-files">files / takes</span>
+  <span class="badge badge-legal">legal / admin</span>
+  <span class="badge badge-sched">schedule</span>
+  <span class="badge badge-joint">joint w/ Gio</span>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterTable('all',this)">All</button>
+  <button class="filter-btn" onclick="filterTable('script',this)">AI / Script</button>
+  <button class="filter-btn" onclick="filterTable('files',this)">Files / Takes</button>
+  <button class="filter-btn" onclick="filterTable('legal',this)">Legal / Admin</button>
+  <button class="filter-btn" onclick="filterTable('sched',this)">Schedule</button>
+  <button class="filter-btn" onclick="filterTable('joint',this)">Joint w/ Gio</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th width="22%">Area</th>
+      <th width="40%">Task</th>
+      <th width="16%">Session</th>
+      <th width="14%">Type</th>
+      <th width="8%"></th>
+    </tr>
+  </thead>
+  <tbody id="taskTable">
+
+    <!-- SECTION: AI / RE-RECORDING SCRIPT -->
+    <tr class="section-header"><td colspan="5">AI Replacement · Re-recording Script</td></tr>
+
+    <tr class="data-row" data-cat="script">
+      <td><span class="task-name">Rename Descript Composition</span><div class="task-context">naming cleanup</div></td>
+      <td><span class="priority-dot dot-mid"></span>Rename the current working composition in Descript from "copy of copy" to its actual project name.</td>
+      <td><span class="session-tag">10:01 PDT</span></td>
+      <td><span class="badge badge-script">ai / script</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d1',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d1">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 10:01 session. The working composition was duplicated during the AI audit and is currently named "copy of copy of [original name]." Rename it to the proper project title before proceeding with any further work.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="script">
+      <td><span class="task-name">Prepare Re-recording Script</span><div class="task-context">Ch10 AI clusters → Google Doc</div></td>
+      <td><span class="priority-dot dot-hot"></span>Extract dialogue for all identified AI overdub clusters in Ch10. Compile into a <strong>Google Doc</strong> for Robert to read — include ~10 seconds of context before each segment.</td>
+      <td><span class="session-tag">10:01 PDT</span></td>
+      <td><span class="badge badge-script">ai / script</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d2',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d2">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 10:01 session. The AI audit identified 2 ElevenLabs files and 18 overdub instances in Ch10. The refined workflow (using Underlord in Descript) isolates specific overdub clusters with 10 seconds of context. Compile these into a clean Google Doc for Robert to record in-session. <strong>Reference: SOTE_Ch10_Pickups_v2.html</strong> in BOB BOOK — all 9 timestamp sections are already documented there.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="script">
+      <td><span class="task-name">Create Comprehensive Pickup Script</span><div class="task-context">all chapters, all AI</div></td>
+      <td><span class="priority-dot dot-hot"></span>Go through ALL required AI-replacement material across all chapters. Generate comprehensive shared pickup script (Google Doc) for Robert.</td>
+      <td><span class="session-tag">10:01 PDT</span></td>
+      <td><span class="badge badge-script">ai / script</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d3',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d3">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 10:01 session. Beyond Ch10, AI was also confirmed in: Ch11 (40+ hash-ID ElevenLabs files), Ch25 (full AI session), and Epilogue (full AI session). Dan is responsible for generating the complete shared script covering all of these. <strong>Chapters affected:</strong> Ch10, Ch11, Ch25, Epilogue.
+      </div></td>
+    </tr>
+
+    <!-- SECTION: FILES / TAKES -->
+    <tr class="section-header"><td colspan="5">Files · Missing Takes</td></tr>
+
+    <tr class="data-row" data-cat="files">
+      <td><span class="task-name">Share Session Recording</span><div class="task-context">transcript to Gio</div></td>
+      <td><span class="priority-dot dot-mid"></span>Send the complete meeting recording or transcript text to Giorgio Bertuccelli.</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-files">files</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d4',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d4">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. Gio requested the full meeting recording or transcript. Note: Gemini auto-generated notes are available via Google Drive (three docs from April 12 — all owned by dan@dankav.com). Share links or export if needed.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="files">
+      <td><span class="task-name">Provide Missing Takes</span><div class="task-context">all available takes</div></td>
+      <td><span class="priority-dot dot-hot"></span>Give Gio all available takes for missing sections across chapters. Particularly: <strong>Ch6, Ch9, Ch13 (6 takes), Ch15, Ch19</strong> pickups not yet imported.</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-files">files / takes</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d5',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d5">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session + task list. April 2–3 pickup WAVs are in <strong>Dropbox / Giorgio Bertuccelli / BOB BOOK / Pick Ups April 2026/</strong>. These have not been imported into any mix session. Ch13 has 6 takes — select the best and edit/print v3 or v4. Dan needs to confirm all takes are accessible and flag any that are missing.
+      </div></td>
+    </tr>
+
+    <!-- SECTION: LEGAL / ADMIN -->
+    <tr class="section-header"><td colspan="5">Legal · Administrative</td></tr>
+
+    <tr class="data-row" data-cat="legal">
+      <td><span class="task-name">Investigate Ch1 Legal Email</span><div class="task-context">missing correspondence</div></td>
+      <td><span class="priority-dot dot-hot"></span>Investigate the missing email correspondence related to the Chapter 1 legal note. Find and forward to Gio.</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-legal">legal</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d6',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d6">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. There is a legal note attached to Chapter 1 that references an email — the email itself is missing or hasn't been shared. Dan is tasked with finding it and resolving the context. <strong>Reminder:</strong> existing legal flags include Ch3 Beethoven, Ch12 Stevie Wonder, Ch14 Grammy, Ch15 Bukowski, Ch17 DEVO, Ch18 unlicensable track — the Ch1 legal note is separate and new.
+      </div></td>
+    </tr>
+
+    <tr class="data-row" data-cat="legal">
+      <td><span class="task-name">Jasmine's Notes — Joint Review</span><div class="task-context">with Gio</div></td>
+      <td><span class="priority-dot dot-mid"></span>Go through Jasmine's notes together with Gio. Evaluate each complaint — resolve directly or flag for individual follow-up.</td>
+      <td><span class="session-tag">10:01 PDT</span></td>
+      <td><span class="badge badge-joint">joint w/ Gio</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d7',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d7">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 10:01 session. Jasmine's notes are from the script review and are being used as the primary hit list source for both Gio and Dan. The 12:59 and 16:40 sessions were largely working through these notes in real time. Continue this process in the 1:30pm session.
+      </div></td>
+    </tr>
+
+    <!-- SECTION: SCHEDULING -->
+    <tr class="section-header"><td colspan="5">Scheduling · Coordination</td></tr>
+
+    <tr class="data-row" data-cat="sched">
+      <td><span class="task-name">Schedule Tonto Visit</span><div class="task-context">post-project coordination</div></td>
+      <td><span class="priority-dot dot-low"></span>Coordinate a visit with Tonto after current project completion.</td>
+      <td><span class="session-tag">12:59 PDT</span></td>
+      <td><span class="badge badge-sched">schedule</span></td>
+      <td><button class="expand-btn" onclick="toggleDetail('d8',this)">▸ detail</button></td>
+    </tr>
+    <tr class="detail-row" id="d8">
+      <td colspan="5"><div class="detail-block">
+        <strong>Source:</strong> 12:59 session. Dan mentioned a planned visit with Tonto — schedule for after the Shaping Sounds project wraps/delivers. Low priority until delivery is done.
+      </div></td>
+    </tr>
+
+  </tbody>
+</table>
+
+<!-- Summary card -->
+<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 24px;">
+  <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 12px;">Key File Locations — For Reference</div>
+  <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+    <tr><td style="padding: 5px 0; color: var(--muted); width: 30%;">Active Mix Sessions</td><td style="padding: 5px 0; color: var(--text);">Dropbox / Giorgio Bertuccelli / BOB BOOK / MIX /</td></tr>
+    <tr><td style="padding: 5px 0; color: var(--muted);">April 2026 Pick-Ups</td><td style="padding: 5px 0; color: var(--text);">Dropbox / Giorgio Bertuccelli / BOB BOOK / Pick Ups April 2026 /</td></tr>
+    <tr><td style="padding: 5px 0; color: var(--muted);">Archive PT Sessions</td><td style="padding: 5px 0; color: var(--text);">Dropbox / Audio Assets / ProTools /</td></tr>
+    <tr><td style="padding: 5px 0; color: var(--muted);">Ch10 Pickup Ref</td><td style="padding: 5px 0; color: var(--text);">BOB BOOK / SOTE_Ch10_Pickups_v2.html</td></tr>
+    <tr><td style="padding: 5px 0; color: var(--muted);">AI Audit Reference</td><td style="padding: 5px 0; color: var(--text);">BOB BOOK / SOTE_AI_AUDIT_v3.html</td></tr>
+    <tr><td style="padding: 5px 0; color: var(--muted);">Master Task List</td><td style="padding: 5px 0; color: var(--text);">BOB BOOK / SOTE_TaskList_ForDan_v3.html</td></tr>
+  </table>
+</div>
+
+<div class="footer">SHAPING SOUNDS · @dan Personal Hit List · April 12, 2026 · Three Sessions (10:01 / 12:59 / 16:40 PDT) · Generated April 13, 2026</div>
+
+<script>
+function filterTable(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#taskTable tr[data-cat]').forEach(row => {
+    if (cat === 'all' || row.dataset.cat === cat) {
+      row.classList.remove('hidden');
+    } else {
+      row.classList.add('hidden');
+      const expandBtn = row.querySelector('.expand-btn');
+      if (expandBtn) {
+        const detailId = expandBtn.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+        if (detailId) {
+          const drow = document.getElementById(detailId);
+          if (drow) { drow.classList.remove('open'); expandBtn.textContent = '▸ detail'; }
+        }
+      }
+    }
+  });
+}
+
+function toggleDetail(id, btn) {
+  const row = document.getElementById(id);
+  if (row.classList.contains('open')) {
+    row.classList.remove('open');
+    btn.textContent = '▸ detail';
+  } else {
+    row.classList.add('open');
+    btn.textContent = '▾ close';
+  }
+}
+</script>
+</body>
+</html>

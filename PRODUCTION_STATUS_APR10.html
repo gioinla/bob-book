@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shaping Sounds — Production Status & Hit List | April 13, 2026</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0d1117; color: #c9d1d9; line-height: 1.6; padding: 24px; max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 1.8rem; color: #f0f6fc; margin-bottom: 4px; }
+  .subtitle { color: #8b949e; font-size: 0.95rem; margin-bottom: 24px; }
+  .countdown { background: linear-gradient(135deg, #b62324 0%, #da3633 100%); color: #fff; padding: 14px 20px; border-radius: 10px; margin-bottom: 28px; font-size: 1.1rem; font-weight: 600; text-align: center; letter-spacing: 0.3px; }
+  .countdown span { font-size: 1.6rem; display: block; margin-top: 4px; }
+
+  .section { margin-bottom: 28px; border-radius: 10px; overflow: hidden; border: 1px solid #30363d; }
+  .section-header { padding: 12px 18px; font-weight: 700; font-size: 1.05rem; display: flex; align-items: center; gap: 10px; }
+  .section-body { padding: 16px 18px; background: #161b22; }
+
+  .red .section-header { background: #b62324; color: #fff; }
+  .orange .section-header { background: #b35c00; color: #fff; }
+  .yellow .section-header { background: #7a6d00; color: #fff; }
+  .green .section-header { background: #1a7f37; color: #fff; }
+  .blue .section-header { background: #1f6feb; color: #fff; }
+
+  .item { padding: 10px 0; border-bottom: 1px solid #21262d; }
+  .item:last-child { border-bottom: none; }
+  .item-title { font-weight: 600; color: #f0f6fc; margin-bottom: 3px; }
+  .item-detail { color: #8b949e; font-size: 0.9rem; }
+  .item-detail strong { color: #c9d1d9; }
+  .tag { display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-left: 6px; vertical-align: middle; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tag-dan { background: #6e40c9; color: #fff; }
+  .tag-gio { background: #1f6feb; color: #fff; }
+  .tag-tomorrow { background: #da3633; color: #fff; }
+  .tag-week { background: #b35c00; color: #fff; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.88rem; }
+  th { text-align: left; padding: 8px 10px; background: #21262d; color: #8b949e; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 8px 10px; border-bottom: 1px solid #21262d; }
+  tr:last-child td { border-bottom: none; }
+  .status-clean { color: #3fb950; }
+  .status-near { color: #58a6ff; }
+  .status-spot { color: #d29922; }
+  .status-dan { color: #bc8cff; }
+  .status-rework { color: #f85149; }
+  .status-unknown { color: #8b949e; }
+
+  .note { background: #1c2128; border-left: 3px solid #58a6ff; padding: 10px 14px; margin-top: 12px; border-radius: 0 6px 6px 0; font-size: 0.9rem; }
+  .note strong { color: #58a6ff; }
+
+  .footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid #21262d; color: #484f58; font-size: 0.8rem; text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>SHAPING SOUNDS — Production Status</h1>
+<p class="subtitle">Robert Margouleff with Jim Reilly &bull; Pushkin Industries &bull; Compiled for Gio Bertucchelli &bull; April 10, 2026 &bull; <strong style="color:#3fb950;">Updated April 13, 2026</strong></p>
+
+<div class="countdown">
+  3rd Mixes Due to Pushkin — THIS WEEK
+  <span>DEADLINE: April 24 &nbsp;|&nbsp; Publication: May 19, 2026</span>
+</div>
+
+<!-- ============================================ -->
+<!-- TOMORROW -->
+<!-- ============================================ -->
+<div class="section red">
+  <div class="section-header">🔴 NOT YET — Pick-Up Recording Session Still Needed</div>
+  <div class="section-body">
+    <div class="item">
+      <div class="item-title">Pick-Up Session with Bob, Dan & Mark Allen Hall <span class="tag tag-tomorrow">SCHEDULE ASAP</span></div>
+      <div class="item-detail">
+        <strong>Session has NOT happened yet.</strong> Still needs to be booked and recorded.<br>
+        <strong>Priority targets for the mic:</strong>
+      </div>
+      <ul style="margin:8px 0 0 18px; color:#8b949e; font-size:0.9rem;">
+        <li><strong>Ch10</strong> — 55 AI files (15-20%). Biggest single remediation need.</li>
+        <li><strong>Ch11</strong> — 17 ElevenLabs voice-clone segments (~7 min). All must be replaced.</li>
+        <li><strong>Ch13</strong> — 63 AI files (18%). Apr 2–3 pickups exist but gaps remain.</li>
+        <li><strong>Spot fixes (~63 sec total):</strong> Prologue (5s), Ch4B (8s), Ch17 (35s), Ch18 (11s), Epilogue (2s), End Credits (2s)</li>
+      </ul>
+      <div class="note"><strong>Also ready to integrate (Apr 2–3 pickups already in Dropbox):</strong> Ch6, Ch9, Ch13, Ch15, Ch19 — organized in PICKUP_IMPORTS_APR2026 folder.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- BLOCKING DECISIONS FOR DAN -->
+<!-- ============================================ -->
+<div class="section red">
+  <div class="section-header">🔴 BLOCKING — Decisions Needed from Dan Kavanaugh</div>
+  <div class="section-body">
+    <div class="item">
+      <div class="item-title">Ch12 & Ch15 — Confirm correct Descript project versions <span class="tag tag-dan">DAN</span></div>
+      <div class="item-detail">AI audit flagged these as "NEEDS DAN" — the Descript project files are ambiguous. Dan must identify which version is the canonical edit so Gio can build the final PT sessions from the right source.</div>
+    </div>
+    <div class="item">
+      <div class="item-title">Ch21 — Flattened / Unverifiable <span class="tag tag-dan">DAN</span></div>
+      <div class="item-detail">Delivered as a flattened stereo file — no multitrack, no Descript project recoverable. Cannot audit for AI content. <strong>Decision:</strong> Accept as-is with disclosure, or rebuild from scratch?</div>
+    </div>
+    <div class="item">
+      <div class="item-title">Descript Project Sharing — AI Edit History Exposure <span class="tag tag-dan">DAN</span></div>
+      <div class="item-detail">Pushkin requested Descript project access (itaccounts@pushkin.fm). <strong>Risk:</strong> Sharing exposes the full AI edit history (regenerations, Studio Sound usage, etc.) in the project timeline. Dan must decide whether to share, sanitize, or decline.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- AI REMEDIATION -->
+<!-- ============================================ -->
+<div class="section orange">
+  <div class="section-header">🟠 AI COMPLIANCE — SAG-AFTRA Audit Status (31 Chapters)</div>
+  <div class="section-body">
+
+    <table>
+      <tr><th>Tier</th><th>Count</th><th>Chapters</th><th>Action</th></tr>
+      <tr>
+        <td class="status-clean">✅ CLEAN</td>
+        <td>14</td>
+        <td>Ch1, Ch2, Ch3, Ch4, Ch7, Ch8, Ch14, Ch17, Ch18, Ch19, Ch20, Ch22, Ch23, Ch24</td>
+        <td>None — ready for 3rd mix</td>
+      </tr>
+      <tr>
+        <td class="status-near">🔵 NEAR-CLEAN</td>
+        <td>2</td>
+        <td>Ch5, Ch16</td>
+        <td>Trivial — minor artifacts, no AI content</td>
+      </tr>
+      <tr>
+        <td class="status-spot">🟡 SPOT FIXES</td>
+        <td>7</td>
+        <td>Ch6, Ch9, Prologue, Preface, Foreword, Credits, Epilogue</td>
+        <td>~64 seconds total AI to replace. Quick punch-ins.</td>
+      </tr>
+      <tr>
+        <td class="status-dan">🟣 NEEDS DAN</td>
+        <td>2</td>
+        <td>Ch12, Ch15</td>
+        <td>Blocked — awaiting Dan's project confirmation</td>
+      </tr>
+      <tr>
+        <td class="status-rework">🔴 SIGNIFICANT REWORK</td>
+        <td>3</td>
+        <td>Ch10, Ch11, Ch13</td>
+        <td>25-32 min worst case replacement. Tomorrow's session is critical.</td>
+      </tr>
+      <tr>
+        <td class="status-unknown">⚪ UNVERIFIABLE</td>
+        <td>1</td>
+        <td>Ch21</td>
+        <td>Flattened file — Dan must decide path forward</td>
+      </tr>
+    </table>
+
+    <div class="note">
+      <strong>Bottom line:</strong> 16 of 31 chapters are clean or near-clean. 7 need quick spot fixes (~64s total). The real work is Ch10, Ch11, Ch13 (the "big three") plus the Dan-blocked Ch12, Ch15, Ch21. <br><br>
+      <strong>Best case total AI replacement:</strong> 7-9 minutes &nbsp;|&nbsp; <strong>Worst case:</strong> 25-32 minutes<br>
+      <strong>Pick-up sessions recorded (Apr 2–3):</strong> Ch6, Ch9, Ch13, Ch15, Ch19 — integrate into PT sessions. Organized in PICKUP_IMPORTS_APR2026 folder. <strong>Apr 11 session has NOT happened yet — still needs to be scheduled.</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- 3RD MIX DELIVERY -->
+<!-- ============================================ -->
+<div class="section orange">
+  <div class="section-header">🟠 THIS WEEK — 3rd Mixes Due (Week of Apr 13)</div>
+  <div class="section-body">
+    <div class="item">
+      <div class="item-title">Processing Standard <span class="tag tag-gio">GIO</span></div>
+      <div class="item-detail">
+        <strong>Gold standard:</strong> Match Ch16 and Ch25 treatment (confirmed by Sarah at Pushkin).<br>
+        <strong>Approach:</strong> "Edited-raw" — clean editorial, room tone present, no effects. Let Pushkin's engineers shape tone.<br>
+        <strong>Vibe:</strong> "Tiny Desk" — natural, intimate, present. Light EQ + light compression + limited RX Voice De-noise.<br>
+        <strong>Studio Sound: OFF.</strong> Confirmed directive from Pushkin. Must be disabled in every Descript project before bounce.<br>
+        <strong>Signal chain note:</strong> Preface v3 was tracked through Neve 1073 — that's the warmth everyone loves. All other chapters are M88/interface. Don't chase the Preface sound on non-Preface chapters.
+      </div>
+    </div>
+    <div class="item">
+      <div class="item-title">Jasmine's Notes — Must Incorporate Before Delivery <span class="tag tag-week">THIS WEEK</span></div>
+      <div class="item-detail">Jasmine Faustino (Pushkin Associate Publisher) left notes in the shared manuscript Google Doc. These edits must be incorporated into the 3rd mixes before upload. Check the doc: search for her comments/suggestions.</div>
+    </div>
+    <div class="item">
+      <div class="item-title">Delivery Method — LucidLink <span class="tag tag-gio">GIO</span></div>
+      <div class="item-detail">Upload completed 3rd mixes to LucidLink (Pushkin's cloud platform). Confirm access is still active.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- CHAPTER-BY-CHAPTER READINESS -->
+<!-- ============================================ -->
+<div class="section blue">
+  <div class="section-header">📋 Chapter Readiness for 3rd Mix Delivery</div>
+  <div class="section-body">
+    <table>
+      <tr><th>Chapter</th><th>AI Status</th><th>3rd Mix Ready?</th><th>Notes</th></tr>
+      <tr><td>Prologue</td><td class="status-spot">Spot Fix</td><td>Almost</td><td>Minor AI segment to replace</td></tr>
+      <tr><td>Preface</td><td class="status-spot">Spot Fix</td><td>Almost</td><td>Neve 1073 signal chain — do not re-process to match other chapters</td></tr>
+      <tr><td>Foreword</td><td class="status-spot">Spot Fix</td><td>Almost</td><td>Quick patch needed</td></tr>
+      <tr><td>Ch1</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply Ch16/Ch25 treatment, incorporate Jasmine's notes</td></tr>
+      <tr><td>Ch2</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply treatment + notes</td></tr>
+      <tr><td>Ch3</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply treatment + notes</td></tr>
+      <tr><td>Ch4</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply treatment + notes</td></tr>
+      <tr><td>Ch5</td><td class="status-near">Near-Clean</td><td>✅ Yes</td><td>Trivial artifact, not AI</td></tr>
+      <tr><td>Ch6</td><td class="status-spot">Spot Fix</td><td>Almost</td><td>v5 delivered Apr 8. Integrate Apr 2-3 pickups. Dan's 11 edit notes addressed.</td></tr>
+      <tr><td>Ch7</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply treatment + notes</td></tr>
+      <tr><td>Ch8</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply treatment + notes</td></tr>
+      <tr><td>Ch9</td><td class="status-spot">Spot Fix</td><td>Almost</td><td>Apr 2-3 pickups recorded — integrate</td></tr>
+      <tr><td style="color:#f85149; font-weight:700;">Ch10</td><td class="status-rework">🔴 Rework</td><td>❌ No</td><td>55 AI files (15-20%). Needs pickup session — NOT yet recorded.</td></tr>
+      <tr><td style="color:#f85149; font-weight:700;">Ch11</td><td class="status-rework">🔴 Rework</td><td>❌ No</td><td>17 ElevenLabs segments (~7 min). Needs pickup session — NOT yet recorded.</td></tr>
+      <tr><td style="color:#bc8cff;">Ch12</td><td class="status-dan">Needs Dan</td><td>⏸ Blocked</td><td>Awaiting project version confirmation from Dan</td></tr>
+      <tr><td style="color:#f85149; font-weight:700;">Ch13</td><td class="status-rework">🔴 Rework</td><td>❌ No</td><td>63 AI files (18%). Apr 2–3 pickups in Dropbox — integrate. May still need pickup session for remaining gaps.</td></tr>
+      <tr><td>Ch14</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply treatment + notes</td></tr>
+      <tr><td style="color:#bc8cff;">Ch15</td><td class="status-dan">Needs Dan</td><td>⏸ Blocked</td><td>Apr 2-3 pickups exist but project version unconfirmed</td></tr>
+      <tr><td>Ch16</td><td class="status-near">Near-Clean</td><td>✅ Yes</td><td>THIS IS THE TREATMENT STANDARD</td></tr>
+      <tr><td>Ch17</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply treatment + notes</td></tr>
+      <tr><td>Ch18</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply treatment + notes</td></tr>
+      <tr><td>Ch19</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apr 2-3 pickups recorded — integrate</td></tr>
+      <tr><td>Ch20</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply treatment + notes</td></tr>
+      <tr><td style="color:#8b949e;">Ch21</td><td class="status-unknown">Unverifiable</td><td>⏸ Blocked</td><td>Flattened stereo — Dan must decide: accept or rebuild</td></tr>
+      <tr><td>Ch22</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply treatment + notes</td></tr>
+      <tr><td>Ch23</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply treatment + notes</td></tr>
+      <tr><td>Ch24</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>Apply treatment + notes</td></tr>
+      <tr><td>Ch25 + Epilogue</td><td class="status-clean">Clean</td><td>✅ Yes</td><td>THIS IS THE TREATMENT STANDARD (with Ch16)</td></tr>
+      <tr><td>Credits</td><td class="status-spot">Spot Fix</td><td>Almost</td><td>Quick AI segment replacement</td></tr>
+    </table>
+
+    <div class="note" style="margin-top:14px;">
+      <strong>Summary:</strong> ~18 chapters ready for 3rd mix (clean + near-clean, just need treatment pass + Jasmine's notes). 7 chapters need quick spot fixes. 3 chapters (Ch10/11/13) need significant work — tomorrow's session is make-or-break. 3 chapters blocked on Dan.
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ADMIN -->
+<!-- ============================================ -->
+<div class="section yellow">
+  <div class="section-header">🟡 ADMIN — Communications & Housekeeping</div>
+  <div class="section-body">
+    <div class="item">
+      <div class="item-title">Reply to Jasmine Faustino <span class="tag tag-gio">GIO</span></div>
+      <div class="item-detail">Acknowledge her Google Doc notes. Confirm they'll be incorporated into the 3rd mixes.</div>
+    </div>
+    <div class="item">
+      <div class="item-title">Descript Project Sharing Decision <span class="tag tag-dan">DAN</span></div>
+      <div class="item-detail">Pushkin requested access via itaccounts@pushkin.fm. Sharing exposes AI edit history. Dan must decide before 3rd mix delivery.</div>
+    </div>
+    <div class="item">
+      <div class="item-title">Verify LucidLink Access <span class="tag tag-gio">GIO</span></div>
+      <div class="item-detail">Confirm upload credentials still active before delivery day.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- DELIVERY CHECKLIST -->
+<!-- ============================================ -->
+<div class="section green">
+  <div class="section-header">✅ Per-Chapter Delivery Checklist (Before Upload)</div>
+  <div class="section-body" style="font-size:0.9rem;">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+      <div>☐ Studio Sound <strong>OFF</strong> in Descript</div>
+      <div>☐ No AI-generated voice content</div>
+      <div>☐ No AI content in sound library</div>
+      <div>☐ Matches Ch16/Ch25 treatment standard</div>
+      <div>☐ Jasmine's Google Doc notes incorporated</div>
+      <div>☐ Edit artifacts cleaned (breaths, clicks, timing)</div>
+      <div>☐ Room tone present — not stripped</div>
+      <div>☐ Bounced from Pro Tools final session</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Shaping Sounds &bull; Pushkin Industries &bull; Release: May 19, 2026 &bull; Report generated April 10, 2026
+</div>
+
+</body>
+</html>

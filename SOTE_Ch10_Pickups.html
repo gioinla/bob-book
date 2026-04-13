@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chapter 10 — AI Replacement Pickups</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0e0e0e;color:#ddd;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;padding-bottom:80px}
+nav{position:sticky;top:0;z-index:100;background:#111;border-bottom:1px solid #222;display:flex;gap:0;flex-wrap:wrap;padding:8px 16px;align-items:center}
+nav a{color:#666;text-decoration:none;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:3px}
+nav a:hover{color:#fff;background:#1a1a1a}
+.nav-title{color:#444;font-size:10px;letter-spacing:3px;margin-right:12px}
+.page-header{padding:32px 24px 24px;border-bottom:1px solid #1a1a1a}
+.page-header h1{font-size:22px;font-weight:900;letter-spacing:2px;color:#fff;margin-bottom:4px}
+.page-header .sub{font-size:11px;letter-spacing:2px;color:#555;margin-bottom:16px}
+.page-header .lede{font-size:12px;color:#888;line-height:1.6;max-width:800px}
+section{padding:28px 24px;border-bottom:1px solid #181818}
+section h2{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:20px;padding-bottom:8px;border-bottom:1px solid #1c1c1c}
+.status-row{display:flex;gap:10px;flex-wrap:wrap;padding:16px 24px;background:#141414;border-bottom:1px solid #1a1a1a;align-items:center}
+.badge{display:inline-block;padding:4px 10px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.badge.red{background:#3a1010;color:#e05050;border:1px solid #5a2020}
+.badge.yellow{background:#2a1e00;color:#c09020;border:1px solid #4a3800}
+.badge.green{background:#0a2a0a;color:#4ec94e;border:1px solid #1a4a1a}
+.badge.teal{background:#0a2020;color:#20b0a0;border:1px solid #0a3a3a}
+.pickup-block{margin-bottom:16px;background:#141414;border-radius:6px;overflow:hidden;border:1px solid #1c1c1c}
+.pickup-header{display:grid;grid-template-columns:160px 200px 1fr;gap:0;background:#181818;border-bottom:1px solid #222}
+.pickup-ts{padding:12px 16px;font-family:monospace;font-size:14px;font-weight:900;color:#e05050;border-right:1px solid #222}
+.pickup-overdubs{padding:12px 16px;border-right:1px solid #222}
+.pickup-overdubs .label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:4px}
+.pickup-overdubs .times{font-family:monospace;font-size:12px;color:#c09020}
+.pickup-status-cell{padding:12px 16px;display:flex;align-items:center}
+.pickup-body{padding:16px}
+.pickup-text{font-size:12px;color:#999;line-height:1.9;font-style:italic}
+.pickup-text .ai-word{background:#2a0a0a;color:#e05050;padding:1px 4px;border-radius:2px;font-style:normal;font-family:monospace;font-size:11px}
+.pickup-actions{margin-top:10px;padding-top:10px;border-top:1px solid #1c1c1c;font-size:10px;color:#555;letter-spacing:0.5px}
+.pickup-actions strong{color:#888}
+.checklist{display:flex;flex-direction:column;gap:8px}
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:#141414;border-radius:4px;border-left:3px solid #333}
+.check-item.done{border-left-color:#1a4a1a;opacity:0.6}
+.check-item.pending{border-left-color:#3a2800}
+.check-item.urgent{border-left-color:#5a1a1a}
+.check-box{width:14px;height:14px;border:1px solid #444;border-radius:2px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:9px}
+.check-box.checked{background:#1a4a1a;border-color:#2a6a2a;color:#4ec94e}
+.check-text{font-size:11px;color:#888;line-height:1.5}
+.check-text strong{color:#ccc}
+.spec-table{width:100%;border-collapse:collapse}
+.spec-table td{padding:8px 12px;border-bottom:1px solid #161616;font-size:11px;vertical-align:top}
+.spec-table td:first-child{color:#555;font-size:10px;letter-spacing:1px;text-transform:uppercase;width:180px}
+.spec-table td:last-child{color:#aaa;font-family:monospace}
+.sticky-bottom{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #222;padding:8px 20px;font-size:11px;color:#555;display:flex;gap:24px;flex-wrap:wrap}
+.sticky-bottom b{color:#aaa}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">SOTE · CH10 PICKUPS</span>
+  <a href="#overview">Overview</a>
+  <a href="#pickups">Pickup Sections</a>
+  <a href="#workflow">Workflow</a>
+  <a href="#specs">Delivery Specs</a>
+</nav>
+
+<div class="page-header">
+  <h1>CHAPTER 10 — AI REPLACEMENT PICKUP SHEET</h1>
+  <div class="sub">SOURCE: DAN KAVANAUGH · GOOGLE DRIVE · APRIL 12, 2026 · 9 SECTIONS TO RE-RECORD</div>
+  <div class="lede">
+    Chapter 10 currently has <strong style="color:#e05050">19 AI-generated "BOB new pro" audio files</strong> in the active Pro Tools MIX session (<code style="color:#888">014_SOTE_chapter10</code>). These were generated via direct ElevenLabs API and have no filename timestamps. Robert Margouleff must re-record each of the following 9 passages as human pickups. After editing in the new recordings, all AI files must be removed from the session before the final print.
+  </div>
+</div>
+
+<div class="status-row">
+  <span class="badge red">19 AI Files in Active Session</span>
+  <span class="badge yellow">9 Pickup Sections Identified</span>
+  <span class="badge yellow">~2 Min Trailing Silence — Must Trim</span>
+  <span class="badge teal">Bounce Spec: 192kbps CBR · –3dBFS · –18 LUFS</span>
+</div>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <h2>Overview &amp; Session Status</h2>
+  <div class="checklist">
+    <div class="check-item urgent">
+      <div class="check-box">·</div>
+      <div class="check-text"><strong>AI files currently in active mix:</strong> 19 "BOB new pro" hash-ID files in <code>014_SOTE_chapter10 (MIX)</code> session. These are ElevenLabs API downloads from an unknown date (older API format = no timestamp in filename). They fill gaps in Robert's narration throughout the chapter.</div>
+    </div>
+    <div class="check-item urgent">
+      <div class="check-box">·</div>
+      <div class="check-text"><strong>Archive folder is empty:</strong> Ch10 has no session in the numbered archive (<code>Audio Assets/ProTools</code>). The session only exists in the active MIX folder. After the final print, archive properly.</div>
+    </div>
+    <div class="check-item urgent">
+      <div class="check-box">·</div>
+      <div class="check-text"><strong>~2 minutes of trailing silence at end of file:</strong> Audible's ingest system will reject the file if it ends with excessive silence. Must trim before delivery.</div>
+    </div>
+    <div class="check-item pending">
+      <div class="check-box">·</div>
+      <div class="check-text"><strong>Robert re-records pickups:</strong> All 9 sections below need to be recorded by Robert in the studio. Refer to the exact timestamp ranges for locating the AI sections in Pro Tools.</div>
+    </div>
+    <div class="check-item pending">
+      <div class="check-box">·</div>
+      <div class="check-text"><strong>Edit pickups into session:</strong> Once Robert's recordings arrive, cut them in to replace the AI files. Match room tone and processing to surrounding narration.</div>
+    </div>
+    <div class="check-item pending">
+      <div class="check-box">·</div>
+      <div class="check-text"><strong>Remove all 19 AI files:</strong> After confirming human pickups are in place and sounding good, remove all hash-ID BOB files from the session. Do not leave any AI audio in the deliverable.</div>
+    </div>
+    <div class="check-item pending">
+      <div class="check-box">·</div>
+      <div class="check-text"><strong>Trim trailing silence, then print final bounce.</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- PICKUPS -->
+<section id="pickups">
+  <h2>9 Pickup Sections — Timestamps + Text</h2>
+  <p style="font-size:11px;color:#666;margin-bottom:20px">Timestamps are positions in the chapter audio file. "AI overdub" = exact point where ElevenLabs audio is inserted. Robert reads the full passage; the engineer drops in the needed section.</p>
+
+  <div class="pickup-block">
+    <div class="pickup-header">
+      <div class="pickup-ts">18:08–18:23</div>
+      <div class="pickup-overdubs">
+        <div class="label">AI overdub at</div>
+        <div class="times">18:18–18:20</div>
+      </div>
+      <div class="pickup-status-cell"><span class="badge yellow">Re-record needed</span></div>
+    </div>
+    <div class="pickup-body">
+      <div class="pickup-text">…setting up the studios, upgrading and installing new equipment. A month or so before we started working with Stevie, Malcolm's wife Polly and their son Milton arrived from Toronto, Canada. The immigration process was insane and Malcolm spent a lot of time sorting it out on the phone.</div>
+      <div class="pickup-actions"><strong>Action:</strong> Robert reads from "…Malcolm's wife Polly…" through "…sorting it out on the phone." The 18:18–18:20 window is the exact AI replacement — capture enough on either side to edit cleanly.</div>
+    </div>
+  </div>
+
+  <div class="pickup-block">
+    <div class="pickup-header">
+      <div class="pickup-ts">25:28–25:47</div>
+      <div class="pickup-overdubs">
+        <div class="label">AI overdub at</div>
+        <div class="times">25:38, 25:44</div>
+      </div>
+      <div class="pickup-status-cell"><span class="badge yellow">Re-record needed</span></div>
+    </div>
+    <div class="pickup-body">
+      <div class="pickup-text">We moved into Electric Lady in November and December of 1971 and immediately picked up where we had left off at Media Sound. There were two studios, Studio A where we set up shop and Studio B. They shared a lounge with a barber's chair and a couch, some playback equipment and a pair of speakers and a reception coffee area, which was triangular and had a huge round column in the center, maybe eight feet in diameter with a bench built around it. Stevie quickly learned the studio layout and the hallways where Studio B was, where the stairs were. The layout of Studio A, the control room doors, the lounge, the bathrooms, and so on.</div>
+      <div class="pickup-actions"><strong>Action:</strong> Two AI overdubs at 25:38 and 25:44. Robert reads the full passage for best editing flexibility. Target: natural read of "Stevie quickly learned the studio layout…" section.</div>
+    </div>
+  </div>
+
+  <div class="pickup-block">
+    <div class="pickup-header">
+      <div class="pickup-ts">25:51–26:10</div>
+      <div class="pickup-overdubs">
+        <div class="label">AI overdub at</div>
+        <div class="times">26:01, 26:06</div>
+      </div>
+      <div class="pickup-status-cell"><span class="badge yellow">Re-record needed</span></div>
+    </div>
+    <div class="pickup-body">
+      <div class="pickup-text">It wasn't long before he was moving around happily and confidently on his own. Malcolm and I made sure that we gave him an auditory picture anytime we made changes to the studio and that he knew where any microphone stands were. As always, we kept the mic booms high so that he wouldn't walk into them and get clobbered by those or any other unpredictable obstructions. The studio's architecture played a part.</div>
+      <div class="pickup-actions"><strong>Action:</strong> Two AI overdubs 5 seconds apart at 26:01 and 26:06. Read the full passage; edit in the needed 19-second section.</div>
+    </div>
+  </div>
+
+  <div class="pickup-block">
+    <div class="pickup-header">
+      <div class="pickup-ts">26:31–26:47</div>
+      <div class="pickup-overdubs">
+        <div class="label">AI overdub at</div>
+        <div class="times">26:41</div>
+      </div>
+      <div class="pickup-status-cell"><span class="badge yellow">Re-record needed</span></div>
+    </div>
+    <div class="pickup-body">
+      <div class="pickup-text">The studio glass disappeared, and I could see that Stevie felt right at home, as did Malcolm and I. There were no restrictions at Electric Lady. I never felt tired. It didn't matter if we needed to work three days in a row, leave a mix on the console or stay set up in the studio. They bent over backwards to make it happen. Eddie Kramer had installed an off-brand data mix recording console, some great studio monitors, and a ton of custom equipment.</div>
+      <div class="pickup-actions"><strong>Action:</strong> Single AI overdub at 26:41 within a 16-second window. Read the full passage for context; cut in cleanly around 26:41.</div>
+    </div>
+  </div>
+
+  <div class="pickup-block">
+    <div class="pickup-header">
+      <div class="pickup-ts">27:35–27:49</div>
+      <div class="pickup-overdubs">
+        <div class="label">AI overdub at</div>
+        <div class="times">27:45</div>
+      </div>
+      <div class="pickup-status-cell"><span class="badge yellow">Re-record needed</span></div>
+    </div>
+    <div class="pickup-body">
+      <div class="pickup-text">We kept several of our own clients, mostly commercials and acts on Richie Havens' record label, but we were employed mainly by Stevie. By good fortune, Malcolm and I both found spacious two-bedroom apartments in a lovely pre-World War II building at the corner of 72nd Street and Broadway. My second bedroom and living room became our new production offices.</div>
+      <div class="pickup-actions"><strong>Action:</strong> Single AI overdub at 27:45 within a 14-second window. This is a short passage — read the whole thing for a clean edit.</div>
+    </div>
+  </div>
+
+  <div class="pickup-block">
+    <div class="pickup-header">
+      <div class="pickup-ts">28:20–28:41</div>
+      <div class="pickup-overdubs">
+        <div class="label">AI overdub at</div>
+        <div class="times">28:30, 28:33, 28:38</div>
+      </div>
+      <div class="pickup-status-cell"><span class="badge red">3 overdubs — Longest section</span></div>
+    </div>
+    <div class="pickup-body">
+      <div class="pickup-text">Women were relegated to the front desk, business offices and public relations roles. Joan became one of the first female engineers in the studio world and went on to have a very successful career long after her work with us. The other blessing was that we never heard a word from Stevie about being over budget or anything like that. He allowed us to concentrate on the music without worrying about whether or not we'd be able to pay the bills or put food on the table. After we moved into the lady and established ourselves there, John Stork showed up and introduced himself. That night began a friendship that has endured for more than 50 years.</div>
+      <div class="pickup-actions"><strong>Action:</strong> Three AI overdubs at 28:30, 28:33, and 28:38 — clustered close together in a 21-second window. Most complex pickup. Robert should read the entire passage in one take for best edit flexibility. Pay attention to the Joan paragraph — that's where all three hits live.</div>
+    </div>
+  </div>
+
+  <div class="pickup-block">
+    <div class="pickup-header">
+      <div class="pickup-ts">28:48–29:02</div>
+      <div class="pickup-overdubs">
+        <div class="label">AI overdub at</div>
+        <div class="times">28:58</div>
+      </div>
+      <div class="pickup-status-cell"><span class="badge yellow">Re-record needed</span></div>
+    </div>
+    <div class="pickup-body">
+      <div class="pickup-text">To this day, I often think of music from an architectural perspective and compare creating a recording to designing a house. Each sound is like a separate room with its own form, furnishing and colors. Once you piece that together, the house itself takes shape. Then you need to think about how the recording fits with everything else you'd ask.</div>
+      <div class="pickup-actions"><strong>Action:</strong> Single AI overdub at 28:58. Short 14-second passage — read completely for one clean human take.</div>
+    </div>
+  </div>
+
+  <div class="pickup-block">
+    <div class="pickup-header">
+      <div class="pickup-ts">29:02–29:25</div>
+      <div class="pickup-overdubs">
+        <div class="label">AI overdub at</div>
+        <div class="times">29:13 <span style="color:#e05050;font-size:10px">(ElevenLabs)</span></div>
+      </div>
+      <div class="pickup-status-cell"><span class="badge yellow">Re-record needed</span></div>
+    </div>
+    <div class="pickup-body">
+      <div class="pickup-text">John Stork is an incredible pianist, for example, and I know that his musical ear was invaluable to his success designing recording studios. We were impressed with John's design of the studio. As our friendship grew, he told us how he was influenced by classical architects like Antonio Gaudí and Frederick Keisler, who by coincidence had designed the facade and the auditorium of the theater that occupied the ground floor above Electric Lady. The studio was in the basement and took up three additional floors above the theater.</div>
+      <div class="pickup-actions"><strong>Action:</strong> ElevenLabs AI insert at 29:13 within a 23-second window. John Stork / Electric Lady architecture passage. Robert reads for human replacement.</div>
+    </div>
+  </div>
+
+  <div class="pickup-block">
+    <div class="pickup-header">
+      <div class="pickup-ts">30:25–30:39</div>
+      <div class="pickup-overdubs">
+        <div class="label">AI overdub at</div>
+        <div class="times">30:35</div>
+      </div>
+      <div class="pickup-status-cell"><span class="badge yellow">Re-record needed</span></div>
+    </div>
+    <div class="pickup-body">
+      <div class="pickup-text">We were there for Music of My Mind, Talking Book, Inner Visions, and Fulfillingness' First Finale. Parts of our work together ended up on songs in The Key of Life too, but we were never credited. The best way for me to share the stories from that time is to look first at the processes and the way we pushed musical boundaries together. After that, I'll let my highlights from each of the records we created take center stage.</div>
+      <div class="pickup-actions"><strong>Action:</strong> Final pickup — single AI overdub at 30:35. This passage names the Stevie Wonder albums. Read the full closing paragraph for a clean chapter ending.</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- WORKFLOW -->
+<section id="workflow">
+  <h2>Recording + Editing Workflow</h2>
+  <div class="checklist">
+    <div class="check-item pending">
+      <div class="check-box">1</div>
+      <div class="check-text"><strong>Book studio time with Robert.</strong> Nine passages across the chapter — probably 1–2 recording sessions. Have Robert warm up on each passage before the take.</div>
+    </div>
+    <div class="check-item pending">
+      <div class="check-box">2</div>
+      <div class="check-text"><strong>Open active session:</strong> <code>BOB BOOK / MIX / 014_SOTE_chapter10 (MIX)</code>. Locate each AI region in the timeline using the timestamps above. Mute or solo to confirm you're hearing the right segments.</div>
+    </div>
+    <div class="check-item pending">
+      <div class="check-box">3</div>
+      <div class="check-text"><strong>Record Robert's pickups</strong> on a new track. Record each passage with a bit of lead-in and lead-out for clean editing. Use the same mic/chain as the rest of the chapter narration.</div>
+    </div>
+    <div class="check-item pending">
+      <div class="check-box">4</div>
+      <div class="check-text"><strong>Edit human pickups into place.</strong> Comp the best take for each section. Match room tone, breath timing, and processing (RX, EQ, compression) to surrounding narration. The existing AI files will have Dialogue Match or Ozone processing — match that treatment to the human replacement.</div>
+    </div>
+    <div class="check-item pending">
+      <div class="check-box">5</div>
+      <div class="check-text"><strong>Remove all 19 AI hash-ID files from the session</strong> once pickups are confirmed. Make a session backup before removing — keep the AI assets in a separate folder for reference/chain of custody.</div>
+    </div>
+    <div class="check-item pending">
+      <div class="check-box">6</div>
+      <div class="check-text"><strong>Trim trailing silence.</strong> The current file has ~2 minutes of silence at the end. Remove it before the final print bounce — Audible will reject the file otherwise.</div>
+    </div>
+    <div class="check-item pending">
+      <div class="check-box">7</div>
+      <div class="check-text"><strong>Print final bounce</strong> to the FINAL PRINTS folder. See delivery specs below.</div>
+    </div>
+    <div class="check-item pending">
+      <div class="check-box">8</div>
+      <div class="check-text"><strong>Archive session properly.</strong> Ch10 currently has no session in <code>Audio Assets/ProTools</code> numbered archive — the archive folder is empty. After printing, make a proper archived copy.</div>
+    </div>
+  </div>
+</section>
+
+<!-- DELIVERY SPECS -->
+<section id="specs">
+  <h2>Delivery Specs — Audible Requirements</h2>
+  <table class="spec-table">
+    <tr><td>Format</td><td>MP3, Constant Bit Rate (CBR)</td></tr>
+    <tr><td>Bit Rate</td><td>192 kbps CBR</td></tr>
+    <tr><td>Peak Level</td><td>–3 dBFS (hard limit — do not exceed)</td></tr>
+    <tr><td>Integrated Loudness</td><td>–18 LUFS (Audible standard)</td></tr>
+    <tr><td>Trailing Silence</td><td>Trim to ≤ 1 sec at end of file — ~2 min is present now and WILL cause rejection</td></tr>
+    <tr><td>Sample Rate</td><td>Match session (typically 48kHz or 44.1kHz — confirm with existing bounces)</td></tr>
+    <tr><td>Output Folder</td><td>Dropbox / Giorgio Bertuccelli / BOB BOOK / FINAL PRINTS /</td></tr>
+  </table>
+</section>
+
+<div class="sticky-bottom">
+  <span>CH10 PICKUPS · APRIL 12 2026</span>
+  <span><b>9</b> sections to re-record</span>
+  <span><b>19</b> AI files to remove after pickups</span>
+  <span><b>⚠</b> Trim ~2min trailing silence before print</span>
+</div>
+
+</body>
+</html>

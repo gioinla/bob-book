@@ -1,0 +1,181 @@
+<!--
+  A NEW DAWN FOR AN OLD WORLD — Landing Page
+  For WordPress: paste into a Custom HTML block on a full-width page template.
+  Or use as standalone HTML.
+-->
+<style>
+  .anewdawn-page { font-family: 'Georgia', 'Times New Roman', serif; color: #1a1a1a; max-width: 860px; margin: 0 auto; padding: 40px 24px; line-height: 1.7; }
+  .anewdawn-page * { box-sizing: border-box; }
+
+  /* HERO */
+  .anewdawn-hero { text-align: center; padding: 80px 20px 60px; border-bottom: 3px solid #1a1a1a; margin-bottom: 50px; }
+  .anewdawn-hero h1 { font-size: 42px; font-weight: 400; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 12px; color: #1a1a1a; }
+  .anewdawn-hero .subtitle { font-size: 20px; font-style: italic; color: #666; margin-bottom: 30px; }
+  .anewdawn-hero .tagline { font-size: 26px; font-weight: 400; color: #333; line-height: 1.5; max-width: 600px; margin: 0 auto 20px; }
+  .anewdawn-hero .coming { display: inline-block; margin-top: 24px; padding: 10px 28px; border: 2px solid #1a1a1a; font-family: Arial, sans-serif; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: #1a1a1a; text-decoration: none; }
+  .anewdawn-hero .coming:hover { background: #1a1a1a; color: #fff; }
+
+  /* TEASE BLOCK */
+  .anewdawn-tease { padding: 40px 0; text-align: center; }
+  .anewdawn-tease p { font-size: 19px; color: #444; max-width: 640px; margin: 0 auto 18px; }
+  .anewdawn-tease .em { font-style: italic; color: #888; font-size: 17px; }
+
+  /* DIVIDER */
+  .anewdawn-divider { width: 60px; height: 2px; background: #ccc; margin: 50px auto; }
+
+  /* THE PROJECT */
+  .anewdawn-project { padding: 30px 0; }
+  .anewdawn-project h2 { font-size: 28px; font-weight: 400; letter-spacing: 1px; text-align: center; margin-bottom: 24px; color: #1a1a1a; }
+  .anewdawn-project .book-info { text-align: center; margin-bottom: 30px; }
+  .anewdawn-project .book-title { font-size: 24px; font-style: italic; color: #0d47a1; }
+  .anewdawn-project .book-author { font-size: 18px; color: #555; margin-top: 4px; }
+  .anewdawn-project .book-detail { font-size: 16px; color: #888; margin-top: 4px; }
+  .anewdawn-project .desc { font-size: 18px; color: #444; max-width: 640px; margin: 0 auto 24px; text-align: center; }
+
+  /* LINKS SECTION */
+  .anewdawn-links { padding: 30px 0; }
+  .anewdawn-links h2 { font-size: 24px; font-weight: 400; letter-spacing: 1px; text-align: center; margin-bottom: 30px; color: #1a1a1a; }
+  .anewdawn-link-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 700px; margin: 0 auto; }
+  .anewdawn-link-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; text-decoration: none; color: #1a1a1a; transition: all 0.2s; }
+  .anewdawn-link-card:hover { border-color: #0d47a1; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .anewdawn-link-card .source { font-family: Arial, sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 6px; }
+  .anewdawn-link-card .title { font-size: 16px; font-weight: bold; color: #0d47a1; margin-bottom: 4px; }
+  .anewdawn-link-card .blurb { font-size: 14px; color: #666; }
+
+  /* PEOPLE */
+  .anewdawn-people { padding: 30px 0; text-align: center; }
+  .anewdawn-people h2 { font-size: 24px; font-weight: 400; letter-spacing: 1px; margin-bottom: 24px; color: #1a1a1a; }
+  .anewdawn-people .person { margin-bottom: 16px; }
+  .anewdawn-people .person-name { font-size: 18px; font-weight: bold; color: #1a1a1a; }
+  .anewdawn-people .person-role { font-size: 15px; color: #777; }
+  .anewdawn-people a { color: #0d47a1; text-decoration: none; }
+  .anewdawn-people a:hover { text-decoration: underline; }
+
+  /* FOOTER */
+  .anewdawn-footer { text-align: center; padding: 40px 0 20px; border-top: 1px solid #ddd; margin-top: 50px; }
+  .anewdawn-footer p { font-size: 14px; color: #999; }
+  .anewdawn-footer a { color: #0d47a1; text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .anewdawn-hero h1 { font-size: 28px; letter-spacing: 1px; }
+    .anewdawn-hero .tagline { font-size: 20px; }
+    .anewdawn-link-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="anewdawn-page">
+
+  <!-- HERO -->
+  <div class="anewdawn-hero">
+    <h1>A New Dawn<br>for an Old World</h1>
+    <div class="subtitle">A workflow. A discovery. A gift.</div>
+    <div class="tagline">Two producers used AI to find AI &mdash; and built a new way to work together in the process.</div>
+    <a href="#project" class="coming">The story &darr;</a>
+  </div>
+
+  <!-- TEASE -->
+  <div class="anewdawn-tease">
+    <p>While engineering the audiobook for Grammy-winning producer <strong>Robert Margouleff</strong>, we discovered something we didn&rsquo;t expect.</p>
+    <p>Not just a problem to solve &mdash; but a new model for how producers, engineers, and creative teams can share intelligence, make decisions, and work transparently in the age of AI.</p>
+    <p class="em">This is not a product. It&rsquo;s a workflow &mdash; and we&rsquo;re giving it away.</p>
+  </div>
+
+  <div class="anewdawn-divider"></div>
+
+  <!-- THE PROJECT -->
+  <div class="anewdawn-project" id="project">
+    <h2>The Project</h2>
+    <div class="book-info">
+      <div class="book-title">&ldquo;Shaping Sounds&rdquo;</div>
+      <div class="book-author">by Robert Margouleff with Jim Reilly</div>
+      <div class="book-detail">Foreword by Mark Mothersbaugh &middot; Jawbone Press &middot; May 19, 2026</div>
+      <div class="book-detail">Audiobook by Pushkin Industries</div>
+    </div>
+    <p class="desc">Stevie Wonder. DEVO. The Synth Revolution. The memoir of the man who built TONTO and helped create some of the greatest albums in music history.</p>
+    <p class="desc">During production, we were asked to audit the audiobook for AI-generated content under SAG-AFTRA compliance. What we built to do that &mdash; a system of linked documents, highlighted scripts, and triangulated source material &mdash; became something bigger than we anticipated.</p>
+    <p class="desc"><strong>Full case study coming soon.</strong></p>
+  </div>
+
+  <div class="anewdawn-divider"></div>
+
+  <!-- PRESS & LINKS -->
+  <div class="anewdawn-links">
+    <h2>In the Press</h2>
+    <div class="anewdawn-link-grid">
+      <a href="https://www.mixonline.com/technology/news-products/robert-margouleff-shaping-sounds-memoir-lands-in-may" target="_blank" class="anewdawn-link-card">
+        <div class="source">Mix Magazine</div>
+        <div class="title">Margouleff&rsquo;s &lsquo;Shaping Sounds&rsquo; Memoir Arrives In May</div>
+        <div class="blurb">The industry publication on the book&rsquo;s release.</div>
+      </a>
+      <a href="https://wildfiremusic.net/2026/03/02/robert-margouleff-memoir-shaping-sounds-reflects-on-innovation-and-the-synth-revolution/" target="_blank" class="anewdawn-link-card">
+        <div class="source">Wildfire Music</div>
+        <div class="title">Reflects On Innovation And The Synth Revolution</div>
+        <div class="blurb">Feature on the memoir and Margouleff&rsquo;s legacy.</div>
+      </a>
+      <a href="https://www.musicradar.com/news/robert-margouleff-interview" target="_blank" class="anewdawn-link-card">
+        <div class="source">MusicRadar</div>
+        <div class="title">&ldquo;It only plays one note at a time!&rdquo;</div>
+        <div class="blurb">The first time Stevie Wonder touched TONTO.</div>
+      </a>
+      <a href="https://www.pushkin.fm/podcasts/broken-record/wesley-morris-robert-margouleff-on-stevie-wonder" target="_blank" class="anewdawn-link-card">
+        <div class="source">Broken Record Podcast</div>
+        <div class="title">Wesley Morris &amp; Margouleff on Stevie Wonder</div>
+        <div class="blurb">With Rick Rubin &amp; Malcolm Gladwell. Pushkin.</div>
+      </a>
+      <a href="https://musictech.com/news/music/stevie-wonder-tonto-synth-robert-margouleff/" target="_blank" class="anewdawn-link-card">
+        <div class="source">MusicTech</div>
+        <div class="title">Stevie Wonder&rsquo;s First Encounter with TONTO</div>
+        <div class="blurb">The story behind the synth that changed music.</div>
+      </a>
+      <a href="https://floodmagazine.com/86589/the-man-machine-robert-margouleff-on-malcolm-cecil/" target="_blank" class="anewdawn-link-card">
+        <div class="source">FLOOD Magazine</div>
+        <div class="title">The Man Machine: Remembering Malcolm Cecil</div>
+        <div class="blurb">Margouleff on his creative partner.</div>
+      </a>
+      <a href="https://www.amazon.com/Shaping-Sounds-Stevie-Wonder-Revolution/dp/1916829287" target="_blank" class="anewdawn-link-card">
+        <div class="source">Amazon</div>
+        <div class="title">Pre-order the Book</div>
+        <div class="blurb">Shaping Sounds &mdash; available May 19, 2026.</div>
+      </a>
+      <a href="https://www.pushkin.fm/audiobooks/shaping-sounds-stevie-wonder-devo-the-synth-revolution-and-my-life-behind-the-music" target="_blank" class="anewdawn-link-card">
+        <div class="source">Pushkin Industries</div>
+        <div class="title">Listen to the Audiobook</div>
+        <div class="blurb">Read by the author. 11 hours.</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="anewdawn-divider"></div>
+
+  <!-- PEOPLE -->
+  <div class="anewdawn-people">
+    <h2>The Team</h2>
+    <div class="person">
+      <div class="person-name"><a href="https://www.margouleff.com/" target="_blank">Robert Margouleff</a></div>
+      <div class="person-role">Author &middot; Grammy Award-winning producer &middot; Creator of TONTO</div>
+    </div>
+    <div class="person">
+      <div class="person-name">Dan Kavanaugh</div>
+      <div class="person-role">Producer &middot; Manager</div>
+    </div>
+    <div class="person">
+      <div class="person-name">Gio Bertuccelli</div>
+      <div class="person-role">Audio Engineer &middot; AI Workflow Design</div>
+    </div>
+    <div class="person">
+      <div class="person-name"><a href="https://www.jimreilly.ca/" target="_blank">Jim Reilly</a></div>
+      <div class="person-role">Co-author</div>
+    </div>
+  </div>
+
+  <div class="anewdawn-divider"></div>
+
+  <!-- FOOTER -->
+  <div class="anewdawn-footer">
+    <p><strong>A New Dawn for an Old World</strong></p>
+    <p>A workflow for the AI era &mdash; discovered in production, shared freely.</p>
+    <p style="margin-top: 16px;">Contact: <a href="mailto:giosoundmusic@gmail.com">giosoundmusic@gmail.com</a></p>
+    <p style="margin-top: 8px; font-size: 12px; color: #bbb;">&copy; 2026</p>
+  </div>
+
+</div>

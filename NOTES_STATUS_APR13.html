@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes Status — What's Done, What's Not</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0a0a0a;
+    color: #e0e0e0;
+    padding: 24px 18px 60px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 24px; font-weight: 800; color: #fff; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .meta { font-size: 13px; color: #555; margin-bottom: 32px; }
+
+  .section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: #444; margin: 32px 0 12px;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left; padding: 8px 12px;
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: #444;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  td { padding: 10px 12px; border-bottom: 1px solid #141414; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { font-weight: 700; color: #fff; white-space: nowrap; width: 90px; }
+
+  .done { color: #3fb950; font-weight: 700; }
+  .open { color: #ff6b57; font-weight: 700; }
+  .blocked { color: #bc8cff; font-weight: 700; }
+  .partial { color: #d29922; font-weight: 700; }
+
+  .block {
+    background: #111; border: 1px solid #1e1e1e; border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 10px;
+  }
+  .block-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .block-detail { font-size: 13px; color: #666; line-height: 1.55; }
+  .block-detail strong { color: #999; }
+  .block.done-block { border-color: #1a3a1e; background: #060e07; }
+  .block.open-block { border-color: #3a1010; background: #0e0606; }
+  .block.warn-block { border-color: #2a2000; background: #0c0b04; }
+  .block.blocked-block { border-color: #2a1a3a; background: #0e0814; }
+
+  .status-pill {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 4px; margin-bottom: 6px;
+  }
+  .pill-done { background: #0d2214; color: #3fb950; border: 1px solid #1a5530; }
+  .pill-open { background: #2a0808; color: #ff6b57; border: 1px solid #5a1a1a; }
+  .pill-blocked { background: #1a0a2a; color: #bc8cff; border: 1px solid #3a1a5a; }
+  .pill-partial { background: #2a2000; color: #d29922; border: 1px solid #5a4400; }
+  .pill-warn { background: #2a1500; color: #ff9933; border: 1px solid #5a3000; }
+
+  .divider { height: 1px; background: #181818; margin: 36px 0; }
+  .note-box {
+    background: #0e0e14; border: 1px solid #1e1e2e; border-radius: 10px;
+    padding: 14px 16px; font-size: 13px; color: #666; line-height: 1.6; margin-top: 8px;
+  }
+  .note-box strong { color: #888; }
+  .footer { margin-top: 48px; text-align: center; font-size: 11px; color: #2a2a2a; text-transform: uppercase; letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+
+<h1>Notes Status — What's Done, What's Not</h1>
+<div class="meta">Apr 13, 2026 &bull; Compiled from all source docs + session history</div>
+
+<!-- ============ PICKUP FILES ============ -->
+<div class="section-label">🎙 Pickup Recordings</div>
+
+<div class="block done-block">
+  <div class="status-pill pill-done">✓ Done — Files In Dropbox</div>
+  <div class="block-title">Apr 2–3 Pickups — Organized & Ready</div>
+  <div class="block-detail">
+    All Apr 2–3 WAVs have been copied into <strong>BOB BOOK / PICKUP_IMPORTS_APR2026 /</strong> sorted by chapter. Just drag into PT.<br><br>
+    Ch6 (4 files) · Ch9 (2 takes) · Ch13 (1 WAV, Apr 2) · Ch15 (2 takes) · Ch19 (sample + 2 takes)
+  </div>
+</div>
+
+<div class="block open-block">
+  <div class="status-pill pill-open">NOT YET DONE</div>
+  <div class="block-title">2nd Pickup Session — Still Needs to Be Scheduled</div>
+  <div class="block-detail">
+    No second session has happened yet. Still needs to be booked with Robert + Mark Allen Hall.<br><br>
+    <strong>Must record:</strong> Ch10 (55 AI files, biggest job), Ch11 (17 ElevenLabs segments ~7 min), Ch13 gaps.<br>
+    <strong>Quick spot fixes (~63 sec total):</strong> Prologue (5s), Ch4B (8s), Ch17 (35s), Ch18 (11s), Epilogue (2s), End Credits (2s).<br><br>
+    This session is critical. Without it, Ch10, Ch11, and several spot-fix chapters cannot be delivered.
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ AI COMPLIANCE ============ -->
+<div class="section-label">🤖 AI Compliance — Chapter by Chapter</div>
+
+<table>
+  <tr><th>Chapter</th><th>Status</th><th>Notes</th></tr>
+  <tr><td>Prologue</td><td><span class="open">OPEN</span></td><td>4 TTS segments (~5 sec). Needs 2nd pickup session to record replacement lines.</td></tr>
+  <tr><td>Ch1–5</td><td><span class="done">CLEAN</span></td><td>No AI. Ready for treatment pass + Jasmine notes.</td></tr>
+  <tr><td>Ch4B</td><td><span class="open">OPEN</span></td><td>ElevenLabs "BOB new pro" (~8 sec). Needs 2nd pickup session. Library cleanup also needed (strip ElevenLabs files).</td></tr>
+  <tr><td>Ch6</td><td><span class="partial">PARTIAL</span></td><td>Apr 2–3 pickups in Dropbox ✓ (in PICKUP_IMPORTS_APR2026). v4c/v4d mix done. Import pickups into final PT session.</td></tr>
+  <tr><td>Ch7–8</td><td><span class="done">CLEAN</span></td><td>No AI. Ready.</td></tr>
+  <tr><td>Ch9</td><td><span class="partial">PARTIAL</span></td><td>Apr 2–3 pickups in Dropbox ✓. Had 2.8s spot fix — verify pickups covered it. Also: is there a 9B? (Dan to confirm)</td></tr>
+  <tr><td>Ch10</td><td><span class="open">OPEN</span></td><td>55 AI files / 15–20%. Biggest chapter. Needs 2nd pickup session — nothing recorded yet.</td></tr>
+  <tr><td>Ch11</td><td><span class="open">OPEN</span></td><td>17 ElevenLabs segments (~7 min). Needs 2nd pickup session. Check "Duplicates_Removed" comp first.</td></tr>
+  <tr><td>Ch12</td><td><span class="blocked">BLOCKED</span></td><td>Two Descript projects exist. Dan must confirm which is the deliverable.</td></tr>
+  <tr><td>Ch13</td><td><span class="partial">PARTIAL</span></td><td>Apr 2 pickups in Dropbox ✓. Was 18% AI — pickups may cover some gaps. May still need 2nd session for remaining lines.</td></tr>
+  <tr><td>Ch14</td><td><span class="done">CLEAN</span></td><td>No AI. Ready.</td></tr>
+  <tr><td>Ch15</td><td><span class="blocked">BLOCKED</span></td><td>Pickups done + in Dropbox ✓. Blocked: Dan must confirm which Descript project is the source.</td></tr>
+  <tr><td>Ch16</td><td><span class="done">CLEAN</span></td><td>Gold standard. No action. (Crash recovery session found — verify current session is intact.)</td></tr>
+  <tr><td>Ch17</td><td><span class="open">OPEN</span></td><td>~35 sec AI passage. Needs 2nd pickup session to record replacement.</td></tr>
+  <tr><td>Ch18</td><td><span class="open">OPEN</span></td><td>~11 sec AI segment. Needs 2nd pickup session. Also: unlicensable song — remove and replace with cleared music.</td></tr>
+  <tr><td>Ch19</td><td><span class="partial">PARTIAL</span></td><td>Apr 2–3 pickups in Dropbox ✓. Had 2.8s spot fix — verify pickups covered it. Integrate into PT.</td></tr>
+  <tr><td>Ch20</td><td><span class="done">CLEAN</span></td><td>No AI. Ready.</td></tr>
+  <tr><td>Ch21</td><td><span class="blocked">BLOCKED</span></td><td>Flattened stereo. Cannot audit. Dan must decide: deliver as-is OR full rebuild from RAW Descript project.</td></tr>
+  <tr><td>Ch22–24</td><td><span class="done">CLEAN</span></td><td>No AI. Ch24: use RAW project only (not edited version). Library cleanup + trim trailing silence needed.</td></tr>
+  <tr><td>Ch25</td><td><span class="done">CLEAN</span></td><td>Gold standard. AI voice session EXISTS but is separate — do NOT deliver that one.</td></tr>
+  <tr><td>Epilogue</td><td><span class="open">OPEN</span></td><td>~2 sec AI bit. Needs 2nd pickup session. Also: AI session exists — do NOT deliver. No human narration PT session found.</td></tr>
+  <tr><td>End Credits</td><td><span class="open">OPEN</span></td><td>~2 sec AI segment. Needs 2nd pickup session. PT session folder exists — confirm .ptx file is there.</td></tr>
+  <tr><td>Acknowledgements</td><td><span class="open">OPEN</span></td><td>No PT session, no MP3 found anywhere. Needs to be created from scratch.</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- ============ DAN DECISIONS ============ -->
+<div class="section-label">🟣 Dan Decisions — Still Blocking</div>
+
+<div class="block blocked-block">
+  <div class="block-title">Ch12 & Ch15 — Which Descript project?</div>
+  <div class="block-detail">Two versions exist for both. Cannot build PT sessions until Dan confirms the canonical one.</div>
+</div>
+<div class="block blocked-block">
+  <div class="block-title">Ch21 — Accept flattened or rebuild?</div>
+  <div class="block-detail">Flattened stereo, can't audit AI. Dan decides.</div>
+</div>
+<div class="block blocked-block">
+  <div class="block-title">Ch9 — Is there a 9B?</div>
+  <div class="block-detail">Scorecard flags this as an open question. Dan to confirm.</div>
+</div>
+<div class="block blocked-block">
+  <div class="block-title">Ch25 + Epilogue — AI voice sessions</div>
+  <div class="block-detail">AI voice sessions exist for both. Are these being re-recorded by Robert, or is AI delivery cleared with Pushkin?</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ LEGAL ============ -->
+<div class="section-label">⚖️ Legal — Must Resolve Before Delivery</div>
+
+<table>
+  <tr><th>Chapter</th><th>Status</th><th>Issue</th></tr>
+  <tr><td>Ch3</td><td><span class="open">OPEN</span></td><td>Beethoven recording — confirm which version, get clearance or replace</td></tr>
+  <tr><td>Ch12</td><td><span class="open">OPEN</span></td><td>Stevie Wonder clips — must stay under 60 sec total per song. Time and cut if over.</td></tr>
+  <tr><td>Ch14</td><td><span class="open">OPEN</span></td><td>Grammy footage reference — possible rights issue. Remove or replace segment.</td></tr>
+  <tr><td>Ch15</td><td><span class="open">OPEN</span></td><td>Charles Bukowski poem — copyright unclear. Confirm fair use or remove.</td></tr>
+  <tr><td>Ch17</td><td><span class="open">OPEN</span></td><td>DEVO song name mentioned — clearance needed. Confirm or remove.</td></tr>
+  <tr><td>Ch18</td><td><span class="open">OPEN</span></td><td>Song identified as unlicensable — remove and replace with cleared music.</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- ============ JASMINE NOTES ============ -->
+<div class="section-label">📝 Jasmine's Notes (Pushkin)</div>
+
+<div class="block open-block">
+  <div class="status-pill pill-open">Still Open</div>
+  <div class="block-title">Chapter-by-chapter editorial notes from Jasmine Faustino</div>
+  <div class="block-detail">
+    Notes live in the <strong>shared manuscript Google Doc</strong> (comments). Dan has a session hit list HTML on his desktop from the Apr 12 working session.<br><br>
+    The working session on Apr 12 went through these — but I don't have the resolution log. Get that from Dan (he was logging decisions in the Word doc during the Google Meet).<br><br>
+    <strong>What still needs to happen:</strong> Go chapter by chapter, confirm each of Jasmine's notes is incorporated into the 3rd mix before delivery. Nothing ships without this.
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ STUDIO SOUND ============ -->
+<div class="section-label">🔇 Studio Sound — Must Be OFF</div>
+
+<div class="block warn-block">
+  <div class="block-detail">
+    Check and disable Studio Sound in Descript for these chapters before any bounce:<br><br>
+    <strong>Ch1, Ch5, Ch7, Ch9, Ch10, Ch11, Ch15, Ch18, Ch20, Ch24</strong><br><br>
+    Ch24 specifically: turn off in the RAW project before bounce, not the edited version.
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ AUDIBLE TECH FLAGS ============ -->
+<div class="section-label">🎧 Audible Technical Flags</div>
+
+<div class="block warn-block">
+  <div class="block-detail">
+    <strong>Ch10</strong> — ~2 minutes of trailing silence at end of file. Audible will reject. Trim before delivery.<br><br>
+    <strong>Ch24</strong> — Trailing silence at end. Trim.<br><br>
+    <strong>All chapters</strong> — Final bounces: 192kbps CBR MP3 · −3dBFS peak · −18 LUFS integrated.<br><br>
+    <strong>Epilogue</strong> — No human narration PT session found (only SpectraLayers .slp + WAV). Locate missing PT session or rebuild.<br><br>
+    <strong>End Credits</strong> — PT session folder exists but .ptx file not confirmed. Open and confirm.<br><br>
+    <strong>Acknowledgements (032)</strong> — No PT session, no MP3 found anywhere. Needs to be created.
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ PICKUP IMPORT LOCATION ============ -->
+<div class="section-label">📁 Where the Pickup Files Are</div>
+
+<div class="note-box">
+  <strong>Organized pickup WAVs (Apr 2–3) are in:</strong><br>
+  <code style="color:#f0c27f; font-size:12px;">BOB BOOK / PICKUP_IMPORTS_APR2026 /</code><br>
+  Folders: CH6_apr3 · CH9_apr3 · CH13_apr2 · CH15_apr3 · CH19_apr3<br><br>
+  <strong>Apr 11 files:</strong> Not in Dropbox yet. Need transfer from Mark Allen Hall's session drive or Dan's machine.<br>
+  A placeholder folder <code style="color:#ff8888; font-size:12px;">CH10_CH11_apr11_NOT_IN_DROPBOX</code> marks the gap.<br><br>
+  <strong>Pro Tools sessions are in:</strong><br>
+  <code style="color:#f0c27f; font-size:12px;">BOB BOOK / MIX /</code>
+</div>
+
+<div class="footer">Shaping Sounds · Pushkin · Apr 13, 2026 · Deadline Apr 24</div>
+
+</body>
+</html>

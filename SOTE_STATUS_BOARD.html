@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOTE — AI Status Board</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d0d0d; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; padding: 20px 14px 72px; }
+
+  h1 { font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: #444; margin-bottom: 4px; }
+  .subtitle { font-size: 11px; color: #333; margin-bottom: 20px; letter-spacing: 2px; }
+
+  .legend {
+    display: flex; gap: 14px; margin-bottom: 22px; flex-wrap: wrap;
+    padding: 12px 14px; background: #141414; border-radius: 8px; border: 1px solid #1e1e1e;
+  }
+  .leg { display: flex; align-items: center; gap: 7px; font-size: 11px; letter-spacing: 0.5px; color: #888; }
+  .dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .dot.g  { background: #2ecc71; }
+  .dot.y  { background: #f39c12; }
+  .dot.r  { background: #e74c3c; }
+  .dot.p  { background: #9b59b6; }
+  .dot.o  { background: #e67e22; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 8px;
+  }
+
+  .card {
+    border-radius: 8px;
+    padding: 14px 12px 12px;
+    border: 1px solid transparent;
+  }
+
+  /* GREEN — clear, ready */
+  .card.g { background: #071a0f; border-color: #1a5230; }
+  .card.g .num { color: #2ecc71; }
+  .card.g .badge { background: #2ecc71; color: #000; }
+  .card.g .why { color: #3a8a55; }
+
+  /* YELLOW — warning, needs work but not blocked */
+  .card.y { background: #1a1200; border-color: #4a3500; }
+  .card.y .num { color: #f39c12; }
+  .card.y .badge { background: #f39c12; color: #000; }
+  .card.y .why { color: #a06820; }
+
+  /* ORANGE — needs pickup session (AI not yet replaced) */
+  .card.o { background: #1a0e00; border-color: #5a2e00; }
+  .card.o .num { color: #e67e22; }
+  .card.o .badge { background: #e67e22; color: #000; }
+  .card.o .why { color: #b06010; }
+
+  /* RED — hard blocked, cannot deliver */
+  .card.r { background: #1a0505; border-color: #5a1010; }
+  .card.r .num { color: #e74c3c; }
+  .card.r .badge { background: #e74c3c; color: #fff; }
+  .card.r .why { color: #c04040; }
+
+  /* PURPLE — blocked on Dan decision */
+  .card.p { background: #120a1a; border-color: #3a1a5a; }
+  .card.p .num { color: #9b59b6; }
+  .card.p .badge { background: #9b59b6; color: #fff; }
+  .card.p .why { color: #7a3a9a; }
+
+  .num {
+    font-size: 24px; font-weight: 900; line-height: 1; margin-bottom: 5px;
+  }
+  .badge {
+    display: inline-block; font-size: 8px; font-weight: 800;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    border-radius: 3px; padding: 2px 5px; margin-bottom: 5px;
+  }
+  .name {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase; color: #ccc; line-height: 1.3; margin-bottom: 6px;
+  }
+  .why { font-size: 10px; line-height: 1.45; }
+
+  /* Bottom bar */
+  .totals {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #141414; border-top: 1px solid #222;
+    padding: 10px 16px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 11px; letter-spacing: 0.8px;
+  }
+  .totals span { color: #555; }
+  .totals b { margin-right: 3px; }
+  .tg { color: #2ecc71; } .ty { color: #f39c12; }
+  .to { color: #e67e22; } .tr { color: #e74c3c; } .tp { color: #9b59b6; }
+</style>
+</head>
+<body>
+
+<h1>Standing on the Edge</h1>
+<div class="subtitle">AI STATUS BOARD — APR 13, 2026 · DEADLINE APR 24</div>
+
+<div class="legend">
+  <div class="leg"><div class="dot g"></div> CLEAR</div>
+  <div class="leg"><div class="dot y"></div> NEEDS WORK</div>
+  <div class="leg"><div class="dot o"></div> NEEDS SESSION</div>
+  <div class="leg"><div class="dot r"></div> BLOCKED</div>
+  <div class="leg"><div class="dot p"></div> NEEDS DAN</div>
+</div>
+
+<div class="grid">
+
+  <div class="card o">
+    <div class="num">001</div>
+    <div class="badge">SESSION</div>
+    <div class="name">Opening Credits</div>
+    <div class="why">AI segment (~2s). Needs 2nd pickup session.</div>
+  </div>
+
+  <div class="card y">
+    <div class="num">002</div>
+    <div class="badge">NEEDS WORK</div>
+    <div class="name">Foreword</div>
+    <div class="why">Spot AI fix needed. Quick patch.</div>
+  </div>
+
+  <div class="card y">
+    <div class="num">003</div>
+    <div class="badge">NEEDS WORK</div>
+    <div class="name">Preface</div>
+    <div class="why">Spot AI fix. Neve 1073 chain — do NOT re-process to match other chapters.</div>
+  </div>
+
+  <div class="card o">
+    <div class="num">004</div>
+    <div class="badge">SESSION</div>
+    <div class="name">Prologue</div>
+    <div class="why">4 TTS segments (~5s). Needs 2nd pickup session.</div>
+  </div>
+
+  <div class="card g">
+    <div class="num">005</div>
+    <div class="badge">CLEAR</div>
+    <div class="name">Chapter 1</div>
+    <div class="why">AI clean. Treatment pass + Jasmine notes needed.</div>
+  </div>
+
+  <div class="card g">
+    <div class="num">006</div>
+    <div class="badge">CLEAR</div>
+    <div class="name">Chapter 2</div>
+    <div class="why">AI clean. Treatment pass + Jasmine notes needed.</div>
+  </div>
+
+  <div class="card y">
+    <div class="num">007</div>
+    <div class="badge">NEEDS WORK</div>
+    <div class="name">Chapter 3</div>
+    <div class="why">AI clean. ⚠️ Beethoven clip — confirm licensed recording or replace.</div>
+  </div>
+
+  <div class="card y">
+    <div class="num">008</div>
+    <div class="badge">NEEDS WORK</div>
+    <div class="name">Chapter 4</div>
+    <div class="why">Ch4A clean. Ch4B: ElevenLabs AI (~8s) + rebuild from RAW. Needs 2nd session.</div>
+  </div>
+
+  <div class="card g">
+    <div class="num">009</div>
+    <div class="badge">CLEAR</div>
+    <div class="name">Chapter 5</div>
+    <div class="why">Near-clean. Minor artifact, not AI. Ready.</div>
+  </div>
+
+  <div class="card y">
+    <div class="num">010</div>
+    <div class="badge">NEEDS WORK</div>
+    <div class="name">Chapter 6</div>
+    <div class="why">Spot AI fix. Apr 2–3 pickups in Dropbox ✓ — integrate into PT. Crash recovery: verify v4d clean.</div>
+  </div>
+
+  <div class="card g">
+    <div class="num">011</div>
+    <div class="badge">CLEAR</div>
+    <div class="name">Chapter 7</div>
+    <div class="why">AI clean. Treatment pass + Jasmine notes needed.</div>
+  </div>
+
+  <div class="card g">
+    <div class="num">012</div>
+    <div class="badge">CLEAR</div>
+    <div class="name">Chapter 8</div>
+    <div class="why">AI clean. Treatment pass + Jasmine notes needed.</div>
+  </div>
+
+  <div class="card y">
+    <div class="num">013</div>
+    <div class="badge">NEEDS WORK</div>
+    <div class="name">Chapter 9</div>
+    <div class="why">Spot AI fix. Apr 2–3 pickups in Dropbox ✓. Is there a 9B? — ask Dan.</div>
+  </div>
+
+  <div class="card r">
+    <div class="num">014</div>
+    <div class="badge">BLOCKED</div>
+    <div class="name">Chapter 10</div>
+    <div class="why">55 AI files (15–20%). Needs 2nd session — BIGGEST JOB. Archive folder empty. ~2 min trailing silence.</div>
+  </div>
+
+  <div class="card r">
+    <div class="num">015</div>
+    <div class="badge">BLOCKED</div>
+    <div class="name">Chapter 11</div>
+    <div class="why">17 ElevenLabs segments (~7 min). Needs 2nd session. Check "Duplicates_Removed" comp.</div>
+  </div>
+
+  <div class="card p">
+    <div class="num">016</div>
+    <div class="badge">NEEDS DAN</div>
+    <div class="name">Chapter 12</div>
+    <div class="why">Two Descript projects — Dan must confirm which is deliverable. ⚠️ Stevie Wonder clips &lt;60s check.</div>
+  </div>
+
+  <div class="card r">
+    <div class="num">017</div>
+    <div class="badge">BLOCKED</div>
+    <div class="name">Chapter 13</div>
+    <div class="why">63 AI files (18%). Apr 2–3 pickups in Dropbox ✓. May need 2nd session for remaining gaps.</div>
+  </div>
+
+  <div class="card y">
+    <div class="num">018</div>
+    <div class="badge">NEEDS WORK</div>
+    <div class="name">Chapter 14</div>
+    <div class="why">AI clean. ⚠️ Grammy footage reference — legal flag, must remove/replace segment.</div>
+  </div>
+
+  <div class="card p">
+    <div class="num">019</div>
+    <div class="badge">NEEDS DAN</div>
+    <div class="name">Chapter 15</div>
+    <div class="why">Pickups in Dropbox ✓. Blocked: Dan must confirm Descript project version. ⚠️ Bukowski poem — fair use?</div>
+  </div>
+
+  <div class="card g">
+    <div class="num">020</div>
+    <div class="badge">CLEAR</div>
+    <div class="name">Chapter 16</div>
+    <div class="why">GOLD STANDARD. Near-clean. Crash recovery session — verify current session intact.</div>
+  </div>
+
+  <div class="card o">
+    <div class="num">021</div>
+    <div class="badge">SESSION</div>
+    <div class="name">Chapter 17</div>
+    <div class="why">~35s AI passage. Needs 2nd pickup session. ⚠️ DEVO reference — confirm clearance.</div>
+  </div>
+
+  <div class="card r">
+    <div class="num">022</div>
+    <div class="badge">BLOCKED</div>
+    <div class="name">Chapter 18</div>
+    <div class="why">~11s AI segment + unlicensable song — remove and replace. Needs 2nd session + legal fix.</div>
+  </div>
+
+  <div class="card y">
+    <div class="num">023</div>
+    <div class="badge">NEEDS WORK</div>
+    <div class="name">Chapter 19</div>
+    <div class="why">Apr 2–3 pickups in Dropbox ✓ — integrate. 2.8s spot fix — verify pickups cover it.</div>
+  </div>
+
+  <div class="card g">
+    <div class="num">024</div>
+    <div class="badge">CLEAR</div>
+    <div class="name">Chapter 20</div>
+    <div class="why">AI clean. Treatment pass + Jasmine notes needed.</div>
+  </div>
+
+  <div class="card p">
+    <div class="num">025</div>
+    <div class="badge">NEEDS DAN</div>
+    <div class="name">Chapter 21</div>
+    <div class="why">Flattened stereo — cannot audit AI. Dan decides: deliver as-is or full rebuild.</div>
+  </div>
+
+  <div class="card g">
+    <div class="num">026</div>
+    <div class="badge">CLEAR</div>
+    <div class="name">Chapter 22</div>
+    <div class="why">AI clean. Treatment pass + Jasmine notes needed.</div>
+  </div>
+
+  <div class="card y">
+    <div class="num">027</div>
+    <div class="badge">NEEDS WORK</div>
+    <div class="name">Chapter 23</div>
+    <div class="why">3 ElevenLabs clips on "Dan Edit" comp. Fix: use Copy #1 instead.</div>
+  </div>
+
+  <div class="card y">
+    <div class="num">028</div>
+    <div class="badge">NEEDS WORK</div>
+    <div class="name">Chapter 24</div>
+    <div class="why">Use RAW project only. Trailing silence — trim. Studio Sound OFF. Library cleanup needed.</div>
+  </div>
+
+  <div class="card g">
+    <div class="num">029</div>
+    <div class="badge">CLEAR</div>
+    <div class="name">Chapter 25</div>
+    <div class="why">GOLD STANDARD. AI session exists separately — confirm human narration is the delivery file.</div>
+  </div>
+
+  <div class="card r">
+    <div class="num">030</div>
+    <div class="badge">BLOCKED</div>
+    <div class="name">Epilogue</div>
+    <div class="why">~2s AI. Needs 2nd session. No human narration PT session found. AI session exists — do NOT deliver.</div>
+  </div>
+
+  <div class="card y">
+    <div class="num">031</div>
+    <div class="badge">NEEDS WORK</div>
+    <div class="name">End Credits</div>
+    <div class="why">~2s AI. Needs 2nd session. PT session folder exists — confirm .ptx file is there.</div>
+  </div>
+
+  <div class="card r">
+    <div class="num">032</div>
+    <div class="badge">BLOCKED</div>
+    <div class="name">Acknowledgements</div>
+    <div class="why">No PT session. No MP3. Nothing exists. Investigate with Dan — may need to be built from scratch.</div>
+  </div>
+
+</div>
+
+<div class="totals">
+  <span><b class="tg">8</b> CLEAR</span>
+  <span><b class="ty">9</b> NEEDS WORK</span>
+  <span><b class="to">3</b> NEEDS SESSION</span>
+  <span><b class="tr">6</b> BLOCKED</span>
+  <span><b class="tp">3</b> NEEDS DAN</span>
+  <span style="color:#2a2a2a">|</span>
+  <span style="color:#333">32 TOTAL</span>
+</div>
+
+</body>
+</html>

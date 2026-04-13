@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shaping Sounds — Pro Tools Session Reference</title>
+<style>
+  :root {
+    --bg: #0e1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3348;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-muted: #64748b;
+    --green: #22c55e;
+    --green-bg: #052e16;
+    --green-border: #166534;
+    --amber: #f59e0b;
+    --amber-bg: #1c1205;
+    --amber-border: #78350f;
+    --red: #ef4444;
+    --red-bg: #1c0505;
+    --red-border: #7f1d1d;
+    --blue: #3b82f6;
+    --blue-bg: #0c1a3a;
+    --blue-border: #1e3a8a;
+    --purple: #a855f7;
+    --purple-bg: #1a0c2e;
+    --purple-border: #581c87;
+    --orange: #f97316;
+    --orange-bg: #1c0e05;
+    --orange-border: #7c2d12;
+    --teal: #14b8a6;
+    --teal-bg: #042322;
+    --teal-border: #0f766e;
+    --accent: #6366f1;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    min-height: 100vh;
+    padding: 32px 24px;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    max-width: 1280px;
+    margin: 0 auto 40px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 28px;
+  }
+  .header-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .header h1 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .header h1 span { color: var(--accent); }
+  .header-sub {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+  .header-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .meta-chip {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .meta-chip strong { color: var(--text-dim); }
+
+  /* ─── STATS ROW ─── */
+  .stats {
+    max-width: 1280px;
+    margin: 0 auto 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-card .num {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: -apple-system, sans-serif;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-card .label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .stat-green .num { color: var(--green); }
+  .stat-amber .num { color: var(--amber); }
+  .stat-red .num { color: var(--red); }
+  .stat-blue .num { color: var(--blue); }
+  .stat-purple .num { color: var(--purple); }
+
+  /* ─── LEGEND ─── */
+  .legend {
+    max-width: 1280px;
+    margin: 0 auto 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .legend-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-right: 4px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .badge-archive    { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-border); }
+  .badge-multi      { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-border); }
+  .badge-missing    { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-border); }
+  .badge-active     { background: var(--blue-bg);   color: var(--blue);   border: 1px solid var(--blue-border); }
+  .badge-ai         { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+  .badge-mixonly    { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange-border); }
+  .badge-combined   { background: var(--teal-bg);   color: var(--teal);   border: 1px solid var(--teal-border); }
+
+  /* ─── FILTER BAR ─── */
+  .filter-bar {
+    max-width: 1280px;
+    margin: 0 auto 20px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin-right: 4px;
+  }
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ─── TABLE ─── */
+  .table-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead {
+    background: var(--surface2);
+    border-bottom: 2px solid var(--border);
+  }
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  th:first-child { padding-left: 20px; }
+  th:last-child  { padding-right: 20px; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.12s;
+    cursor: default;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+  tbody tr.hidden { display: none; }
+
+  /* section header rows */
+  tr.section-header td {
+    background: var(--bg);
+    padding: 8px 20px 6px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    font-weight: 700;
+    border-top: 2px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  tr.section-header:first-child td { border-top: none; }
+
+  td {
+    padding: 12px 16px;
+    vertical-align: top;
+  }
+  td:first-child { padding-left: 20px; }
+  td:last-child  { padding-right: 20px; }
+
+  /* seq number */
+  .seq {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+    font-family: 'SF Mono', monospace;
+  }
+  .seq-none {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* chapter info */
+  .ch-num {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+  .ch-title {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  /* session files */
+  .session-file {
+    font-size: 12px;
+    font-family: 'SF Mono', 'JetBrains Mono', monospace;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 8px;
+    margin: 2px 0;
+    display: inline-block;
+    line-height: 1.5;
+    word-break: break-all;
+  }
+  .session-file.latest {
+    border-color: var(--green-border);
+    background: var(--green-bg);
+    color: #86efac;
+  }
+  .session-file.active {
+    border-color: var(--blue-border);
+    background: var(--blue-bg);
+    color: #93c5fd;
+  }
+  .session-file.ai {
+    border-color: var(--purple-border);
+    background: var(--purple-bg);
+    color: #d8b4fe;
+  }
+  .session-file.warn {
+    border-color: var(--amber-border);
+    background: var(--amber-bg);
+    color: #fcd34d;
+  }
+  .more-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+  }
+  .more-count:hover { color: var(--text-dim); }
+
+  /* notes */
+  .note {
+    font-family: -apple-system, sans-serif;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .note .flag {
+    display: inline-block;
+    margin-right: 4px;
+  }
+  .note-warn { color: var(--amber); }
+  .note-crit { color: var(--red); }
+  .note-ai   { color: var(--purple); }
+  .note-ok   { color: var(--green); }
+
+  /* ─── DETAIL DRAWER ─── */
+  .detail-row td {
+    padding: 0;
+    background: rgba(99,102,241,0.04);
+  }
+  .detail-content {
+    padding: 16px 20px 20px;
+    border-top: 1px solid rgba(99,102,241,0.2);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+  }
+  .detail-group h4 {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .detail-group ul {
+    list-style: none;
+  }
+  .detail-group ul li {
+    font-size: 12px;
+    font-family: 'SF Mono', monospace;
+    color: var(--text-dim);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-bottom: 4px;
+    word-break: break-all;
+  }
+  .detail-group p {
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* expand button in row */
+  .expand-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.12s;
+    white-space: nowrap;
+  }
+  .expand-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .expand-btn.open { border-color: var(--accent); color: var(--accent); background: rgba(99,102,241,0.08); }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    max-width: 1280px;
+    margin: 32px auto 0;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* responsive */
+  @media (max-width: 900px) {
+    .detail-content { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    body { padding: 16px 12px; }
+    .header h1 { font-size: 24px; }
+    .stats { grid-template-columns: repeat(3,1fr); }
+    td, th { padding: 10px 10px; }
+    td:first-child, th:first-child { padding-left: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="header">
+  <div class="header-eyebrow">Pro Tools Session Reference · Shaping Sounds Audiobook</div>
+  <h1>Shaping Sounds <span>Chapter Map</span></h1>
+  <div class="header-sub">Robert Margouleff with Jim Reilly · Sound Design/Engineering: Gio Bertuccelli · Pushkin Industries</div>
+  <div class="header-meta">
+    <div class="meta-chip"><span>📅</span> Audit: <strong>April 12, 2026</strong></div>
+    <div class="meta-chip"><span>📁</span> Archive: <strong>Audio Assets / ProTools</strong></div>
+    <div class="meta-chip"><span>🎙️</span> Sessions scanned: <strong>52 primary .ptx</strong></div>
+    <div class="meta-chip"><span>📂</span> Folders: <strong>23</strong></div>
+    <div class="meta-chip"><span>⚡</span> Seq range: <strong>001 – 029</strong></div>
+  </div>
+</div>
+
+<!-- ═══ STATS ═══ -->
+<div class="stats">
+  <div class="stat-card stat-green">
+    <div class="num">14</div>
+    <div class="label">In Archive</div>
+  </div>
+  <div class="stat-card stat-amber">
+    <div class="num">7</div>
+    <div class="label">Multi-Version</div>
+  </div>
+  <div class="stat-card stat-red">
+    <div class="num">8</div>
+    <div class="label">Not Found</div>
+  </div>
+  <div class="stat-card stat-blue">
+    <div class="num">1</div>
+    <div class="label">Active Revision</div>
+  </div>
+  <div class="stat-card stat-purple">
+    <div class="num">2</div>
+    <div class="label">AI Sessions</div>
+  </div>
+  <div class="stat-card" style="--num-color:#f97316;">
+    <div class="num" style="color:#f97316;">1</div>
+    <div class="label">MIX Only</div>
+  </div>
+</div>
+
+<!-- ═══ LEGEND ═══ -->
+<div class="legend">
+  <span class="legend-title">Status:</span>
+  <span class="badge badge-archive">✓ Archive</span>
+  <span class="badge badge-multi">⚠ Multi-Version</span>
+  <span class="badge badge-missing">✗ Not Found</span>
+  <span class="badge badge-active">↺ Active Revision</span>
+  <span class="badge badge-ai">✦ AI Session</span>
+  <span class="badge badge-mixonly">⬡ MIX Only</span>
+  <span class="badge badge-combined">◈ Combined Session</span>
+</div>
+
+<!-- ═══ FILTER BAR ═══ -->
+<div class="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" onclick="filterTable('all', this)">All Sections</button>
+  <button class="filter-btn" onclick="filterTable('archive', this)">✓ In Archive</button>
+  <button class="filter-btn" onclick="filterTable('multi', this)">⚠ Multi-Version</button>
+  <button class="filter-btn" onclick="filterTable('missing', this)">✗ Missing</button>
+  <button class="filter-btn" onclick="filterTable('active', this)">↺ Active</button>
+  <button class="filter-btn" onclick="filterTable('ai', this)">✦ AI</button>
+  <button class="filter-btn" onclick="filterTable('action', this)">🚨 Needs Action</button>
+</div>
+
+<!-- ═══ TABLE ═══ -->
+<div class="table-wrap">
+<table id="mainTable">
+  <thead>
+    <tr>
+      <th>Seq #</th>
+      <th>Section / Chapter</th>
+      <th>Status</th>
+      <th>Session File(s)</th>
+      <th>Notes</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <!-- ──── FRONT MATTER ──── -->
+    <tr class="section-header">
+      <td colspan="6">Front Matter</td>
+    </tr>
+
+    <!-- Opening Credits -->
+    <tr data-status="archive" data-detail="oc">
+      <td><div class="seq">001</div></td>
+      <td>
+        <div class="ch-num">Opening Credits</div>
+        <div class="ch-title">Opening Credits</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of OpeningCredits_v1b.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-ok">✓</span> Single version, archived</td>
+      <td><button class="expand-btn" onclick="toggleDetail('oc', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-oc">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>All Sessions</h4>
+            <ul><li>Copy of OpeningCredits_v1b.ptx</li></ul>
+          </div>
+          <div class="detail-group">
+            <h4>Location</h4>
+            <p>Audio Assets/ProTools/ (master archive)</p>
+          </div>
+          <div class="detail-group">
+            <h4>Notes</h4>
+            <p>Single archived version. v1b is the approved deliverable.</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Foreword -->
+    <tr data-status="archive" data-detail="fw">
+      <td><div class="seq">002</div></td>
+      <td>
+        <div class="ch-num">Foreword</div>
+        <div class="ch-title">Foreword — Mark Mothersbaugh of DEVO</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of SOTE_ Foward_V2.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-warn">⚠</span> Filename typo: "Foward" (not "Forward")</td>
+      <td><button class="expand-btn" onclick="toggleDetail('fw', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-fw">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>All Sessions</h4>
+            <ul><li>Copy of SOTE_ Foward_V2.ptx</li></ul>
+          </div>
+          <div class="detail-group">
+            <h4>Location</h4>
+            <p>Audio Assets/ProTools/ (master archive)</p>
+          </div>
+          <div class="detail-group">
+            <h4>Notes</h4>
+            <p>⚠️ Filename has a typo — "Foward" instead of "Forward". Also note leading space after "SOTE_". Session is otherwise archived as V2.</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Preface -->
+    <tr data-status="multi" data-detail="pref">
+      <td><div class="seq">003</div></td>
+      <td>
+        <div class="ch-num">Preface</div>
+        <div class="ch-title">Preface — A note from the author</div>
+      </td>
+      <td><span class="badge badge-multi">⚠ Multi-Version</span></td>
+      <td>
+        <div class="session-file warn">Copy of 003_preface_v0b.ptx</div>
+        <div class="session-file warn">Copy of 003_preface_v1a.ptx</div>
+        <div class="session-file latest">Copy of 003_preface_v1b.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-warn">⚠</span> 3 versions archived — v1b is latest</td>
+      <td><button class="expand-btn" onclick="toggleDetail('pref', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-pref">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>All Archived Versions</h4>
+            <ul>
+              <li>Copy of 003_preface_v0b.ptx</li>
+              <li>Copy of 003_preface_v1a.ptx</li>
+              <li>Copy of 003_preface_v1b.ptx ← latest</li>
+            </ul>
+          </div>
+          <div class="detail-group">
+            <h4>Location</h4>
+            <p>Audio Assets/ProTools/ (master archive)</p>
+          </div>
+          <div class="detail-group">
+            <h4>Notes</h4>
+            <p>Three versions in archive (v0b, v1a, v1b). v1b is the latest. Confirm v1b is the approved deliverable before archiving older versions.</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Prologue -->
+    <tr data-status="mixonly" data-detail="prol">
+      <td><div class="seq-none">— no seq —</div></td>
+      <td>
+        <div class="ch-num">Prologue</div>
+        <div class="ch-title">Memorial Day Weekend, 1971</div>
+      </td>
+      <td><span class="badge badge-mixonly">⬡ MIX Only</span></td>
+      <td>
+        <div class="session-file warn">Dan EDIT2 of SOTE Prologue.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-warn">⚠</span> Lives in MIX folder, not in numbered archive</td>
+      <td><button class="expand-btn" onclick="toggleDetail('prol', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-prol">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>Session Found</h4>
+            <ul><li>Dan EDIT2 of SOTE Prologue.ptx</li></ul>
+          </div>
+          <div class="detail-group">
+            <h4>Location</h4>
+            <p>MIX/ folder — NOT in Audio Assets/ProTools/ master archive</p>
+          </div>
+          <div class="detail-group">
+            <h4>Action Needed</h4>
+            <p>⚠️ No sequence number assigned. This is a Dan edit session in the MIX folder. Should be assigned a sequence number (likely 004 or 005) and archived to master archive folder when approved.</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- ──── BOOK PART 1 ──── -->
+    <tr class="section-header">
+      <td colspan="6">Part 1 · "All human beings are created free and equal in dignity and rights."</td>
+    </tr>
+
+    <!-- Chapter 1 -->
+    <tr data-status="missing" data-detail="ch1">
+      <td><div class="seq-none">— gap —</div></td>
+      <td>
+        <div class="ch-num">Chapter 1</div>
+        <div class="ch-title">Planting Seeds</div>
+      </td>
+      <td><span class="badge badge-missing">✗ Not Found</span></td>
+      <td><span style="font-size:12px;color:var(--text-muted);font-style:italic;">No session located</span></td>
+      <td class="note note-crit"><span class="flag">✗</span> Not in any scanned folder</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch1', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch1">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>Status</h4><p>No .ptx session file found in any scanned folder including Audio Assets, MIX, SOUND DESIGN, Deliveries, or chapter-specific folders.</p></div>
+          <div class="detail-group"><h4>Possible Locations</h4><p>May be on unmounted external drive. Check archive drives or backup media.</p></div>
+          <div class="detail-group"><h4>Action</h4><p>🔴 Locate missing session. Assign seq number (likely 004–006 range). Archive to master folder.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 2 -->
+    <tr data-status="missing" data-detail="ch2">
+      <td><div class="seq-none">— gap —</div></td>
+      <td>
+        <div class="ch-num">Chapter 2</div>
+        <div class="ch-title">Learning became living</div>
+      </td>
+      <td><span class="badge badge-missing">✗ Not Found</span></td>
+      <td><span style="font-size:12px;color:var(--text-muted);font-style:italic;">No session located</span></td>
+      <td class="note note-crit"><span class="flag">✗</span> Not in any scanned folder</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch2', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch2">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>Status</h4><p>No .ptx session file found in any scanned folder.</p></div>
+          <div class="detail-group"><h4>Possible Locations</h4><p>May be on unmounted external drive or not yet produced.</p></div>
+          <div class="detail-group"><h4>Action</h4><p>🔴 Locate missing session. Assign seq number (likely 004–006 range). Archive to master folder.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 3 -->
+    <tr data-status="archive" data-detail="ch3">
+      <td><div class="seq">007</div></td>
+      <td>
+        <div class="ch-num">Chapter 3</div>
+        <div class="ch-title">Finding my voice</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of 007_SOTE_chapter3_v1a.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-ok">✓</span> Single version, archived</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch3', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch3">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>All Sessions</h4>
+            <ul><li>Copy of 007_SOTE_chapter3_v1a.ptx</li></ul>
+          </div>
+          <div class="detail-group">
+            <h4>Export Folder</h4>
+            <p>Mounted folder: <strong>007_SOTE_chapter3_v1</strong> — export/bounce folder present. Likely contains bounced audio deliverables.</p>
+          </div>
+          <div class="detail-group">
+            <h4>Notes</h4>
+            <p>v1a archived. Export folder present — check for bounced audio. Seq 007 is the next after Preface (003), suggesting Prologue, Ch1, Ch2 fill gaps 004–006.</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 4 -->
+    <tr data-status="archive" data-detail="ch4">
+      <td><div class="seq">008</div></td>
+      <td>
+        <div class="ch-num">Chapter 4</div>
+        <div class="ch-title">The East Village… via Uncle Sam</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of 008_chapter4_v0f.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-warn">⚠</span> v0f — still a "v0" draft; space in folder name</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch4', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch4">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>All Sessions</h4>
+            <ul>
+              <li>Copy of 008_chapter4_v0f.ptx ← archived</li>
+              <li>008_SOTE_chapter4 _v2 (v0f).ptx ← note: space in filename!</li>
+            </ul>
+          </div>
+          <div class="detail-group">
+            <h4>Location Note</h4>
+            <p>Mounted folder: <strong>SOTE_Day4_(Chapter4)_07-25-2025</strong> — contains active session with embedded space in filename: <code>008_SOTE_chapter4 _v2 (v0f).ptx</code></p>
+          </div>
+          <div class="detail-group">
+            <h4>⚠️ Action Items</h4>
+            <p>1. Session filename has a trailing space before _v2 — rename to remove the space.<br>2. Archived as v0f — if v2 is the current working version, archive it too.</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 5 -->
+    <tr data-status="archive" data-detail="ch5">
+      <td><div class="seq">009</div></td>
+      <td>
+        <div class="ch-num">Chapter 5</div>
+        <div class="ch-title">Ciao! Baby</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of 009_chapter5_V0e.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-warn">⚠</span> v0e — still a "v0" draft version</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch5', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch5">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>All Sessions</h4><ul><li>Copy of 009_chapter5_V0e.ptx</li></ul></div>
+          <div class="detail-group"><h4>Location</h4><p>Audio Assets/ProTools/ (master archive)</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>Archived as V0e — note this is still an early "version zero" draft. Confirm with Dan/Robert if final approved version or if further revisions are expected.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 6 -->
+    <tr data-status="active" data-detail="ch6">
+      <td><div class="seq">010</div></td>
+      <td>
+        <div class="ch-num">Chapter 6</div>
+        <div class="ch-title">Tuning into the future</div>
+      </td>
+      <td><span class="badge badge-active">↺ Active Revision</span></td>
+      <td>
+        <div class="session-file active">010_SOTE_chapter6_v4d .ptx</div>
+        <div class="more-count" onclick="toggleDetail('ch6', document.querySelector('[onclick*=ch6]'))">+ 7 more sessions ▾</div>
+      </td>
+      <td class="note">
+        <span class="flag note-crit">🚨</span> Crash-recovery session exists (v4c RECOVERD)<br>
+        <span class="flag note-warn">⚠</span> Trailing space in v4d filename<br>
+        <span class="flag note-warn">⚠</span> April 2026 re-edit in progress
+      </td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch6', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch6">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>Active Mix Sessions</h4>
+            <ul>
+              <li>010_SOTE_chapter6_v4b.ptx</li>
+              <li>010_SOTE_chapter6_v4c.ptx</li>
+              <li style="color:#ef4444;">010_SOTE_chapter6_v4c RECOVERD.ptx ⚠️ CRASH RECOVERY</li>
+              <li style="color:#93c5fd;">010_SOTE_chapter6_v4d .ptx ← CURRENT (trailing space!)</li>
+            </ul>
+          </div>
+          <div class="detail-group">
+            <h4>Archived Versions</h4>
+            <ul>
+              <li>Copy of 010_chapter6_v2a.ptx</li>
+              <li>Copy of 010_chapter6_v2b.ptx</li>
+              <li>Copy of 010_chapter6_v2b RE edit test April 1.ptx</li>
+              <li>Copy of 010_chapter6_v2a APRIL 2026.ptx</li>
+            </ul>
+          </div>
+          <div class="detail-group">
+            <h4>🚨 Action Items</h4>
+            <p>
+              1. <strong style="color:#ef4444;">CRITICAL:</strong> Verify <code>v4c RECOVERD.ptx</code> integrity — Pro Tools crash recovery file. Check audio completeness before relying on it.<br><br>
+              2. <strong style="color:#f59e0b;">RENAME:</strong> <code>v4d .ptx</code> has a trailing space — rename to <code>v4d.ptx</code> to prevent file system issues.<br><br>
+              3. Export folder <strong>010_chapter6_v1</strong> present — check bounced deliverables.<br><br>
+              4. April 2026 re-edit archive entry suggests active revision — confirm completion status with Dan.
+            </p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 7 -->
+    <tr data-status="archive" data-detail="ch7">
+      <td><div class="seq">011</div></td>
+      <td>
+        <div class="ch-num">Chapter 7</div>
+        <div class="ch-title">Total chaos and 'vitamin shots'</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of 011_SOTE_chapter7_v1a.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-ok">✓</span> Single version, archived</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch7', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch7">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>All Sessions</h4><ul><li>Copy of 011_SOTE_chapter7_v1a.ptx</li></ul></div>
+          <div class="detail-group"><h4>Location</h4><p>Audio Assets/ProTools/ (master archive)</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>v1a archived. Also appears in combined session <code>SOTE Ch 6-7-8-9.ptx</code>.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 8 -->
+    <tr data-status="combined" data-detail="ch8">
+      <td><div class="seq-none">012 (gap)</div></td>
+      <td>
+        <div class="ch-num">Chapter 8</div>
+        <div class="ch-title">Fire Island and the reset button</div>
+      </td>
+      <td><span class="badge badge-combined">◈ Combined Session</span></td>
+      <td>
+        <div class="session-file warn">SOTE Ch 6-7-8-9.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-warn">⚠</span> No standalone session — only in Ch 6-7-8-9 combined</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch8', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch8">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>Session Found</h4><ul><li>SOTE Ch 6-7-8-9.ptx (combined)</li></ul></div>
+          <div class="detail-group"><h4>Location</h4><p>SOTE Ch 6-7-8-9 folder — combined session for chapters 6, 7, 8, and 9</p></div>
+          <div class="detail-group"><h4>Action</h4><p>⚠️ Seq 012 is a gap in the master archive. Ch 8 needs to be extracted/bounced from the combined session and given its own archive session or bounce folder.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 9 -->
+    <tr data-status="multi" data-detail="ch9">
+      <td><div class="seq">013</div></td>
+      <td>
+        <div class="ch-num">Chapter 9</div>
+        <div class="ch-title">Two minds, one TONTO</div>
+      </td>
+      <td><span class="badge badge-multi">⚠ Multi-Version</span></td>
+      <td>
+        <div class="session-file warn">Copy of 013_SOTE_chapter9_v0a.ptx</div>
+        <div class="session-file latest">Copy of 013_SOTE_chapter9_v2f.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-warn">⚠</span> Both v0a and v2f in archive — v2f is latest</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch9', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch9">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>Archived Versions</h4>
+            <ul>
+              <li>Copy of 013_SOTE_chapter9_v0a.ptx ← early draft</li>
+              <li>Copy of 013_SOTE_chapter9_v2f.ptx ← latest</li>
+            </ul>
+          </div>
+          <div class="detail-group">
+            <h4>Export Folders</h4>
+            <p>Two export folders present:<br>• <strong>013_SOTE_chapter9_v0a</strong><br>• <strong>013_SOTE_chapter9RightAudio_v0a</strong> (right channel only?)</p>
+          </div>
+          <div class="detail-group">
+            <h4>Notes</h4>
+            <p>v2f is the latest archived version. Two bounce folders suggest multiple export passes — the "RightAudio" folder may indicate a specific deliverable for a stereo issue.</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 10 -->
+    <tr data-status="missing" data-detail="ch10">
+      <td><div class="seq-none">014 (gap)</div></td>
+      <td>
+        <div class="ch-num">Chapter 10</div>
+        <div class="ch-title">It's Stevie time!</div>
+      </td>
+      <td><span class="badge badge-missing">✗ Not Found</span></td>
+      <td><span style="font-size:12px;color:var(--text-muted);font-style:italic;">No session located</span></td>
+      <td class="note note-crit"><span class="flag">✗</span> Seq 014 is a gap in archive</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch10', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch10">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>Status</h4><p>No session found in any scanned folder. Seq 014 is a confirmed gap in master archive.</p></div>
+          <div class="detail-group"><h4>Possible Locations</h4><p>May be on external drive, not yet produced, or combined with another chapter session.</p></div>
+          <div class="detail-group"><h4>Action</h4><p>🔴 Locate missing session. Assign seq 014 when found.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 11 -->
+    <tr data-status="archive" data-detail="ch11">
+      <td><div class="seq">015</div></td>
+      <td>
+        <div class="ch-num">Chapter 11</div>
+        <div class="ch-title">Go West: the Record Plant years</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of 015_chapter 11_v2a.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-warn">⚠</span> Space in filename: "chapter 11" (not "chapter11")</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch11', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch11">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>All Sessions</h4><ul><li>Copy of 015_chapter 11_v2a.ptx</li></ul></div>
+          <div class="detail-group"><h4>Location</h4><p>Audio Assets/ProTools/ (master archive)</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>⚠️ Filename has a space: "chapter 11" — inconsistent with other chapter naming conventions (most use "chapter11"). v2a is archived.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 12 -->
+    <tr data-status="archive" data-detail="ch12">
+      <td><div class="seq">016</div></td>
+      <td>
+        <div class="ch-num">Chapter 12</div>
+        <div class="ch-title">The magic we created</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of 016_SOTE_chapter12_v1a.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-ok">✓</span> Single version, archived</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch12', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch12">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>All Sessions</h4><ul><li>Copy of 016_SOTE_chapter12_v1a.ptx</li></ul></div>
+          <div class="detail-group"><h4>Location</h4><p>Audio Assets/ProTools/ (master archive)</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>v1a archived. Single clean version.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 13 -->
+    <tr data-status="multi" data-detail="ch13">
+      <td><div class="seq">017</div></td>
+      <td>
+        <div class="ch-num">Chapter 13</div>
+        <div class="ch-title">Our non-stop studio</div>
+      </td>
+      <td><span class="badge badge-multi">⚠ Multi-Version</span></td>
+      <td>
+        <div class="session-file warn">Copy of 017_chapter13_v2b.ptx</div>
+        <div class="session-file latest">Copy of 017_chapter13_v2c.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-warn">⚠</span> v2b and v2c both archived — v2c is latest</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch13', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch13">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>Archived Versions</h4>
+            <ul>
+              <li>Copy of 017_chapter13_v2b.ptx</li>
+              <li>Copy of 017_chapter13_v2c.ptx ← latest</li>
+            </ul>
+          </div>
+          <div class="detail-group">
+            <h4>Export Folder</h4>
+            <p>Mounted folder: <strong>017_chapter13_V1</strong> present — note folder is labeled V1 but archive has v2b/v2c. May be an older bounce export.</p>
+          </div>
+          <div class="detail-group">
+            <h4>Notes</h4>
+            <p>v2c is latest. Export folder labeled V1 — may need updated bounce if v2c is the approved final.</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 14 -->
+    <tr data-status="archive" data-detail="ch14">
+      <td><div class="seq">018</div></td>
+      <td>
+        <div class="ch-num">Chapter 14</div>
+        <div class="ch-title">All good things must end</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of 018_SOTE_chapter14_V2.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-ok">✓</span> Single version, archived as V2</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch14', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch14">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>All Sessions</h4><ul><li>Copy of 018_SOTE_chapter14_V2.ptx</li></ul></div>
+          <div class="detail-group"><h4>Location</h4><p>Audio Assets/ProTools/ (master archive)</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>V2 archived. Note uppercase "V" inconsistency vs. other sessions. Single clean archive version.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- ──── BOOK PART 2 ──── -->
+    <tr class="section-header">
+      <td colspan="6">Part 2 · "The Original New Timbral Orchestra" — Technology drives the art</td>
+    </tr>
+
+    <!-- Chapter 15 -->
+    <tr data-status="missing" data-detail="ch15">
+      <td><div class="seq-none">019 (gap)</div></td>
+      <td>
+        <div class="ch-num">Chapter 15</div>
+        <div class="ch-title">Life after Wonder</div>
+      </td>
+      <td><span class="badge badge-missing">✗ Not Found</span></td>
+      <td><span style="font-size:12px;color:var(--text-muted);font-style:italic;">No session located</span></td>
+      <td class="note note-crit"><span class="flag">✗</span> Seq 019 is a gap in archive</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch15', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch15">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>Status</h4><p>No session found in any scanned folder.</p></div>
+          <div class="detail-group"><h4>Possible Locations</h4><p>May be on unmounted external drive or not yet produced.</p></div>
+          <div class="detail-group"><h4>Action</h4><p>🔴 Locate missing session. Assign seq 019 when found.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 16 -->
+    <tr data-status="multi" data-detail="ch16">
+      <td><div class="seq">020</div></td>
+      <td>
+        <div class="ch-num">Chapter 16</div>
+        <div class="ch-title">My journeyman years</div>
+      </td>
+      <td><span class="badge badge-multi">⚠ Multi-Version</span></td>
+      <td>
+        <div class="session-file warn">Copy of 20_chapter16_V1b.ptx</div>
+        <div class="session-file warn">Copy of 20_chapter16_V1C.ptx</div>
+        <div class="session-file latest">Copy of 20_chapter16_V3a.ptx</div>
+      </td>
+      <td class="note">
+        <span class="flag note-warn">⚠</span> 3 versions archived — V3a is latest<br>
+        <span class="flag note-warn">⚠</span> Seq written as "20" not "020" (inconsistent)
+      </td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch16', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch16">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>Archived Versions</h4>
+            <ul>
+              <li>Copy of 20_chapter16_V1b.ptx</li>
+              <li>Copy of 20_chapter16_V1C.ptx</li>
+              <li>Copy of 20_chapter16_V3a.ptx ← latest</li>
+            </ul>
+          </div>
+          <div class="detail-group"><h4>Naming Issue</h4><p>⚠️ Seq number written as "20" (2 digits) instead of "020" (3 digits) — inconsistent with rest of archive naming convention. Consider renaming to 020_chapter16_V3a.ptx.</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>V3a is latest. Jump from V1C to V3a suggests an intermediate V2 may be missing from archive or was superseded.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 17 -->
+    <tr data-status="archive" data-detail="ch17">
+      <td><div class="seq">021</div></td>
+      <td>
+        <div class="ch-num">Chapter 17</div>
+        <div class="ch-title">Let's whip it good</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of 021_chapter17_V2.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-ok">✓</span> Single version, archived as V2</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch17', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch17">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>All Sessions</h4><ul><li>Copy of 021_chapter17_V2.ptx</li></ul></div>
+          <div class="detail-group"><h4>Location</h4><p>Audio Assets/ProTools/ (master archive)</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>V2 archived. Single clean version.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 18 -->
+    <tr data-status="archive" data-detail="ch18">
+      <td><div class="seq">022</div></td>
+      <td>
+        <div class="ch-num">Chapter 18</div>
+        <div class="ch-title">It was the 80s, after all</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of 022_chapter18_v1b.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-ok">✓</span> Single version, archived</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch18', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch18">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>All Sessions</h4><ul><li>Copy of 022_chapter18_v1b.ptx</li></ul></div>
+          <div class="detail-group"><h4>Location</h4><p>Audio Assets/ProTools/ (master archive)</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>v1b archived. Single clean version.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 19 DUPLICATE FLAG -->
+    <tr data-status="multi" data-detail="ch19">
+      <td>
+        <div class="seq">023</div>
+        <div class="seq" style="margin-top:4px;">027</div>
+      </td>
+      <td>
+        <div class="ch-num">Chapter 19</div>
+        <div class="ch-title">What's a nice gay man doing marrying a sweet woman like this?</div>
+      </td>
+      <td><span class="badge badge-multi">⚠ Duplicate Seq</span></td>
+      <td>
+        <div class="session-file warn">Copy of 023_chapter19_v1.ptx</div>
+        <div class="session-file latest">Copy of 027_SOTE_chapter19_v1b.ptx</div>
+      </td>
+      <td class="note">
+        <span class="flag note-crit">🚨</span> <strong>Two sequence numbers assigned!</strong><br>
+        Seq 023 = early v1, Seq 027 = revised v1b<br>
+        Confirm which is approved deliverable
+      </td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch19', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch19">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>Both Archived Sessions</h4>
+            <ul>
+              <li>Copy of 023_chapter19_v1.ptx ← seq 023, early version</li>
+              <li>Copy of 027_SOTE_chapter19_v1b.ptx ← seq 027, revised</li>
+            </ul>
+          </div>
+          <div class="detail-group">
+            <h4>The Problem</h4>
+            <p>Chapter 19 has been assigned TWO different sequence numbers (023 and 027), suggesting a revision pass that created a new archive entry rather than updating the original. This leaves a gap at seq 026 (Chapter 22) and a confusing double-entry.</p>
+          </div>
+          <div class="detail-group">
+            <h4>🚨 Action Required</h4>
+            <p>Clarify with Dan: Is 023_v1 superseded by 027_v1b? If yes — archive 023 as legacy, make 027_v1b the canonical version. Resolve what should occupy the seq 026 slot (Chapter 22 is missing).</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 20 -->
+    <tr data-status="missing" data-detail="ch20">
+      <td><div class="seq-none">024 (gap)</div></td>
+      <td>
+        <div class="ch-num">Chapter 20</div>
+        <div class="ch-title">Flying down to Rio</div>
+      </td>
+      <td><span class="badge badge-missing">✗ Not Found</span></td>
+      <td><span style="font-size:12px;color:var(--text-muted);font-style:italic;">No session located</span></td>
+      <td class="note note-crit"><span class="flag">✗</span> Seq 024 is a gap in archive</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch20', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch20">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>Status</h4><p>No session found in any scanned folder.</p></div>
+          <div class="detail-group"><h4>Possible Locations</h4><p>May be on external drive or not yet produced.</p></div>
+          <div class="detail-group"><h4>Action</h4><p>🔴 Locate missing session. Assign seq 024 when found.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 21 -->
+    <tr data-status="archive" data-detail="ch21">
+      <td><div class="seq">025</div></td>
+      <td>
+        <div class="ch-num">Chapter 21</div>
+        <div class="ch-title">A producer at the crossroads</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of 025_chapter21_V0b.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-warn">⚠</span> V0b — early "version zero" draft</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch21', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch21">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>All Sessions</h4><ul><li>Copy of 025_chapter21_V0b.ptx</li></ul></div>
+          <div class="detail-group"><h4>Location</h4><p>Audio Assets/ProTools/ (master archive)</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>⚠️ Archived as V0b — this is an early draft version. Confirm with Dan if further revisions are expected or if V0b is the approved deliverable.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 22 -->
+    <tr data-status="missing" data-detail="ch22">
+      <td><div class="seq-none">026 (gap)</div></td>
+      <td>
+        <div class="ch-num">Chapter 22</div>
+        <div class="ch-title">Immersive audio (at last!)</div>
+      </td>
+      <td><span class="badge badge-missing">✗ Not Found</span></td>
+      <td><span style="font-size:12px;color:var(--text-muted);font-style:italic;">No session located</span></td>
+      <td class="note note-crit"><span class="flag">✗</span> Seq 026 gap — may be related to Ch 19 duplicate seq issue</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch22', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch22">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>Status</h4><p>No session found. Seq 026 is a gap — the chapter 19 v1b revision was assigned seq 027 instead, possibly displacing this chapter's expected position.</p></div>
+          <div class="detail-group"><h4>Possible Locations</h4><p>May be on external drive or not yet produced. Also check if this chapter was combined with Ch 21 or 23.</p></div>
+          <div class="detail-group"><h4>Action</h4><p>🔴 Locate or produce missing session. Assign seq 026 when found.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 23 -->
+    <tr data-status="missing" data-detail="ch23">
+      <td><div class="seq-none">— gap —</div></td>
+      <td>
+        <div class="ch-num">Chapter 23</div>
+        <div class="ch-title">Mi Casa: bringing surround home</div>
+      </td>
+      <td><span class="badge badge-missing">✗ Not Found</span></td>
+      <td><span style="font-size:12px;color:var(--text-muted);font-style:italic;">No session located</span></td>
+      <td class="note note-crit"><span class="flag">✗</span> Not in any scanned folder or combined session</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch23', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch23">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>Status</h4><p>No session found in any scanned folder. Not in the combined Ch 6-7-8-9 session or any other multi-chapter session.</p></div>
+          <div class="detail-group"><h4>Possible Locations</h4><p>May be on external drive or not yet produced.</p></div>
+          <div class="detail-group"><h4>Action</h4><p>🔴 Locate or produce missing session.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Chapter 24 -->
+    <tr data-status="archive" data-detail="ch24">
+      <td><div class="seq">028</div></td>
+      <td>
+        <div class="ch-num">Chapter 24</div>
+        <div class="ch-title">Chasing tall ship dreams / We can do it all, or so I thought</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of 028_chapter24_v2.ptx</div>
+      </td>
+      <td class="note">
+        <span class="flag note-ok">✓</span> Single version, archived<br>
+        <span class="flag note-warn">⚠</span> Chapter title still undetermined in manuscript
+      </td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch24', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch24">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>All Sessions</h4><ul><li>Copy of 028_chapter24_v2.ptx</li></ul></div>
+          <div class="detail-group"><h4>Location</h4><p>Audio Assets/ProTools/ (master archive)</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>v2 archived. The manuscript shows the chapter title was undecided (multiple options listed: "Going to sea", "Chasing my tall ship dreams", "Chasing tall ship dreams", "We can do it all, or so I thought"). Confirm final title with Dan.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- ──── BOOK PART 3 ──── -->
+    <tr class="section-header">
+      <td colspan="6">Part 3 · "The man behind the curtain" — My own mix: production, innovation, recovery</td>
+    </tr>
+
+    <!-- Chapter 25 -->
+    <tr data-status="archive" data-detail="ch25">
+      <td><div class="seq">029</div></td>
+      <td>
+        <div class="ch-num">Chapter 25</div>
+        <div class="ch-title">Stepping back from the edge</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file latest">Copy of 029_chapter25_V0c.ptx</div>
+      </td>
+      <td class="note"><span class="flag note-warn">⚠</span> V0c — early "version zero" draft</td>
+      <td><button class="expand-btn" onclick="toggleDetail('ch25', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-ch25">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group"><h4>All Sessions</h4><ul><li>Copy of 029_chapter25_V0c.ptx</li></ul></div>
+          <div class="detail-group"><h4>Location</h4><p>Audio Assets/ProTools/ (master archive)</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>⚠️ V0c is an early draft. Also see AI sessions for Chapter 25/Epilogue below — AI voice versions exist and require SAG-AFTRA documentation.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Epilogue -->
+    <tr data-status="ai" data-detail="epi">
+      <td><div class="seq-none">— no seq —</div></td>
+      <td>
+        <div class="ch-num">Epilogue</div>
+        <div class="ch-title">Still in the game</div>
+      </td>
+      <td><span class="badge badge-ai">✦ AI Session</span></td>
+      <td>
+        <div class="session-file ai">SOTE_CHapter25_Epologue_v1_AIVOX.ptx</div>
+        <div class="session-file ai">SOTE CHapter25+Epologue(allAI).ptx</div>
+      </td>
+      <td class="note">
+        <span class="flag note-ai">✦</span> AI voice sessions — no human narrator version found<br>
+        <span class="flag note-warn">⚠</span> SAG-AFTRA disclosure required<br>
+        <span class="flag note-warn">⚠</span> Typo: "Epologue" (not "Epilogue")
+      </td>
+      <td><button class="expand-btn" onclick="toggleDetail('epi', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-epi">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>AI Sessions Found</h4>
+            <ul>
+              <li>SOTE_CHapter25_Epologue_v1_AIVOX.ptx (1 backup .bak)</li>
+              <li>SOTE CHapter25+Epologue(allAI).ptx (4 backups .bak.000–.003)</li>
+            </ul>
+          </div>
+          <div class="detail-group">
+            <h4>⚠️ SAG-AFTRA Note</h4>
+            <p>These sessions contain AI-generated voice content. Cross-reference with <strong>SOTE_AUDIT_SCORECARD.md</strong> before any delivery. SAG-AFTRA AI disclosure requirements apply. Confirm compliance with Pushkin Industries.</p>
+          </div>
+          <div class="detail-group">
+            <h4>Issues</h4>
+            <p>1. Filename typo: "Epologue" not "Epilogue"<br>2. No human narrator version of Epilogue found — only AI versions exist in scanned folders<br>3. "allAI" tag in second session name — full AI production?<br>4. No sequence number assigned</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Raw Recording Note -->
+    <tr class="section-header">
+      <td colspan="6">Supplemental Sessions</td>
+    </tr>
+
+    <tr data-status="archive" data-detail="raw">
+      <td><div class="seq-none">Raw Rec</div></td>
+      <td>
+        <div class="ch-num">Recording Days</div>
+        <div class="ch-title">July 2025 Recording Sessions</div>
+      </td>
+      <td><span class="badge badge-archive">✓ Archive</span></td>
+      <td>
+        <div class="session-file">SOTE_July-16-2025_Day 2 24bit</div>
+        <div class="session-file">SOTE_Day4_(Chapter4)_07-25-2025</div>
+      </td>
+      <td class="note"><span class="flag">📼</span> Raw recording day sessions — source material</td>
+      <td><button class="expand-btn" onclick="toggleDetail('raw', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-raw">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>Recording Day Sessions</h4>
+            <ul>
+              <li>SOTE_July-16-2025_Day 2 24bit.ptx</li>
+              <li>SOTE_Day4_(Chapter4)_07-25-2025.ptx</li>
+              <li>Day4_July28_sub-session.ptx</li>
+              <li>Day4_July30_sub-session.ptx</li>
+            </ul>
+          </div>
+          <div class="detail-group"><h4>Purpose</h4><p>Raw recording sessions from July 2025 sessions with Robert. These are source material — chapter sessions are edited from these recordings.</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>Day 2 (July 16) and Day 4 (July 25) with sub-sessions on July 28 and 30. 24-bit recording quality noted on Day 2. Keep archived — do not delete source recordings.</p></div>
+        </div>
+      </td>
+    </tr>
+
+    <tr data-status="archive" data-detail="other">
+      <td><div class="seq-none">Other</div></td>
+      <td>
+        <div class="ch-num">Special Sessions</div>
+        <div class="ch-title">Sister Piano · Combined · Test</div>
+      </td>
+      <td><span class="badge badge-combined">◈ Special</span></td>
+      <td>
+        <div class="session-file">RobertSisterPiano.ptx</div>
+        <div class="session-file">SOTE Ch 6-7-8-9.ptx</div>
+        <div class="session-file warn">TEST_09_12_2025.ptx</div>
+      </td>
+      <td class="note"><span class="flag">🎹</span> Piano session + combined Ch 6-9 + test session</td>
+      <td><button class="expand-btn" onclick="toggleDetail('other', this)">▾ Detail</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-other">
+      <td colspan="6">
+        <div class="detail-content">
+          <div class="detail-group">
+            <h4>Sessions</h4>
+            <ul>
+              <li>RobertSisterPiano.ptx — Jackie's piano recordings</li>
+              <li>SOTE Ch 6-7-8-9.ptx — combined chapters 6, 7, 8, 9</li>
+              <li>TEST_09_12_2025.ptx — September 2025 test session</li>
+            </ul>
+          </div>
+          <div class="detail-group"><h4>Sister Piano</h4><p>Recording of Robert's sister Jackie on the family Steinway — referenced in Chapter 1 and manuscript. Important archival content.</p></div>
+          <div class="detail-group"><h4>Notes</h4><p>TEST session from September 12, 2025 — likely a system/workflow test. Combined Ch 6-7-8-9 is the only source for Ch 8 standalone content.</p></div>
+        </div>
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<div class="footer">
+  <span>Shaping Sounds — Pro Tools Session Reference · Generated April 12, 2026</span>
+  <span>Audio Engineering: Gio Bertuccelli · Publisher: Pushkin Industries</span>
+  <span>Source: SOTE_PROTOOLS_SESSION_AUDIT.md</span>
+</div>
+
+<script>
+  function toggleDetail(id, btn) {
+    const row = document.getElementById('detail-' + id);
+    if (!row) return;
+    const isOpen = !row.classList.contains('hidden');
+    row.classList.toggle('hidden', isOpen);
+    if (btn) {
+      btn.textContent = isOpen ? '▾ Detail' : '▴ Close';
+      btn.classList.toggle('open', !isOpen);
+    }
+  }
+
+  function filterTable(filter, clickedBtn) {
+    // Update button states
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    clickedBtn.classList.add('active');
+
+    const rows = document.querySelectorAll('#mainTable tbody tr[data-status]');
+    rows.forEach(row => {
+      const status = row.getAttribute('data-status');
+      const detailId = row.getAttribute('data-detail');
+      let show = false;
+
+      if (filter === 'all') {
+        show = true;
+      } else if (filter === 'archive') {
+        show = status === 'archive';
+      } else if (filter === 'multi') {
+        show = status === 'multi';
+      } else if (filter === 'missing') {
+        show = status === 'missing' || status === 'combined' || status === 'mixonly';
+      } else if (filter === 'active') {
+        show = status === 'active';
+      } else if (filter === 'ai') {
+        show = status === 'ai';
+      } else if (filter === 'action') {
+        // "Needs Action" = anything not cleanly archived
+        show = status !== 'archive';
+      }
+
+      row.classList.toggle('hidden', !show);
+
+      // Also hide open detail rows
+      if (!show && detailId) {
+        const detail = document.getElementById('detail-' + detailId);
+        if (detail) detail.classList.add('hidden');
+        const btn = row.querySelector('.expand-btn');
+        if (btn) { btn.textContent = '▾ Detail'; btn.classList.remove('open'); }
+      }
+    });
+
+    // Show/hide section headers based on visible rows
+    document.querySelectorAll('#mainTable tr.section-header').forEach(header => {
+      if (filter === 'all') { header.style.display = ''; return; }
+      let next = header.nextElementSibling;
+      let hasVisible = false;
+      while (next && !next.classList.contains('section-header')) {
+        if (next.getAttribute('data-status') && !next.classList.contains('hidden')) {
+          hasVisible = true; break;
+        }
+        next = next.nextElementSibling;
+      }
+      header.style.display = hasVisible ? '' : 'none';
+    });
+  }
+</script>
+
+</body>
+</html>

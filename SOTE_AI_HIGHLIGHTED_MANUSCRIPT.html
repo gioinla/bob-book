@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHAPING SOUNDS — AI Audio Audit: Highlighted Manuscript for Dan Kavanaugh</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Georgia', serif; background: #1a1a2e; color: #e0e0e0; line-height: 1.7; }
+.container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+/* Header */
+.header { background: linear-gradient(135deg, #16213e, #0f3460); padding: 40px 30px; border-radius: 12px; margin-bottom: 30px; border-left: 6px solid #e94560; }
+.header h1 { font-size: 28px; color: #fff; margin-bottom: 8px; }
+.header h2 { font-size: 18px; color: #a0c4ff; margin-bottom: 15px; font-weight: normal; }
+.header .meta { font-size: 14px; color: #8899aa; line-height: 1.8; }
+.header .meta strong { color: #e94560; }
+.header .deadline { background: #e94560; color: #fff; padding: 8px 16px; border-radius: 6px; display: inline-block; margin-top: 12px; font-weight: bold; font-size: 15px; }
+
+/* Legend */
+.legend { background: #16213e; padding: 25px; border-radius: 10px; margin-bottom: 30px; }
+.legend h3 { color: #fff; margin-bottom: 15px; font-size: 18px; }
+.legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.legend-item { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.legend-swatch { width: 24px; height: 24px; border-radius: 4px; flex-shrink: 0; }
+.swatch-elevenlabs { background: #ff4444; }
+.swatch-tts { background: #ff8c00; }
+.swatch-regen { background: #ffd700; }
+.swatch-scratch { background: #fff8dc; }
+.legend .status-legend { margin-top: 18px; border-top: 1px solid #2a3a5e; padding-top: 15px; }
+.legend .status-legend h4 { color: #a0c4ff; margin-bottom: 10px; }
+
+/* Status badges */
+.badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge-clean { background: #2d6a4f; color: #b7e4c7; }
+.badge-spot { background: #b8860b; color: #fff8dc; }
+.badge-rework { background: #c0392b; color: #fce4e4; }
+.badge-critical { background: #8b0000; color: #ffcccc; animation: pulse 2s infinite; }
+.badge-unverifiable { background: #6c3483; color: #e8daef; }
+.badge-conditional { background: #2874a6; color: #d4e6f1; }
+
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+/* Navigation */
+.nav { background: #16213e; padding: 20px; border-radius: 10px; margin-bottom: 30px; }
+.nav h3 { color: #fff; margin-bottom: 12px; }
+.nav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
+.nav-link { color: #a0c4ff; text-decoration: none; font-size: 13px; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
+.nav-link:hover { background: #0f3460; }
+.nav-link .nav-badge { font-size: 11px; margin-left: 4px; }
+
+/* Chapter sections */
+.chapter { background: #16213e; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+.chapter-header { padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a3a5e; }
+.chapter-header h3 { color: #fff; font-size: 18px; }
+.chapter-body { padding: 25px; }
+.chapter-clean { border-left: 4px solid #2d6a4f; }
+.chapter-spot { border-left: 4px solid #b8860b; }
+.chapter-rework { border-left: 4px solid #c0392b; }
+.chapter-critical { border-left: 4px solid #8b0000; }
+.chapter-unverifiable { border-left: 4px solid #6c3483; }
+.chapter-conditional { border-left: 4px solid #2874a6; }
+
+/* AI highlight styles */
+.ai-elevenlabs { background: rgba(255, 68, 68, 0.35); border-bottom: 3px solid #ff4444; padding: 2px 4px; border-radius: 3px; }
+.ai-tts { background: rgba(255, 140, 0, 0.3); border-bottom: 3px solid #ff8c00; padding: 2px 4px; border-radius: 3px; }
+.ai-regen { background: rgba(255, 215, 0, 0.25); border-bottom: 3px solid #ffd700; padding: 2px 4px; border-radius: 3px; color: #fff; }
+.ai-scratch { background: rgba(255, 248, 220, 0.15); border-bottom: 2px dashed #fff8dc; padding: 2px 4px; border-radius: 3px; }
+
+/* Annotation tags */
+.ai-tag { font-size: 11px; font-family: 'Courier New', monospace; padding: 2px 6px; border-radius: 3px; margin-left: 4px; vertical-align: super; }
+.tag-el { background: #ff4444; color: #fff; }
+.tag-tts { background: #ff8c00; color: #fff; }
+.tag-regen { background: #ffd700; color: #000; }
+
+/* Alert banners */
+.alert-banner { padding: 15px 20px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
+.alert-critical { background: rgba(139, 0, 0, 0.3); border: 1px solid #8b0000; }
+.alert-warning { background: rgba(184, 134, 11, 0.2); border: 1px solid #b8860b; }
+.alert-info { background: rgba(40, 116, 166, 0.2); border: 1px solid #2874a6; }
+.alert-banner strong { color: #ff6b6b; }
+.alert-banner .timecodes { font-family: 'Courier New', monospace; color: #ffd700; margin-top: 8px; display: block; }
+
+/* Manuscript text */
+.manuscript { font-size: 15px; line-height: 1.9; color: #d0d0d0; }
+.manuscript p { margin-bottom: 14px; text-indent: 2em; }
+.manuscript p:first-child { text-indent: 0; }
+.context-note { font-style: italic; color: #8899aa; font-size: 13px; margin-bottom: 10px; }
+
+/* Action items */
+.action-items { background: #2c1810; border: 1px solid #e94560; border-radius: 10px; padding: 25px; margin-bottom: 30px; }
+.action-items h3 { color: #e94560; margin-bottom: 15px; }
+.action-items ol { padding-left: 20px; }
+.action-items li { margin-bottom: 12px; font-size: 14px; color: #e0d0c0; }
+.action-items li strong { color: #ff8c00; }
+
+/* Summary stats */
+.summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+.stat-card { background: #16213e; padding: 20px; border-radius: 10px; text-align: center; }
+.stat-card .number { font-size: 36px; font-weight: bold; }
+.stat-card .label { font-size: 12px; color: #8899aa; margin-top: 5px; }
+.stat-green .number { color: #2d6a4f; }
+.stat-yellow .number { color: #ffd700; }
+.stat-red .number { color: #ff4444; }
+.stat-purple .number { color: #8b5cf6; }
+
+/* Print styles */
+@media print {
+  body { background: #fff; color: #000; }
+  .chapter { border: 1px solid #ccc; }
+  .ai-elevenlabs { background: #ffcccc; border-bottom-color: #ff0000; color: #000; }
+  .ai-tts { background: #ffe0b2; border-bottom-color: #ff8c00; color: #000; }
+  .ai-regen { background: #fff9c4; border-bottom-color: #ffd700; color: #000; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+  <h1>SHAPING SOUNDS — AI Audio Highlighted Manuscript</h1>
+  <h2>SAG-AFTRA Compliance Audit: Remediation Guide for Dan Kavanaugh</h2>
+  <div class="meta">
+    <strong>Author:</strong> Robert Margouleff with Jim Reilly<br>
+    <strong>Audit by:</strong> Gio Bertucchelli (Sound Designer / Engineer)<br>
+    <strong>Generated:</strong> April 9, 2026<br>
+    <strong>Requirement:</strong> SAG-AFTRA — Zero AI-generated full words or lines permitted
+  </div>
+  <div class="deadline">⚠ DEADLINE: April 15, 2026 — 6 days remaining</div>
+</div>
+
+<!-- SUMMARY STATS -->
+<div class="summary">
+  <div class="stat-card stat-green"><div class="number">18</div><div class="label">CLEAN CHAPTERS</div></div>
+  <div class="stat-card stat-yellow"><div class="number">5</div><div class="label">SPOT FIXES</div></div>
+  <div class="stat-card stat-red"><div class="number">6</div><div class="label">SIGNIFICANT REWORK</div></div>
+  <div class="stat-card stat-purple"><div class="number">2</div><div class="label">CONDITIONAL / UNVERIFIABLE</div></div>
+</div>
+
+<!-- PRIORITY ACTION ITEMS -->
+<div class="action-items">
+  <h3>🚨 MUST-FIX ACTION ITEMS FOR DAN (8 items)</h3>
+  <ol>
+    <li><strong>Ch10 — CRITICAL:</strong> ~55 AI files (17 ElevenLabs + 19 Descript regens). 15-20% AI content. Needs complete re-record of AI segments or use alternate clean take.</li>
+    <li><strong>Ch11:</strong> 17 ElevenLabs clips (~7 min!) + 3 Descript regens. Use "Chapter11_Duplicates_Removed" project as cleanest starting point.</li>
+    <li><strong>Ch12:</strong> Two projects exist — Project A is CLEAN (use this!). Project B has 42 ElevenLabs + 2 regens. Confirm which project is in final mix.</li>
+    <li><strong>Ch13:</strong> 63 AI files, 18% AI (111 seconds). Dan re-recorded April 3 — verify new recording replaces all AI segments.</li>
+    <li><strong>Ch15:</strong> Two projects — Project A is CLEAN (use this!). Project B has 60+ AI segments. Confirm which project is in final mix.</li>
+    <li><strong>Ch17:</strong> 4 ElevenLabs clips totaling 34.9s. Timecodes: 8:02-8:17, 8:17-8:32, 10:04-10:06, 10:06-10:10.</li>
+    <li><strong>Ch19:</strong> 2 AI phrases in text — "the gays in" (TTS) and "was rhythmically" (regen). Spot re-records needed.</li>
+    <li><strong>Ch21:</strong> UNVERIFIABLE — sources flattened. Full rebuild from original recordings required.</li>
+  </ol>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <h3>Color Legend — AI Type Identification</h3>
+  <div class="legend-grid">
+    <div class="legend-item"><div class="legend-swatch swatch-elevenlabs"></div><span><strong>RED</strong> — ElevenLabs Voice Clone ("BOB new pro") — MOST SEVERE</span></div>
+    <div class="legend-item"><div class="legend-swatch swatch-tts"></div><span><strong>ORANGE</strong> — Descript TTS (text-to-speech generation)</span></div>
+    <div class="legend-item"><div class="legend-swatch swatch-regen"></div><span><strong>YELLOW</strong> — Descript Regeneration (AI re-synthesis)</span></div>
+    <div class="legend-item"><div class="legend-swatch swatch-scratch"></div><span><strong>LIGHT YELLOW</strong> — Descript Scratch Fill (gap filler)</span></div>
+  </div>
+  <div class="status-legend">
+    <h4>Chapter Status Badges</h4>
+    <span class="badge badge-clean">✅ CLEAN</span>
+    <span class="badge badge-spot">⚡ SPOT FIX</span>
+    <span class="badge badge-rework">🔴 SIGNIFICANT REWORK</span>
+    <span class="badge badge-critical">🚨 CRITICAL</span>
+    <span class="badge badge-unverifiable">❓ UNVERIFIABLE</span>
+    <span class="badge badge-conditional">📋 CONDITIONAL</span>
+  </div>
+</div>
+
+<!-- NAVIGATION -->
+<div class="nav">
+  <h3>Chapter Navigation</h3>
+  <div class="nav-grid">
+    <a class="nav-link" href="#opening">Opening Credits <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#foreword">Foreword <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#preface">Preface <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#prologue">Prologue <span class="nav-badge badge badge-spot">⚡</span></a>
+    <a class="nav-link" href="#ch1">Ch 1 — Planting Seeds <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch2">Ch 2 — Learning Became Living <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch3">Ch 3 — Finding My Voice <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch4">Ch 4 — East Village / Uncle Sam <span class="nav-badge badge badge-spot">⚡</span></a>
+    <a class="nav-link" href="#ch5">Ch 5 — Ciao! Baby <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch6">Ch 6 — Tuning into the Future <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch7">Ch 7 — Total Chaos <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch8">Ch 8 — Fire Island <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch9">Ch 9 — Two Minds, One TONTO <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch10">Ch 10 — Stevie Time! <span class="nav-badge badge badge-critical">🚨</span></a>
+    <a class="nav-link" href="#ch11">Ch 11 — Go West <span class="nav-badge badge badge-rework">🔴</span></a>
+    <a class="nav-link" href="#ch12">Ch 12 — The Magic We Created <span class="nav-badge badge badge-conditional">📋</span></a>
+    <a class="nav-link" href="#ch13">Ch 13 — Our Non-Stop Studio <span class="nav-badge badge badge-rework">🔴</span></a>
+    <a class="nav-link" href="#ch14">Ch 14 — All Good Things Must End <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch15">Ch 15 — Life After Wonder <span class="nav-badge badge badge-conditional">📋</span></a>
+    <a class="nav-link" href="#ch16">Ch 16 — Journeyman Years <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch17">Ch 17 — Let's Whip It Good <span class="nav-badge badge badge-rework">🔴</span></a>
+    <a class="nav-link" href="#ch18">Ch 18 — It Was the 80s <span class="nav-badge badge badge-spot">⚡</span></a>
+    <a class="nav-link" href="#ch19">Ch 19 — Nice Gay Man <span class="nav-badge badge badge-spot">⚡</span></a>
+    <a class="nav-link" href="#ch20">Ch 20 — Flying Down to Rio <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch21">Ch 21 — Producer at Crossroads <span class="nav-badge badge badge-unverifiable">❓</span></a>
+    <a class="nav-link" href="#ch22">Ch 22 — Immersive Audio <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch23">Ch 23 — Mi Casa <span class="nav-badge badge badge-spot">⚡</span></a>
+    <a class="nav-link" href="#ch24">Ch 24 — Tall Ship Dreams <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#ch25">Ch 25 — Stepping Back <span class="nav-badge badge badge-clean">✅</span></a>
+    <a class="nav-link" href="#epilogue">Epilogue <span class="nav-badge badge badge-spot">⚡</span></a>
+    <a class="nav-link" href="#credits">End Credits <span class="nav-badge badge badge-spot">⚡</span></a>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHAPTERS BEGIN -->
+<!-- ============================================================ -->
+
+<!-- OPENING CREDITS -->
+<div class="chapter chapter-clean" id="opening">
+  <div class="chapter-header">
+    <h3>Opening Credits</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- FOREWORD -->
+<div class="chapter chapter-clean" id="foreword">
+  <div class="chapter-header">
+    <h3>Foreword by Mark Mothersbaugh of DEVO</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- PREFACE -->
+<div class="chapter chapter-clean" id="preface">
+  <div class="chapter-header">
+    <h3>Preface — A Note from the Author</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- PROLOGUE -->
+<div class="chapter chapter-spot" id="prologue">
+  <div class="chapter-header">
+    <h3>Prologue — Memorial Day Weekend, 1971</h3>
+    <span class="badge badge-spot">⚡ SPOT FIX — 4 Descript TTS segments (~5.2s total)</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-warning">
+      <strong>4 Descript TTS segments detected</strong> — total ~5.2 seconds. All are short phrase replacements that need re-recording by Bob or patch from alternate takes.
+      <span class="timecodes">Timecodes: 1:02 (1.76s) · 4:26 (2.0s) · 4:28 (0.36s) · 4:47 (1.65s)</span>
+    </div>
+    <div class="manuscript">
+      <p>It was early Sunday evening, Memorial Day weekend, at the end of May 1971. I was working at Mediasound recording studios in New York, where I'd settled in with my Moog synthesizer as the resident electronic music specialist and hippie bad boy. The studio was closed for the holiday, and there was virtually no traffic on 57th Street. It was uncharacteristically quiet.</p>
+
+      <p>The studio's chief engineer Malcolm Cecil, lived in an apartment one flight up over a delicatessen, right next door. Mediasound's management put him there so he could keep his eye on the front door, and he had to be on call twenty-four-seven in case anything went wrong.</p>
+
+      <p>Malcolm and I were both musicians, and we had become creative partners and collaborators on a musical project that we called Tonto's Expanding Head Band. We pursued it whenever we could get time between our paying <span class="ai-tts">gigs. The</span><span class="ai-tag tag-tts">TTS 1:02 1.76s</span> synthesizer we created, which was the heart of the project, was TONTO. Then and now, it was and is the world's largest synthesizer.</p>
+
+      <p>TONTO was more than a machine. It had a personality all its own, and it truly was the third member of our group. By now, TONTO had become an acronym: The Original, New, Timbral Orchestra. We had just completed our first all-synthesized electronica album featuring TONTO, Zero Time, and our hopes were running high.</p>
+
+      <p>The evening was warm. We were hanging out in Malcolm's living room with the windows wide open when we heard a voice calling up from the street. We stuck our heads out the window and saw Malcolm's friend and fellow bass player, Ronnie Blanco, standing at the locked front door of the studio with a tall Black guy.</p>
+
+      <p>'Hey, Malcolm,' Ronnie shouted, 'I've got somebody here who wants to see TONTO.'</p>
+
+      <p>That somebody turned out to be Stevie Wonder. We invited him into the studio, and he never left. We would work with Stevie for three years, associate producing, engineering, recording, mixing, and programming all the synth work on Music of My Mind, Talking Book, Innervisions (for which we won a Grammy), and Fulfillingness' First Finale.</p>
+
+      <p>By the time of Stevie's visit, we had moved TONTO into Mediasound's Studio B, which was in the basement. That way, we could stay out of the way and would not have to break down our setup after our sessions to make room for the big recording dates in Studio A.</p>
+
+      <p>The first thing Stevie asked when he met TONTO was, 'Is it a keyboard instrument?'</p>
+
+      <p>'Well, yes, sort of,' Malcolm replied.</p>
+
+      <p>Stevie wanted an explanation of sort of. We showed him the synthesizer and gave him a running narration about what it looked like. He put his hands all over it, touching the knobs, the patch cords, and the multiple keyboards. Of course, being a keyboard player, the first thing he did was try to play a chord. He put a whole fistful of notes down on the keyboard at once, then said, 'Oh, it's not working. Something's broken.'</p>
+
+      <p>'No, Stevie, it doesn't work that way,' Malcolm explained. 'You can only play one note at a time. It's like a trumpet or a saxophone.'</p>
+
+      <p>We realized that Stevie was quite taken by the idea that this was a keyboard instrument that he could use to create all kinds of sounds, even new sounds that no one had ever heard before. But before diving in, he asked, 'Well, where's the piano?'</p>
+
+      <p>'We've got an excellent Steinway right over here,' I told him.</p>
+
+      <p>Stevie sat down and started playing. Then he asked, 'Can we record?'</p>
+
+      <p>At first, we tracked a few songs with just vocals and piano. Then, Stevie said he wanted Malcolm to play acoustic bass on a song called 'Crazy Letters.' We tried a few takes, but it was obvious that it wasn't working.</p>
+
+      <p>'It's the wrong sound,' Malcolm said. 'It's taking it to a jazz place. We need a different sort of bass sound.'</p>
+
+      <p>'We can get a sound on the synthesizer,' I replied.</p>
+
+      <p>So, we whipped up a bass sound and told Stevie that he should play all the parts, since he knew all the changes. We explained what TONTO could and couldn't do, and he caught on quickly and put down <span class="ai-tts">a bass line.</span><span class="ai-tag tag-tts">TTS 4:26 2.0s — "a baseline."</span></p>
+
+      <p>That's how it was with Stevie. Everything was very much in the moment. Nothing was preplanned. It was all intuitive and improvised, which was terrific.</p>
+
+      <p><span class="ai-tts">So,</span><span class="ai-tag tag-tts">TTS 4:28 0.36s</span> Stevie told us that his contract with Motown had expired on his twenty-first birthday, May 13, just two weeks before he came knocking at <span class="ai-tts">our door. He made</span><span class="ai-tag tag-tts">TTS 4:47 1.65s</span> it clear that he felt very limited by the label and wanted his independence.</p>
+
+      <p><em>[Remainder of Prologue continues — no further AI detected through end of chapter]</em></p>
+    </div>
+  </div>
+</div>
+
+<!-- CH1 -->
+<div class="chapter chapter-clean" id="ch1">
+  <div class="chapter-header">
+    <h3>Chapter 1 — Planting Seeds</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- CH2 -->
+<div class="chapter chapter-clean" id="ch2">
+  <div class="chapter-header">
+    <h3>Chapter 2 — Learning Became Living</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- CH3 -->
+<div class="chapter chapter-clean" id="ch3">
+  <div class="chapter-header">
+    <h3>Chapter 3 — Finding My Voice</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- CH4 -->
+<div class="chapter chapter-spot" id="ch4">
+  <div class="chapter-header">
+    <h3>Chapter 4 — The East Village… via Uncle Sam</h3>
+    <span class="badge badge-spot">⚡ SPOT FIX — 1 ElevenLabs (7.4s) + 1 Descript overdub (0.9s)</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-warning">
+      <strong>Ch4 Part B:</strong> Contains 1 ElevenLabs voice clone segment (7.4 seconds) — a full sentence replacement. Also 1 Descript overdub (0.9s). The ElevenLabs segment is the priority fix.
+      <span class="timecodes">ElevenLabs: 8:18–8:25 (7.4s) · Descript overdub: 2:12 (0.9s)</span>
+    </div>
+    <div class="manuscript">
+      <p class="context-note">The following passage from Ch4 Part B contains the ElevenLabs voice clone segment at 8:18–8:25:</p>
+
+      <p>…I just needed customers. I joined up with a young hotshot cinematographer, Don Cohen, who was working in the same building on 5th Street where I had set up my office, shooting stage, and screening room. He was already established and had a regular paying clientele. We became partners and moved our business uptown to a new studio space on 47th Street, between 5th and 6th Avenue, in the heart of the diamond district, which was populated by intensely orthodox Jewish diamond merchants and gem cutters.</p>
+
+      <p><span class="ai-elevenlabs">We named our venture Centaur Films because I felt that the mythical creature—half man, half horse—was heroic.</span><span class="ai-tag tag-el">⚠ ELEVENLABS 8:18 7.4s — MUST RE-RECORD</span> Centaur was on the seventh floor. It consisted of a twenty-five-by-thirty-foot insert stage, a small control room, and several offices.</p>
+
+      <p><em>[Remainder of Ch4 — no further AI detected]</em></p>
+    </div>
+  </div>
+</div>
+
+<!-- CH5 -->
+<div class="chapter chapter-clean" id="ch5">
+  <div class="chapter-header">
+    <h3>Chapter 5 — Ciao! Baby</h3>
+    <span class="badge badge-clean">✅ NEAR-CLEAN (0.8s scratch fill — optional fix)</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">Near-clean. One 0.8s Descript scratch fill detected — below severity threshold. Optional fix only.</p>
+  </div>
+</div>
+
+<!-- CH6 -->
+<div class="chapter chapter-clean" id="ch6">
+  <div class="chapter-header">
+    <h3>Chapter 6 — Tuning into the Future</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- CH7 -->
+<div class="chapter chapter-clean" id="ch7">
+  <div class="chapter-header">
+    <h3>Chapter 7 — Total Chaos and 'Vitamin Shots'</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- CH8 -->
+<div class="chapter chapter-clean" id="ch8">
+  <div class="chapter-header">
+    <h3>Chapter 8 — Fire Island and the Reset Button</h3>
+    <span class="badge badge-clean">✅ NEAR-CLEAN (1.65s — optional fix)</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">Near-clean. One short segment detected (1.65s) — below severity threshold. Optional fix only.</p>
+  </div>
+</div>
+
+<!-- CH9 -->
+<div class="chapter chapter-clean" id="ch9">
+  <div class="chapter-header">
+    <h3>Chapter 9 — Two Minds, One TONTO</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CH10 — CRITICAL -->
+<!-- ============================================================ -->
+<div class="chapter chapter-critical" id="ch10">
+  <div class="chapter-header">
+    <h3>Chapter 10 — It's Stevie Time!</h3>
+    <span class="badge badge-critical">🚨 CRITICAL — ~55 AI Files, 15-20% AI Content</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-critical">
+      <strong>🚨 CRITICAL — HIGHEST PRIORITY REMEDIATION</strong><br>
+      This chapter contains approximately <strong>55 AI-generated audio files</strong>: 17 ElevenLabs voice clones + 19 Descript regenerations + additional TTS/scratch. An estimated 15-20% of the chapter's audio is AI-generated. Specific text phrases are not quoted in the audit scorecard — the volume of AI is too high for individual phrase identification. <strong>This entire chapter needs comprehensive review and re-recording of all AI segments.</strong>
+    </div>
+
+    <div class="manuscript">
+      <p class="context-note">⚠ The entire text of Chapter 10 should be considered potentially affected. The 55 AI files are distributed throughout. Dan must compare against Descript project timeline to identify and replace each AI segment. Key passages from the chapter follow for reference — any of these may contain AI audio in the current mix:</p>
+
+      <p>Stevie Wonder told Rolling Stone in an interview published on April 12, 2021: 'When I met Bob and Malcolm, I was excited. You could create a bass sound, a horn sound, sounds you're imagining in your head. They were trying to take it beyond the typical level…'</p>
+
+      <p>As one's life is playing out, it may seem random and full of coincidences. However, with hindsight, the paths and experiences that bring people together, regardless of their diversity, reveal themselves to be anything but accidental or serendipitous…</p>
+
+      <p>On that first weekend together in 1971, Stevie had just turned twenty-one. His Motown contract had expired, and he had just been paid the money that had previously been held in trust…</p>
+
+      <p><em>[Full chapter text continues — ALL passages potentially affected by the 55 AI files distributed throughout. Cross-reference with Descript project timeline for exact locations.]</em></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CH11 — SIGNIFICANT REWORK -->
+<!-- ============================================================ -->
+<div class="chapter chapter-rework" id="ch11">
+  <div class="chapter-header">
+    <h3>Chapter 11 — Go West: The Record Plant Years</h3>
+    <span class="badge badge-rework">🔴 SIGNIFICANT REWORK — 17 ElevenLabs (~7min) + 3 Descript regens</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-critical">
+      <strong>🔴 17 ElevenLabs voice clone clips totaling approximately 7 minutes</strong> plus 3 Descript regeneration segments. This is extensive AI content. The project labeled <strong>"Chapter11_Duplicates_Removed"</strong> is the cleanest version — use that as the starting point for remediation. All ElevenLabs clips must be re-recorded by Bob or replaced with clean alternate takes.
+    </div>
+
+    <div class="manuscript">
+      <p class="context-note">⚠ AI segments are distributed throughout this chapter. No specific text phrases quoted in audit — the 17 ElevenLabs clips span approximately 7 minutes of audio across the full chapter. Dan should use the "Chapter11_Duplicates_Removed" Descript project and cross-reference with the Underlord AI detection scan to locate each segment. Key chapter passages for reference:</p>
+
+      <p>Once Stevie's new Motown deal was in place, we continued to work in New York and tracked songs and parts of songs that would show up on future records. However, with Motown in Los Angeles, it wasn't long before we started working there too…</p>
+
+      <p><em>[Full chapter continues — cross-reference Descript project for AI segment locations]</em></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CH12 — CONDITIONAL -->
+<!-- ============================================================ -->
+<div class="chapter chapter-conditional" id="ch12">
+  <div class="chapter-header">
+    <h3>Chapter 12 — The Magic We Created</h3>
+    <span class="badge badge-conditional">📋 CONDITIONAL — Two projects exist</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-info">
+      <strong>📋 CONDITIONAL STATUS — Depends on which Descript project Dan uses:</strong><br>
+      <strong>Project A:</strong> ✅ CLEAN — No AI detected. USE THIS ONE.<br>
+      <strong>Project B:</strong> 🔴 42 ElevenLabs voice clones + 2 Descript regenerations — SIGNIFICANT AI content.<br><br>
+      <strong>Dan must confirm which project is in the final Descript composition.</strong> If Project A → no action needed. If Project B → major remediation required.
+    </div>
+
+    <div class="manuscript">
+      <p class="context-note">Chapter text shown for reference. AI status depends on which Descript project Dan has used in the final composition:</p>
+
+      <p>Music of My Mind was the first and most self-contained of the records Stevie, Malcolm, and I made together. Aside from some splendid guitar work on 'Super Woman' by Howard 'Buzzy' Feiten (formerly of the Paul Butterfield Blues Band and The Rascals), Stevie played all the instruments…</p>
+
+      <p><em>[Full chapter continues — if Project B is in use, all passages potentially affected by 42 ElevenLabs clips]</em></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CH13 — SIGNIFICANT REWORK -->
+<!-- ============================================================ -->
+<div class="chapter chapter-rework" id="ch13">
+  <div class="chapter-header">
+    <h3>Chapter 13 — Our Non-Stop Studio</h3>
+    <span class="badge badge-rework">🔴 SIGNIFICANT REWORK — 63 AI files, 18% AI (111s)</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-critical">
+      <strong>🔴 63 AI-generated files — 18% of chapter is AI (111 seconds total)</strong><br>
+      Dan re-recorded on April 3, 2026. <strong>Verify the new recording replaces ALL AI segments at the timecodes below.</strong> If the April 3 re-record covers these timecodes, this chapter may now be clean.
+      <span class="timecodes">AI Timecodes: 0:04–0:17 · 0:59–1:10 · 1:47–1:48 · 3:06–3:32 · 6:34–6:35 · 6:59–7:00</span>
+    </div>
+
+    <div class="manuscript">
+      <p class="context-note">⚠ AI segments concentrated in the first 7 minutes. Timecodes mapped to approximate text locations:</p>
+
+      <p><span style="background: rgba(255,68,68,0.15); padding: 4px 8px; border-left: 3px solid #ff4444; display: block; margin: 10px 0;">⏱ 0:04–0:17 (AI segment)</span>While we were with Stevie, besides working on his own albums, we worked alongside him, continuing as a team, on two albums he produced, one for his ex-wife Syreeta Wright, the other for Minnie Riperton.</p>
+
+      <p><span style="background: rgba(255,68,68,0.15); padding: 4px 8px; border-left: 3px solid #ff4444; display: block; margin: 10px 0;">⏱ 0:59–1:10 (AI segment)</span>Syreeta Wright was a receptionist at the Motown offices in Detroit when Edward Holland (of the Holland-Dozier-Holland songwriting team) heard her singing and was impressed enough that he had her sing on some demos…</p>
+
+      <p><span style="background: rgba(255,68,68,0.15); padding: 4px 8px; border-left: 3px solid #ff4444; display: block; margin: 10px 0;">⏱ 1:47–1:48 (AI segment — brief)</span></p>
+
+      <p><span style="background: rgba(255,68,68,0.15); padding: 4px 8px; border-left: 3px solid #ff4444; display: block; margin: 10px 0;">⏱ 3:06–3:32 (AI segment — 26 seconds)</span></p>
+
+      <p><span style="background: rgba(255,68,68,0.15); padding: 4px 8px; border-left: 3px solid #ff4444; display: block; margin: 10px 0;">⏱ 6:34–6:35 (AI segment — brief)</span></p>
+
+      <p><span style="background: rgba(255,68,68,0.15); padding: 4px 8px; border-left: 3px solid #ff4444; display: block; margin: 10px 0;">⏱ 6:59–7:00 (AI segment — brief)</span></p>
+
+      <p><em>[Dan re-recorded April 3 — verify new recording covers all above timecodes]</em></p>
+    </div>
+  </div>
+</div>
+
+<!-- CH14 -->
+<div class="chapter chapter-clean" id="ch14">
+  <div class="chapter-header">
+    <h3>Chapter 14 — All Good Things Must End</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CH15 — CONDITIONAL -->
+<!-- ============================================================ -->
+<div class="chapter chapter-conditional" id="ch15">
+  <div class="chapter-header">
+    <h3>Chapter 15 — Life After Wonder</h3>
+    <span class="badge badge-conditional">📋 CONDITIONAL — Two projects exist</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-info">
+      <strong>📋 CONDITIONAL STATUS — Depends on which Descript project Dan uses:</strong><br>
+      <strong>Project A:</strong> ✅ CLEAN — No AI detected. USE THIS ONE.<br>
+      <strong>Project B:</strong> 🔴 60+ AI segments — extensive AI content.<br><br>
+      <strong>Dan must confirm which project is in the final Descript composition.</strong>
+    </div>
+  </div>
+</div>
+
+<!-- CH16 -->
+<div class="chapter chapter-clean" id="ch16">
+  <div class="chapter-header">
+    <h3>Chapter 16 — My Journeyman Years</h3>
+    <span class="badge badge-clean">✅ NEAR-CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">Near-clean. Minor segments below severity threshold. No action required.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CH17 — SIGNIFICANT REWORK -->
+<!-- ============================================================ -->
+<div class="chapter chapter-rework" id="ch17">
+  <div class="chapter-header">
+    <h3>Chapter 17 — Let's Whip It Good</h3>
+    <span class="badge badge-rework">🔴 SIGNIFICANT REWORK — 4 ElevenLabs clips (34.9s total)</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-critical">
+      <strong>🔴 4 ElevenLabs voice clone clips totaling 34.9 seconds</strong><br>
+      All concentrated in the second half of the chapter. These must be re-recorded by Bob or replaced with clean alternate takes.
+      <span class="timecodes">ElevenLabs Timecodes: 8:02–8:17 (15s) · 8:17–8:32 (15s) · 10:04–10:06 (2s) · 10:06–10:10 (4s)</span>
+    </div>
+
+    <div class="manuscript">
+      <p class="context-note">⚠ AI segments concentrated around the 8-minute and 10-minute marks. The timecodes map to approximately these portions of the chapter (8:02–8:32 is a continuous 30-second stretch):</p>
+
+      <p><em>[Chapter opening through ~8:00 mark — clean]</em></p>
+
+      <p><span style="background: rgba(255,68,68,0.15); padding: 4px 8px; border-left: 3px solid #ff4444; display: block; margin: 10px 0;">⏱ 8:02–8:32 — TWO CONSECUTIVE ElevenLabs clips (30 seconds total)<br>Approximately corresponds to DEVO rehearsal / pre-production passages</span></p>
+
+      <p><span style="background: rgba(255,68,68,0.15); padding: 4px 8px; border-left: 3px solid #ff4444; display: block; margin: 10px 0;">⏱ 10:04–10:10 — TWO ElevenLabs clips (6 seconds total)<br>Near the end of the chapter</span></p>
+
+      <p><em>[Dan must cross-reference Descript project timeline to identify exact text at these timecodes]</em></p>
+    </div>
+  </div>
+</div>
+
+<!-- CH18 -->
+<div class="chapter chapter-spot" id="ch18">
+  <div class="chapter-header">
+    <h3>Chapter 18 — It Was the 80s, After All</h3>
+    <span class="badge badge-spot">⚡ SPOT FIX — 1 Descript regen (10.77s) on RAW only</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-warning">
+      <strong>1 Descript regeneration segment (10.77 seconds)</strong> detected on the RAW project. If the edited/final project was built from a different source, this may not be present in the final mix. Verify which project Dan used.
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CH19 — SPOT FIX with specific text -->
+<!-- ============================================================ -->
+<div class="chapter chapter-spot" id="ch19">
+  <div class="chapter-header">
+    <h3>Chapter 19 — What's a Nice Gay Man Doing…</h3>
+    <span class="badge badge-spot">⚡ SPOT FIX — 1 TTS + 1 Regen (specific text identified)</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-warning">
+      <strong>2 AI segments with specific text identified:</strong><br>
+      1. Descript TTS at 5:19 — "the gays in" (within surrounding sentence)<br>
+      2. Descript Regen at 10:36 — "was rhythmically" (within surrounding sentence)
+      <span class="timecodes">Timecodes: 5:19 (TTS) · 10:36 (Regen)</span>
+    </div>
+
+    <div class="manuscript">
+      <p class="context-note">Two specific AI phrases located in the manuscript text:</p>
+
+      <p>Because Babsie was in the public-relations business, there were always parties, shows, and green rooms with lots to eat, drink, and get high. I met many people who didn't know me and had no idea about my sexuality. They would say disgusting things about <span class="ai-tts">the gays in</span><span class="ai-tag tag-tts">TTS 5:19</span> the room behind their backs, which made me angry and resentful.</p>
+
+      <p style="margin-top: 30px;"><em>[…later in chapter, around 10:36…]</em></p>
+
+      <p>Much to my surprise, Ollie showed up with an early sort of drum machine and a programmer, and although it had good sounds and <span class="ai-regen">was rhythmically</span><span class="ai-tag tag-regen">REGEN 10:36</span> correct, to this day I think it compromised the feel of the record.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CH20 -->
+<div class="chapter chapter-clean" id="ch20">
+  <div class="chapter-header">
+    <h3>Chapter 20 — Flying Down to Rio</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CH21 — UNVERIFIABLE -->
+<!-- ============================================================ -->
+<div class="chapter chapter-unverifiable" id="ch21">
+  <div class="chapter-header">
+    <h3>Chapter 21 — A Producer at the Crossroads</h3>
+    <span class="badge badge-unverifiable">❓ UNVERIFIABLE — Sources Flattened</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner" style="background: rgba(108,52,131,0.2); border: 1px solid #6c3483;">
+      <strong>❓ UNVERIFIABLE — Cannot confirm AI status.</strong><br>
+      The Descript project sources for this chapter have been flattened (bounced to a single audio file), destroying the edit history and AI detection metadata. <strong>A full rebuild from the original source recordings is required</strong> to verify SAG-AFTRA compliance. Until rebuilt, this chapter cannot be certified as AI-free.
+    </div>
+  </div>
+</div>
+
+<!-- CH22 -->
+<div class="chapter chapter-clean" id="ch22">
+  <div class="chapter-header">
+    <h3>Chapter 22 — Immersive Audio (At Last!)</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CH23 — SPOT FIX with specific text -->
+<!-- ============================================================ -->
+<div class="chapter chapter-spot" id="ch23">
+  <div class="chapter-header">
+    <h3>Chapter 23 — Mi Casa: Bringing Surround Home</h3>
+    <span class="badge badge-spot">⚡ SPOT FIX — 3 ElevenLabs clips (5.0s total)</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-warning">
+      <strong>3 ElevenLabs voice clone clips with specific text identified:</strong><br>
+      1. "just as Bobby Anderson did" at 4:18 (2.0s)<br>
+      2. "back in the days of Edie and Ciao" at 4:20 (1.5s)<br>
+      3. "How right he was" at 6:58 (1.5s)
+      <span class="timecodes">ElevenLabs Timecodes: 4:18 (2.0s) · 4:20 (1.5s) · 6:58 (1.5s)</span>
+    </div>
+
+    <div class="manuscript">
+      <p class="context-note">Three ElevenLabs voice clone phrases located in manuscript text:</p>
+
+      <p>Brookie arrived just in time to help me with the move, and he became what <span class="ai-elevenlabs">Bobby Anderson had been during my days</span><span class="ai-tag tag-el">⚠ ELEVENLABS 4:18 2.0s</span> living in the East Village during the <span class="ai-elevenlabs">Ciao! Manhattan saga</span><span class="ai-tag tag-el">⚠ ELEVENLABS 4:20 1.5s</span>—my majordomo.</p>
+
+      <p style="margin-top: 30px;"><em>[…later in chapter, around 6:58…]</em></p>
+
+      <p>'Moishe,' he replied, using my old nickname from the East Village days, 'do it, and the clients will come.' <span class="ai-elevenlabs">How right he was.</span><span class="ai-tag tag-el">⚠ ELEVENLABS 6:58 1.5s</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- CH24 -->
+<div class="chapter chapter-clean" id="ch24">
+  <div class="chapter-header">
+    <h3>Chapter 24 — Chasing Tall Ship Dreams</h3>
+    <span class="badge badge-clean">✅ CLEAN (use RAW project)</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-info">
+      <strong>📋 USE THE RAW PROJECT — it is clean.</strong><br>
+      The edited project contains 6 ElevenLabs clips. The RAW/unedited project has no AI. Dan must ensure the final composition uses the RAW project for this chapter.
+    </div>
+  </div>
+</div>
+
+<!-- CH25 -->
+<div class="chapter chapter-clean" id="ch25">
+  <div class="chapter-header">
+    <h3>Chapter 25 — Stepping Back from the Edge</h3>
+    <span class="badge badge-clean">✅ CLEAN</span>
+  </div>
+  <div class="chapter-body">
+    <p class="context-note">No AI-generated audio detected. No action required.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- EPILOGUE -->
+<!-- ============================================================ -->
+<div class="chapter chapter-spot" id="epilogue">
+  <div class="chapter-header">
+    <h3>Epilogue — Still in the Game</h3>
+    <span class="badge badge-spot">⚡ SPOT FIX — 1 ElevenLabs clip (~1.8s)</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-warning">
+      <strong>1 ElevenLabs voice clone clip (~1.8 seconds) at 0:47–0:49</strong><br>
+      The phrase "a tech, for support" referring to Brian Kehew.
+      <span class="timecodes">ElevenLabs: 0:47–0:49 (1.8s)</span>
+    </div>
+
+    <div class="manuscript">
+      <p class="context-note">ElevenLabs phrase located in manuscript text:</p>
+
+      <p>Stevie had one in his warehouse at his studio, Wonderland. I brought along Brian Kehew, <span class="ai-elevenlabs">a tech, for support.</span><span class="ai-tag tag-el">⚠ ELEVENLABS 0:47 ~1.8s</span> At first, the synth wouldn't play at all. Then Brian reset all the ribbon cables, and it started working.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- END CREDITS -->
+<!-- ============================================================ -->
+<div class="chapter chapter-spot" id="credits">
+  <div class="chapter-header">
+    <h3>End Credits / Closing</h3>
+    <span class="badge badge-spot">⚡ SPOT FIX — 1 ElevenLabs clip (~2s)</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner alert-warning">
+      <strong>1 ElevenLabs voice clone clip (~2 seconds)</strong><br>
+      Located in the closing credits narration. Likely a phrase such as "Edited by Dan" or similar production credit line. Must be re-recorded by Bob.
+      <span class="timecodes">ElevenLabs: ~2.0s — exact timecode TBD, within credits narration</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- ADDITIONAL NOTES -->
+<!-- ============================================================ -->
+<div class="chapter" style="border-left: 4px solid #555; background: #1e1e2e;">
+  <div class="chapter-header">
+    <h3>Additional Notes — Studio Sound & Library Cleanup</h3>
+    <span class="badge" style="background: #444; color: #aaa;">INFORMATIONAL</span>
+  </div>
+  <div class="chapter-body">
+    <div class="alert-banner" style="background: rgba(100,100,100,0.15); border: 1px solid #555;">
+      <strong>Studio Sound (Descript noise processing):</strong> Multiple chapters have Studio Sound enabled. Per Pushkin requirements, this should be disabled — they want "light processing" only. Affected chapters: Ch2, Ch3, Ch4, Ch5, Ch7, Ch8, Ch9, Ch19, Ch22, Ch25, Epilogue, Credits. This is a separate issue from AI voice generation but should be addressed during remediation.
+    </div>
+    <div class="alert-banner" style="background: rgba(100,100,100,0.15); border: 1px solid #555; margin-top: 10px;">
+      <strong>Library Cleanup:</strong> All ElevenLabs "BOB new pro" voice clone files should be deleted from the Descript Drive library to prevent accidental future use. These files are the source of the most severe AI violations.
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align: center; padding: 40px 0 20px; color: #555; font-size: 13px;">
+  <p>SHAPING SOUNDS — AI Audio Audit Highlighted Manuscript</p>
+  <p>Prepared by Gio Bertucchelli for Dan Kavanaugh · April 9, 2026</p>
+  <p>SAG-AFTRA Compliance · Pushkin Industries Audiobook Production</p>
+  <p style="margin-top: 10px; color: #444;">This document cross-references the SOTE Audit Scorecard with the book manuscript to identify all passages containing AI-generated audio for remediation before the April 15, 2026 deadline.</p>
+</div>
+
+</div>
+</body>
+</html>

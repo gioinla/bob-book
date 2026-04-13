@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOB BOOK — SOTE Production Hub</title>
+<style>
+:root {
+  --bg: #08080d;
+  --bg2: #0e0e18;
+  --bg3: #14141f;
+  --bg4: #1c1c2e;
+  --bg5: #242438;
+  --text: #e8e8f2;
+  --text2: #8888aa;
+  --text3: #55556a;
+  --accent: #ff3366;
+  --accent2: #ff6699;
+  --green: #00cc88;
+  --green-bg: rgba(0,204,136,0.10);
+  --green-border: rgba(0,204,136,0.25);
+  --orange: #ff9500;
+  --orange-bg: rgba(255,149,0,0.10);
+  --orange-border: rgba(255,149,0,0.25);
+  --red: #ff2244;
+  --red-bg: rgba(255,34,68,0.10);
+  --red-border: rgba(255,34,68,0.28);
+  --blue: #448aff;
+  --blue-bg: rgba(68,136,255,0.10);
+  --blue-border: rgba(68,136,255,0.25);
+  --purple: #aa66ff;
+  --purple-bg: rgba(170,102,255,0.10);
+  --purple-border: rgba(170,102,255,0.25);
+  --amber: #ffcc00;
+  --amber-bg: rgba(255,204,0,0.10);
+  --amber-border: rgba(255,204,0,0.25);
+  --teal: #00d4cc;
+  --teal-bg: rgba(0,212,204,0.10);
+  --border: #1e1e30;
+  --glow: rgba(255,48,102,0.08);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.site-header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+}
+.header-inner {
+  max-width: 1300px;
+  margin: 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.logo {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.logo span { color: var(--text2); font-weight: 400; }
+.header-nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+.nav-link {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.nav-link:hover { background: var(--bg4); color: var(--text); }
+.header-badge {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text3);
+  white-space: nowrap;
+  font-family: 'SF Mono', 'JetBrains Mono', monospace;
+}
+
+/* ── HERO ── */
+.hero {
+  padding: 52px 32px 40px;
+  max-width: 1300px;
+  margin: 0 auto;
+  position: relative;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -200px;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, var(--glow), transparent 60%);
+  pointer-events: none;
+}
+.hero-eye {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.hero h1 {
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1.05;
+  background: linear-gradient(135deg, #fff 0%, var(--accent) 60%, var(--purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+}
+.hero-sub {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--text2);
+  max-width: 640px;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+.hero-meta {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.meta-pill {
+  font-size: 12px;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+.meta-pill strong { color: var(--text); }
+
+/* ── ALERT BANNER ── */
+.alert-banner {
+  max-width: 1300px;
+  margin: 0 auto 32px;
+  padding: 0 32px;
+}
+.alert {
+  background: var(--red-bg);
+  border: 1px solid var(--red-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.alert-body { flex: 1; }
+.alert-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--red);
+  margin-bottom: 4px;
+}
+.alert-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.alert-text strong { color: var(--text); }
+
+.alert-amber { background: var(--amber-bg); border-color: var(--amber-border); }
+.alert-amber .alert-title { color: var(--amber); }
+
+/* ── SECTION ── */
+.section {
+  max-width: 1300px;
+  margin: 0 auto 48px;
+  padding: 0 32px;
+}
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text2);
+}
+.section-count {
+  font-size: 11px;
+  color: var(--text3);
+  font-family: 'SF Mono', monospace;
+}
+
+/* ── DOC CARDS ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+.card-grid-wide {
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+}
+
+.doc-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-decoration: none;
+  display: block;
+  transition: all 0.18s;
+  position: relative;
+  overflow: hidden;
+}
+.doc-card:hover {
+  border-color: var(--accent);
+  background: var(--bg3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(255,51,102,0.12);
+}
+.doc-card.priority {
+  border-color: rgba(255,34,68,0.4);
+  background: linear-gradient(135deg, var(--bg2), rgba(255,34,68,0.05));
+}
+.doc-card.priority:hover {
+  border-color: var(--red);
+  box-shadow: 0 8px 32px rgba(255,34,68,0.15);
+}
+.doc-card.for-dan {
+  border-color: rgba(68,136,255,0.3);
+  background: linear-gradient(135deg, var(--bg2), rgba(68,136,255,0.04));
+}
+.doc-card.for-dan:hover {
+  border-color: var(--blue);
+  box-shadow: 0 8px 32px rgba(68,136,255,0.15);
+}
+.doc-card.green-card {
+  border-color: rgba(0,204,136,0.3);
+}
+.doc-card.green-card:hover {
+  border-color: var(--green);
+  box-shadow: 0 8px 32px rgba(0,204,136,0.12);
+}
+
+.card-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tag-dan { color: var(--blue); }
+.tag-audit { color: var(--purple); }
+.tag-status { color: var(--green); }
+.tag-critical { color: var(--red); }
+.tag-intel { color: var(--orange); }
+.tag-ref { color: var(--teal); }
+.tag-archive { color: var(--text3); }
+
+.card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.card-sub {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.card-date {
+  font-size: 11px;
+  font-family: 'SF Mono', monospace;
+  color: var(--text3);
+}
+.card-arrow {
+  font-size: 14px;
+  color: var(--text3);
+  transition: all 0.15s;
+}
+.doc-card:hover .card-arrow {
+  color: var(--accent);
+  transform: translateX(3px);
+}
+.card-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-new { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.badge-urgent { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+.badge-updated { background: var(--blue-bg); color: var(--blue); border: var(--blue-border); }
+.badge-dan { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+
+/* ── QUICK STATS ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 40px;
+  max-width: 1300px;
+  padding: 0 32px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.stat-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-num {
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text3);
+  line-height: 1.3;
+}
+.num-red { color: var(--red); }
+.num-amber { color: var(--amber); }
+.num-green { color: var(--green); }
+.num-blue { color: var(--blue); }
+.num-purple { color: var(--purple); }
+.num-orange { color: var(--orange); }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); max-width: 1300px; margin: 0 auto 40px; }
+
+/* ── FOOTER ── */
+.site-footer {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 24px 32px 48px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: gap;
+  gap: 12px;
+}
+.footer-left { font-size: 12px; color: var(--text3); }
+.footer-left strong { color: var(--text2); }
+.footer-right { font-size: 11px; font-family: 'SF Mono', monospace; color: var(--text3); }
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 30px; }
+  .hero { padding: 32px 20px 24px; }
+  .section { padding: 0 16px; }
+  .alert-banner { padding: 0 16px; }
+  .stats-row { padding: 0 16px; }
+  .card-grid, .card-grid-wide { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">BOB BOOK <span>/ SOTE</span></div>
+    <nav class="header-nav">
+      <a href="#for-dan" class="nav-link">📋 For Dan</a>
+      <a href="#ai-audit" class="nav-link">🔍 AI Audit</a>
+      <a href="#status" class="nav-link">📊 Status</a>
+      <a href="#production" class="nav-link">🎙️ Production</a>
+      <a href="#intel" class="nav-link">💡 Intel</a>
+      <a href="#archive" class="nav-link">📁 Archive</a>
+    </nav>
+    <div class="header-badge" id="live-time">Updated Apr 13 2026</div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eye">Shaping Sounds · Standing on the Edge · Production Command Center</div>
+  <h1>BOB BOOK HUB</h1>
+  <p class="hero-sub">Robert Margouleff audiobook — all live documents in one place. AI audit, chapter status, Dan's task lists, production intelligence. Updated continuously.</p>
+  <div class="hero-meta">
+    <div class="meta-pill">📅 Deadline: <strong>April 15 (revised mixes to Pushkin)</strong></div>
+    <div class="meta-pill">🎙️ Voice: <strong>BOB new pro (ElevenLabs)</strong></div>
+    <div class="meta-pill">📦 Publisher: <strong>Pushkin Industries</strong></div>
+    <div class="meta-pill">🏢 <strong>SAG-AFTRA consented</strong></div>
+  </div>
+</div>
+
+<!-- URGENT ALERTS -->
+<div class="alert-banner">
+  <div class="alert" style="margin-bottom:12px;">
+    <div class="alert-icon">🚨</div>
+    <div class="alert-body">
+      <div class="alert-title">Pushkin Deadline — April 15, 2026</div>
+      <div class="alert-text">Jasmine Faustino (Pushkin) emailed today: <strong>"How are we looking on receiving the Descript files? As well getting revised mixes on 4/15?"</strong> — Chapters 25 + Epilogue must NOT be delivered as AI narration. Ch10 has 19 AI files to replace before print.</div>
+    </div>
+  </div>
+  <div class="alert alert-amber">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-body">
+      <div class="alert-title">Ch 25 + Epilogue — Do Not Deliver (Full AI Sessions Found)</div>
+      <div class="alert-text"><strong>SOTE CHapter25+Epologue(allAI).ptx</strong> — both PT sessions are labeled AI. Must confirm re-record plan with Robert before delivery to Audible/Pushkin.</div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-box">
+    <div class="stat-num num-amber">9</div>
+    <div class="stat-label">Chapters w/ AI in PT</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-num num-blue">80+</div>
+    <div class="stat-label">ElevenLabs .wav files</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-num num-red">2</div>
+    <div class="stat-label">Full AI Sessions ⛔</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-num num-orange">19</div>
+    <div class="stat-label">Ch10 AI files to replace</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-num num-purple">40+</div>
+    <div class="stat-label">Ch11 hash-ID files</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-num num-green">1</div>
+    <div class="stat-label">Voice model (consented)</div>
+  </div>
+</div>
+
+<!-- FOR DAN -->
+<div class="section" id="for-dan">
+  <div class="section-head">
+    <div class="section-title">📋 For Dan — Action Docs</div>
+    <div class="section-count">Documents Dan needs to work from</div>
+  </div>
+  <div class="card-grid card-grid-wide">
+
+    <a href="SOTE_TaskList_ForDan_v3.html" class="doc-card for-dan">
+      <div class="card-tag tag-dan">⭐ Dan's Primary Doc</div>
+      <div class="card-title">Master Task List for Dan — v3</div>
+      <div class="card-sub">Full task breakdown: AI replacements, pickups, chapter status, delivery checklist. The main working doc.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 13, 2026</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="card-badge badge-new">Latest</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="SOTE_TaskList_ForDan_v2.html" class="doc-card for-dan">
+      <div class="card-tag tag-dan">Dan Task List</div>
+      <div class="card-title">Master Task List for Dan — v2</div>
+      <div class="card-sub">Previous version of Dan's task list. Reference if v3 is missing something.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 12, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="SOTE_Ch10_Pickups_v2.html" class="doc-card priority">
+      <div class="card-tag tag-critical">⛔ Urgent — Ch10 Pickups</div>
+      <div class="card-title">Chapter 10 AI Replacement Pickups — v2</div>
+      <div class="card-sub">9 timestamp ranges where Robert must re-record. 19 AI files in active MIX. ~2min trailing silence. Do not print until done.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 13, 2026</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="card-badge badge-urgent">Action Needed</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="DESCRIPT_FILES_FOR_DAN.html" class="doc-card for-dan">
+      <div class="card-tag tag-dan">Descript Handoff</div>
+      <div class="card-title">Descript Files for Dan</div>
+      <div class="card-sub">Full reference of Descript project files, session names, and handoff details for Dan to share with Pushkin (itaccounts@pushkin.fm).</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 13, 2026</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="card-badge badge-dan">For Pushkin</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- AI AUDIT -->
+<div class="section" id="ai-audit">
+  <div class="section-head">
+    <div class="section-title">🔍 AI Audit — ElevenLabs / Pro Tools</div>
+    <div class="section-count">All AI usage identified across 29 chapters</div>
+  </div>
+  <div class="card-grid card-grid-wide">
+
+    <a href="SOTE_AI_AUDIT_v3.html" class="doc-card green-card">
+      <div class="card-tag tag-audit">⭐ Latest Audit</div>
+      <div class="card-title">Shaping Sounds — AI Audit v3</div>
+      <div class="card-sub">Complete chapter-by-chapter AI audit. Rebuilt April 13. Filterable table: Full AI Sessions, Partial AI, Hash-ID files. All critical flags included.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 13, 2026</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="card-badge badge-new">Current</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="SOTE_AUDIT_SCORECARD.html" class="doc-card">
+      <div class="card-tag tag-audit">Scorecard</div>
+      <div class="card-title">AI Audit Scorecard</div>
+      <div class="card-sub">Chapter-level pass/fail scoring with SAG-AFTRA compliance overview and delivery readiness per chapter.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 13, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="SOTE_SAG_AFTRA_AUDIT_REPORT.html" class="doc-card">
+      <div class="card-tag tag-audit">SAG-AFTRA</div>
+      <div class="card-title">SAG-AFTRA Audit Report</div>
+      <div class="card-sub">Full SAG-AFTRA compliance audit: voice clone consent documentation, AI disclosure requirements, contract compliance per chapter.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 12–13, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="SOTE_AI_AUDIT_HIGHLIGHTED_MANUSCRIPT.html" class="doc-card">
+      <div class="card-tag tag-audit">Manuscript</div>
+      <div class="card-title">AI-Highlighted Manuscript</div>
+      <div class="card-sub">Full SOTE manuscript with AI-generated passages highlighted and annotated. Use to cross-reference pickup needs with source text.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 12, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- STATUS -->
+<div class="section" id="status">
+  <div class="section-head">
+    <div class="section-title">📊 Status — Live Production Boards</div>
+    <div class="section-count">Current state of all chapters and tasks</div>
+  </div>
+  <div class="card-grid">
+
+    <a href="SOTE_STATUS_BOARD.html" class="doc-card green-card">
+      <div class="card-tag tag-status">Live Board</div>
+      <div class="card-title">SOTE AI Status Board</div>
+      <div class="card-sub">Master status board: all chapters, AI flags, current state. Updated continuously as work progresses.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 13, 2026</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="card-badge badge-new">Live</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="SOTE_PRODUCTION_HUB.html" class="doc-card">
+      <div class="card-tag tag-status">Production</div>
+      <div class="card-title">SOTE Production Hub</div>
+      <div class="card-sub">Full production timeline, chapter tracking, mix status, and delivery milestones. Tab-based dashboard.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 12, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="NOTES_STATUS_APR13.html" class="doc-card">
+      <div class="card-tag tag-status">Today</div>
+      <div class="card-title">Notes Status — Apr 13</div>
+      <div class="card-sub">What's done, what's in progress, what's blocked as of today. Daily status snapshot.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 13, 2026</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="card-badge badge-new">Today</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="PRODUCTION_STATUS_APR10.html" class="doc-card">
+      <div class="card-tag tag-status">Status Snapshot</div>
+      <div class="card-title">Production Status — Apr 10</div>
+      <div class="card-sub">Snapshot of production state as of April 10. Good reference for what changed over the weekend.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 10, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- PRODUCTION INTEL -->
+<div class="section" id="production">
+  <div class="section-head">
+    <div class="section-title">🎙️ Production Docs</div>
+    <div class="section-count">Gio's work documents and production planning</div>
+  </div>
+  <div class="card-grid">
+
+    <a href="GIO_HITLIST_APR13.html" class="doc-card">
+      <div class="card-tag tag-intel">Today's List</div>
+      <div class="card-title">Gio — April 13 Hit List</div>
+      <div class="card-sub">Gio's personal task list and priorities for today. What needs to get done before end of day.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 13, 2026</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="card-badge badge-new">Today</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="SHAPING_SOUNDS_HIT_LIST.html" class="doc-card">
+      <div class="card-tag tag-intel">Planning</div>
+      <div class="card-title">Shaping Sounds Hit List</div>
+      <div class="card-sub">Full project hit list with all outstanding tasks, organized by priority and chapter.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 12, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="PRODUCTION_INTELLIGENCE.html" class="doc-card">
+      <div class="card-tag tag-intel">Intelligence</div>
+      <div class="card-title">Production Intelligence</div>
+      <div class="card-sub">Key production decisions, methodology notes, and lessons learned throughout the audiobook build.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 12, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="GIO_INTELLIGENCE_BANK.html" class="doc-card">
+      <div class="card-tag tag-intel">Reference</div>
+      <div class="card-title">Gio Intelligence Bank</div>
+      <div class="card-sub">Running reference of technical decisions, ElevenLabs settings, Pro Tools workflow, and AI methodology choices.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 12, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- INTEL / REFERENCE -->
+<div class="section" id="intel">
+  <div class="section-head">
+    <div class="section-title">💡 Chapter Reference & Scripts</div>
+    <div class="section-count">Chapter data, script highlights, pickup sheets</div>
+  </div>
+  <div class="card-grid">
+
+    <a href="SOTE_CHAPTER_REFERENCE.html" class="doc-card">
+      <div class="card-tag tag-ref">Chapter Map</div>
+      <div class="card-title">Chapter Reference Guide</div>
+      <div class="card-sub">Full chapter-by-chapter reference: session names, Pro Tools filenames, sequence numbers, and delivery status.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 12, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="SOTE_SCRIPT_AI_HIGHLIGHTS_COMPLETE.html" class="doc-card">
+      <div class="card-tag tag-ref">Script</div>
+      <div class="card-title">Script AI Highlights — Complete</div>
+      <div class="card-sub">Full SOTE script with all AI-generated sections highlighted. Complete version covering all chapters.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 12, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="SOTE_SCRIPT_AI_HIGHLIGHTS.html" class="doc-card">
+      <div class="card-tag tag-ref">Script</div>
+      <div class="card-title">Script AI Highlights</div>
+      <div class="card-sub">Annotated script highlights showing where AI narration was used vs. Robert's original recordings.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 11, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="SOTE_Ch10_Pickups.html" class="doc-card">
+      <div class="card-tag tag-ref">Ch10 v1</div>
+      <div class="card-title">Chapter 10 Pickups — v1</div>
+      <div class="card-sub">Original Ch10 pickup sheet. Use v2 for current work — this is the reference for how the pickup list evolved.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 12, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- ARCHIVE -->
+<div class="section" id="archive">
+  <div class="section-head">
+    <div class="section-title">📁 Archive — Earlier Versions</div>
+    <div class="section-count">Previous versions for reference</div>
+  </div>
+  <div class="card-grid">
+
+    <a href="SOTE_AI_AUDIT_v2.html" class="doc-card">
+      <div class="card-tag tag-archive">v2</div>
+      <div class="card-title">SOTE AI Audit — v2</div>
+      <div class="card-sub">Previous audit version. Use v3 for current work.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 12, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="SOTE_AI_AUDIT.html" class="doc-card">
+      <div class="card-tag tag-archive">v1</div>
+      <div class="card-title">SOTE AI Audit — v1</div>
+      <div class="card-sub">First version of the audit. Use v3 for current work.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 11, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="SOTE_AI_HIGHLIGHTED_MANUSCRIPT.html" class="doc-card">
+      <div class="card-tag tag-archive">Manuscript v1</div>
+      <div class="card-title">AI Highlighted Manuscript — v1</div>
+      <div class="card-sub">Earlier version of the highlighted manuscript. Superseded by the AUDIT_HIGHLIGHTED version.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 11, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="Gio_HitList_Wed_Apr8.html" class="doc-card">
+      <div class="card-tag tag-archive">Old Hitlist</div>
+      <div class="card-title">Gio Hit List — Apr 8</div>
+      <div class="card-sub">Last week's hit list. Use Apr 13 version for current priorities.</div>
+      <div class="card-footer">
+        <span class="card-date">Apr 8, 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-left">
+    <strong>BOB BOOK / SOTE</strong> — Shaping Sounds Audiobook Production Hub<br>
+    Robert Margouleff with Jim Reilly · Pushkin Industries · Gio Bertuccelli &amp; Dan Kavanaugh
+  </div>
+  <div class="footer-right" id="footer-time">Last updated: Apr 13, 2026</div>
+</footer>
+
+<script>
+  // Live clock
+  function tick() {
+    const now = new Date();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const str = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear()
+      + '  ' + now.getHours().toString().padStart(2,'0')
+      + ':' + now.getMinutes().toString().padStart(2,'0');
+    document.getElementById('live-time').textContent = 'Live · ' + str;
+    document.getElementById('footer-time').textContent = 'Hub loaded: ' + str;
+  }
+  tick();
+  setInterval(tick, 30000);
+</script>
+
+</body>
+</html>

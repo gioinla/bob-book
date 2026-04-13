@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shaping Sounds — Master Task List for Dan</title>
+<style>
+  :root {
+    --bg: #0e1117; --surface: #161b27; --surface2: #1e2535; --border: #2a3348;
+    --text: #e2e8f0; --text-dim: #94a3b8; --text-muted: #64748b;
+    --green: #22c55e; --green-bg: #052e16; --green-border: #166534;
+    --amber: #f59e0b; --amber-bg: #1c1205; --amber-border: #78350f;
+    --red: #ef4444; --red-bg: #1c0505; --red-border: #7f1d1d;
+    --blue: #3b82f6; --blue-bg: #0c1a3a; --blue-border: #1e3a8a;
+    --purple: #a855f7; --purple-bg: #1a0c2e; --purple-border: #581c87;
+    --teal: #14b8a6; --teal-bg: #042322; --teal-border: #0f766e;
+    --accent: #6366f1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'SF Mono','JetBrains Mono','Fira Code','Courier New',monospace; min-height: 100vh; padding: 32px 24px; }
+  .header { max-width: 1280px; margin: 0 auto 40px; border-bottom: 1px solid var(--border); padding-bottom: 28px; }
+  .header-eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .header h1 { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 36px; font-weight: 700; letter-spacing: -0.5px; color: #fff; margin-bottom: 6px; }
+  .header h1 span { color: var(--accent); }
+  .header-sub { font-family: -apple-system, sans-serif; font-size: 15px; color: var(--text-dim); margin-bottom: 20px; }
+  .header-meta { display: flex; gap: 24px; flex-wrap: wrap; }
+  .meta-chip { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+  .meta-chip strong { color: var(--text-dim); }
+  .stats { max-width: 1280px; margin: 0 auto 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .stat-card .num { font-size: 28px; font-weight: 700; font-family: -apple-system, sans-serif; line-height: 1; margin-bottom: 6px; }
+  .stat-card .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .legend { max-width: 1280px; margin: 0 auto 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+  .legend-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-right: 4px; }
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }
+  .badge-legal     { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-border); }
+  .badge-recording { background: var(--blue-bg);   color: var(--blue);   border: 1px solid var(--blue-border); }
+  .badge-session   { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-border); }
+  .badge-audible   { background: var(--teal-bg);   color: var(--teal);   border: 1px solid var(--teal-border); }
+  .badge-ai        { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+  .badge-meeting   { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-border); }
+  .badge-dan       { background: var(--blue-bg);   color: var(--blue);   border: 1px solid var(--blue-border); }
+  .badge-done      { background: var(--surface2);  color: var(--text-muted); border: 1px solid var(--border); }
+  .filter-bar { max-width: 1280px; margin: 0 auto 20px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .filter-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-right: 4px; }
+  .filter-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); font-family: inherit; font-size: 12px; padding: 5px 14px; border-radius: 20px; cursor: pointer; transition: all 0.15s; }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .table-wrap { max-width: 1280px; margin: 0 auto 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--surface2); border-bottom: 2px solid var(--border); }
+  th { padding: 12px 16px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+  th:first-child { padding-left: 20px; } th:last-child { padding-right: 20px; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+  tbody tr.hidden { display: none; }
+  tr.section-header td { background: var(--bg); padding: 8px 20px 6px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); font-weight: 700; border-top: 2px solid var(--border); border-bottom: 1px solid var(--border); }
+  tr.section-header:first-child td { border-top: none; }
+  td { padding: 12px 16px; vertical-align: top; }
+  td:first-child { padding-left: 20px; } td:last-child { padding-right: 20px; }
+  .ch-label { font-family: -apple-system, sans-serif; font-size: 14px; font-weight: 600; color: var(--text); }
+  .ch-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .note { font-family: -apple-system, sans-serif; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+  .note-warn { color: var(--amber); } .note-crit { color: var(--red); } .note-ok { color: var(--green); }
+  .session-file { font-size: 12px; font-family: 'SF Mono', monospace; color: var(--text-dim); background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; margin: 2px 0; display: inline-block; line-height: 1.5; word-break: break-all; }
+  .detail-row td { padding: 0; background: rgba(99,102,241,0.04); }
+  .detail-content { padding: 16px 20px 20px; border-top: 1px solid rgba(99,102,241,0.2); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .detail-group h4 { font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 8px; }
+  .detail-group p { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+  .detail-group ul { list-style: none; }
+  .detail-group ul li { font-size: 12px; font-family: -apple-system, sans-serif; color: var(--text-dim); padding: 3px 0; border-bottom: 1px solid var(--border); }
+  .detail-group ul li:last-child { border-bottom: none; }
+  .expand-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); font-family: inherit; font-size: 11px; padding: 3px 8px; border-radius: 4px; cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+  .expand-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .expand-btn.open { border-color: var(--accent); color: var(--accent); background: rgba(99,102,241,0.08); }
+  .paths-card { max-width: 1280px; margin: 0 auto 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .paths-card-header { padding: 14px 20px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); font-weight: 700; }
+  .path-row { display: grid; grid-template-columns: 200px 1fr; border-bottom: 1px solid var(--border); }
+  .path-row:last-child { border-bottom: none; }
+  .path-key { padding: 10px 16px 10px 20px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); display: flex; align-items: center; }
+  .path-val { padding: 10px 16px; font-family: 'SF Mono', monospace; font-size: 12px; color: var(--teal); display: flex; align-items: center; }
+  .print-card { max-width: 1280px; margin: 0 auto 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+  .print-card h3 { font-family: -apple-system, sans-serif; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+  .steps { display: flex; flex-direction: column; gap: 10px; }
+  .step { display: flex; gap: 14px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
+  .step-num { font-size: 18px; font-weight: 700; color: var(--accent); font-family: -apple-system, sans-serif; min-width: 24px; line-height: 1.2; }
+  .step-body strong { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--text); display: block; margin-bottom: 3px; }
+  .step-body span { font-family: -apple-system, sans-serif; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+  .footer { max-width: 1280px; margin: 32px auto 0; padding-top: 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  @media (max-width: 900px) { .detail-content { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) { body { padding: 16px 12px; } .header h1 { font-size: 24px; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">Master Task Catalog · Shaping Sounds Audiobook</div>
+  <h1>Shaping Sounds <span>Task List</span></h1>
+  <div class="header-sub">For Dan Kavanaugh · Gio + Dan Working Session · April 12–13, 2026</div>
+  <div class="header-meta">
+    <div class="meta-chip"><span>📅</span> Session: <strong>April 12, 2026 — 12:59 PDT meeting notes included</strong></div>
+    <div class="meta-chip"><span>📋</span> Sources: SOTE_MASTER_TASKLIST.md + DOCX + Gemini meeting notes</div>
+    <div class="meta-chip"><span>⚡</span> Dan logging resolutions in Word doc during Google Meet</div>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card"><div class="num" style="color:var(--red)">6</div><div class="label">Legal Items Open</div></div>
+  <div class="stat-card"><div class="num" style="color:var(--blue)">5</div><div class="label">Recordings Not Imported</div></div>
+  <div class="stat-card"><div class="num" style="color:var(--amber)">6</div><div class="label">Session Issues</div></div>
+  <div class="stat-card"><div class="num" style="color:var(--teal)">2</div><div class="label">Audible Rejection Risks</div></div>
+  <div class="stat-card"><div class="num" style="color:var(--purple)">2</div><div class="label">Full AI Sessions</div></div>
+  <div class="stat-card"><div class="num" style="color:var(--green)">9+</div><div class="label">Meeting Action Items</div></div>
+</div>
+
+<div class="legend">
+  <span class="legend-title">Category:</span>
+  <span class="badge badge-legal">⚖ Legal</span>
+  <span class="badge badge-recording">🎙 New Recording</span>
+  <span class="badge badge-session">⚙ Session Issue</span>
+  <span class="badge badge-audible">📤 Audible Flag</span>
+  <span class="badge badge-ai">✦ AI Warning</span>
+  <span class="badge badge-meeting">📋 Meeting Action</span>
+</div>
+
+<div class="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" onclick="filterTable('all', this)">All Tasks</button>
+  <button class="filter-btn" onclick="filterTable('legal', this)">⚖ Legal</button>
+  <button class="filter-btn" onclick="filterTable('recording', this)">🎙 Recordings</button>
+  <button class="filter-btn" onclick="filterTable('session', this)">⚙ Session Issues</button>
+  <button class="filter-btn" onclick="filterTable('audible', this)">📤 Audible</button>
+  <button class="filter-btn" onclick="filterTable('ai', this)">✦ AI Warning</button>
+  <button class="filter-btn" onclick="filterTable('meeting', this)">📋 Meeting</button>
+  <button class="filter-btn" onclick="filterTable('dan', this)">👤 Dan's Items</button>
+</div>
+
+<div class="table-wrap">
+<table id="mainTable">
+  <thead>
+    <tr>
+      <th>Chapter</th>
+      <th>Category</th>
+      <th>Issue</th>
+      <th>Action</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <tr class="section-header"><td colspan="6">Legal — Hard Stops Before Delivery</td></tr>
+
+    <tr data-status="legal" data-detail="l1">
+      <td><div class="ch-label">Ch 3</div></td>
+      <td><span class="badge badge-legal">⚖ Legal</span></td>
+      <td class="note">Beethoven recording — possibly unlicensed version used.</td>
+      <td class="note">Apr 12 meeting: "Gloria" section removed, save as V2A/V2B. Confirm and log resolved.</td>
+      <td class="note note-warn">In Progress</td>
+      <td><button class="expand-btn" onclick="toggleDetail('l1', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-l1"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>Issue</h4><p>A Beethoven recording used in Ch3 may be an unlicensed version — specific recording unknown. Legal clearance required or replacement needed.</p></div>
+      <div class="detail-group"><h4>April 12 Meeting Update</h4><p>The "Gloria" music clip was removed due to qualification/licensing issues. Session should be saved as V2A or V2B. Confirm this was done and log it as resolved in the Word doc.</p></div>
+      <div class="detail-group"><h4>Action</h4><p>Verify the file is saved as V2A or V2B with Gloria removed. Also: fix audio dip at 17:41 in Ch3 (separate issue from the legal flag).</p></div>
+    </div></td></tr>
+
+    <tr data-status="legal" data-detail="l2">
+      <td><div class="ch-label">Ch 12</div></td>
+      <td><span class="badge badge-legal">⚖ Legal</span></td>
+      <td class="note">Stevie Wonder clips — must stay under 60 seconds total per song.</td>
+      <td class="note">Time each clip, cut if over the limit before delivery.</td>
+      <td class="note note-crit">Open</td>
+      <td><button class="expand-btn" onclick="toggleDetail('l2', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-l2"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>Issue</h4><p>Stevie Wonder clips in Ch12. Fair use typically allows short clips but there is a 60-second-per-song ceiling to stay within — total clip time per song must be checked.</p></div>
+      <div class="detail-group"><h4>Action</h4><p>Time each Stevie clip in the session. If any individual song exceeds 60 seconds total across all uses, cut to bring it under. Log timing results in the Word doc.</p></div>
+      <div class="detail-group"><h4>Note</h4><p>Also note: the "again and again.wav" file in the Ch12 PT session may be a Stevie clip — confirm what it is and whether it's counted in the timing.</p></div>
+    </div></td></tr>
+
+    <tr data-status="legal" data-detail="l3">
+      <td><div class="ch-label">Ch 14</div></td>
+      <td><span class="badge badge-legal">⚖ Legal</span></td>
+      <td class="note">Grammy footage / award reference — possible rights issue.</td>
+      <td class="note">Remove or replace the segment.</td>
+      <td class="note note-crit">Open</td>
+      <td><button class="expand-btn" onclick="toggleDetail('l3', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-l3"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>Issue</h4><p>Grammy footage or award reference in Ch14. Grammy/NARAS materials require licensing — cannot be used without clearance.</p></div>
+      <div class="detail-group"><h4>Action</h4><p>Remove or replace the segment. If the reference is purely text/narration (not actual Grammy audio), confirm with Pushkin legal whether narrated references are acceptable.</p></div>
+      <div class="detail-group"><h4>Session</h4><p>018_SOTE_chapter14_V2 — single archive version, no AI files.</p></div>
+    </div></td></tr>
+
+    <tr data-status="legal" data-detail="l4">
+      <td><div class="ch-label">Ch 15</div></td>
+      <td><span class="badge badge-legal">⚖ Legal</span></td>
+      <td class="note">Charles Bukowski poem — copyright status unclear.</td>
+      <td class="note">Confirm fair use or remove.</td>
+      <td class="note note-crit">Open</td>
+      <td><button class="expand-btn" onclick="toggleDetail('l4', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-l4"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>Issue</h4><p>A Charles Bukowski poem is read or referenced in Ch15. Bukowski's work is still in copyright (he died 1994 — US copyright extends 70 years after death). Fair use possible but not guaranteed for audiobooks.</p></div>
+      <div class="detail-group"><h4>Action</h4><p>Determine which poem and how much is used. Get Pushkin legal to confirm fair use, OR get clearance from the Bukowski estate, OR remove and replace.</p></div>
+      <div class="detail-group"><h4>Session Note</h4><p>Ch15 has no numbered archive session in Audio Assets/ProTools. New human recording also in Pick Ups April 2026 folder — not yet imported.</p></div>
+    </div></td></tr>
+
+    <tr data-status="legal" data-detail="l5">
+      <td><div class="ch-label">Ch 17</div></td>
+      <td><span class="badge badge-legal">⚖ Legal</span></td>
+      <td class="note">DEVO song name mentioned — clearance needed.</td>
+      <td class="note">Confirm clearance or remove the reference.</td>
+      <td class="note note-crit">Open</td>
+      <td><button class="expand-btn" onclick="toggleDetail('l5', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-l5"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>Issue</h4><p>A DEVO song name is mentioned in Ch17. Song titles alone are generally not copyrightable, but if any lyrics or audio from the song is included, clearance is needed.</p></div>
+      <div class="detail-group"><h4>Action</h4><p>Clarify whether it's just a mention of the title, or if any audio/lyrics are included. If audio/lyrics: remove or get clearance. If title only: confirm with Pushkin legal that it's acceptable.</p></div>
+      <div class="detail-group"><h4>Session</h4><p>021_chapter17_V2 — single archive version, no AI files.</p></div>
+    </div></td></tr>
+
+    <tr data-status="legal" data-detail="l6">
+      <td><div class="ch-label">Ch 18</div></td>
+      <td><span class="badge badge-legal">⚖ Legal</span></td>
+      <td class="note">Song identified as unlicensable.</td>
+      <td class="note">Remove and replace with cleared music.</td>
+      <td class="note note-crit">Open</td>
+      <td><button class="expand-btn" onclick="toggleDetail('l6', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-l6"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>Issue</h4><p>A specific song in Ch18 has been identified as unlicensable — meaning the rights holder is unwilling or unable to grant a license regardless of fee.</p></div>
+      <div class="detail-group"><h4>Action</h4><p>Remove the song entirely. Replace with a cleared piece of music that serves a similar function in the chapter. Get Pushkin editorial approval on the replacement.</p></div>
+      <div class="detail-group"><h4>Session</h4><p>022_chapter18_v1b — single archive version, no AI files.</p></div>
+    </div></td></tr>
+
+    <tr data-status="legal dan" data-detail="l7">
+      <td><div class="ch-label">Ch 1</div><div class="ch-sub">Dan assigned</div></td>
+      <td><span class="badge badge-legal">⚖ Legal</span> <span class="badge badge-dan">👤 Dan</span></td>
+      <td class="note">Missing email correspondence related to Ch1 legal note.</td>
+      <td class="note">Dan: investigate the missing email. (From Apr 12 meeting.)</td>
+      <td class="note note-warn">Dan Assigned</td>
+      <td><button class="expand-btn" onclick="toggleDetail('l7', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-l7"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>Issue</h4><p>During the April 12 meeting, a legal note appeared in Chapter 1 and Dan identified missing email correspondence related to it. Dan assigned this to himself to investigate.</p></div>
+      <div class="detail-group"><h4>Action for Dan</h4><p>Find and review the missing email thread. Determine whether it changes the approach to the Ch1 legal note. Report findings to Gio.</p></div>
+      <div class="detail-group"><h4>Source</h4><p>Captured in April 12 12:59 PDT Google Meet session notes (Gemini auto-notes).</p></div>
+    </div></td></tr>
+
+    <tr class="section-header"><td colspan="6">New Recordings — Not Yet Imported Into Any Mix</td></tr>
+
+    <tr data-status="recording" data-detail="r1">
+      <td><div class="ch-label">Ch 6</div></td>
+      <td><span class="badge badge-recording">🎙 Recording</span></td>
+      <td class="note">New Bob recording in Pick Ups April 2026 folder — not imported.</td>
+      <td class="note">Import into active session (v4d). Confirm it replaces Mar 27 AI render.</td>
+      <td class="note note-crit">Not Imported</td>
+      <td><button class="expand-btn" onclick="toggleDetail('r1', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-r1"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>File Location</h4><p>Dropbox / Giorgio Bertuccelli / BOB BOOK / Pick Ups April 2026 /</p></div>
+      <div class="detail-group"><h4>Active Session</h4><p>010_SOTE_chapter6_v4d.ptx in Mixes folder. Note: the most recent AI render for Ch6 was March 27, 2026 — confirm whether the new human recording replaces those AI takes or fills a different gap.</p></div>
+      <div class="detail-group"><h4>Session Caution</h4><p>v4c RECOVERD.ptx exists alongside v4d — verify v4d is clean and v4c RECOVERD can be discarded after confirming all regions are intact in v4d.</p></div>
+    </div></td></tr>
+
+    <tr data-status="recording" data-detail="r2">
+      <td><div class="ch-label">Ch 9</div></td>
+      <td><span class="badge badge-recording">🎙 Recording</span></td>
+      <td class="note">New Bob recording in Pick Ups April 2026 folder — not imported.</td>
+      <td class="note">Import into active session (v2f). Confirm AI takes are replaced.</td>
+      <td class="note note-crit">Not Imported</td>
+      <td><button class="expand-btn" onclick="toggleDetail('r2', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-r2"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>File Location</h4><p>Dropbox / Giorgio Bertuccelli / BOB BOOK / Pick Ups April 2026 /</p></div>
+      <div class="detail-group"><h4>Active Session</h4><p>013_SOTE_chapter9_v2f.ptx — this is the latest archived version (v2f). AI renders present from Sep 2025 and Oct 2025. After importing the new human recording, confirm AI files are fully replaced before print.</p></div>
+      <div class="detail-group"><h4>Notes</h4><p>3 separate AI sessions over 5 months for Ch9. The new human recording should supersede all of them.</p></div>
+    </div></td></tr>
+
+    <tr data-status="recording" data-detail="r3">
+      <td><div class="ch-label">Ch 13</div><div class="ch-sub">6 takes — pick best</div></td>
+      <td><span class="badge badge-recording">🎙 Recording</span></td>
+      <td class="note">6 new WAV takes arrived April 2–3.</td>
+      <td class="note">Pick the best take from 6 WAVs. Edit in. Print as v3 or v4.</td>
+      <td class="note note-crit">Not Imported</td>
+      <td><button class="expand-btn" onclick="toggleDetail('r3', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-r3"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>File Location</h4><p>Dropbox / Giorgio Bertuccelli / BOB BOOK / Pick Ups April 2026 / (6 WAV files)</p></div>
+      <div class="detail-group"><h4>Action</h4><p>Listen to all 6 takes. Pick the best one (or comp if needed). Edit into 017_SOTE_chapter13_v3 session. AI renders from Dec 2025 and Feb 2026 are present — human takes should replace them. Print as v3 or v4.</p></div>
+      <div class="detail-group"><h4>Notes</h4><p>Ch13 had the most intensive single AI session (8 renders in 9 minutes on Feb 13). VcAs processing was applied. Match processing treatment when editing in human takes.</p></div>
+    </div></td></tr>
+
+    <tr data-status="recording" data-detail="r4">
+      <td><div class="ch-label">Ch 15</div></td>
+      <td><span class="badge badge-recording">🎙 Recording</span></td>
+      <td class="note">New Bob recording in Pick Ups April 2026 folder — not imported.</td>
+      <td class="note">Import. Note: Ch15 has no numbered archive session — may need a new PT session.</td>
+      <td class="note note-crit">Not Imported</td>
+      <td><button class="expand-btn" onclick="toggleDetail('r4', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-r4"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>File Location</h4><p>Dropbox / Giorgio Bertuccelli / BOB BOOK / Pick Ups April 2026 /</p></div>
+      <div class="detail-group"><h4>Session Status</h4><p>Ch15 has no .ptx session in the Audio Assets/ProTools numbered archive. No session was found anywhere in the scan. A new Pro Tools session may need to be created to house the recording.</p></div>
+      <div class="detail-group"><h4>Also</h4><p>Bukowski poem legal flag is on this chapter — confirm legal resolution before printing Ch15.</p></div>
+    </div></td></tr>
+
+    <tr data-status="recording" data-detail="r5">
+      <td><div class="ch-label">Ch 19</div><div class="ch-sub">Appears twice in archive</div></td>
+      <td><span class="badge badge-recording">🎙 Recording</span></td>
+      <td class="note">New Bob recording in Pick Ups April 2026 folder — not imported.</td>
+      <td class="note">Import. First confirm: which archive version (023 or 027) is the approved deliverable?</td>
+      <td class="note note-crit">Not Imported</td>
+      <td><button class="expand-btn" onclick="toggleDetail('r5', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-r5"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>File Location</h4><p>Dropbox / Giorgio Bertuccelli / BOB BOOK / Pick Ups April 2026 /</p></div>
+      <div class="detail-group"><h4>Ambiguity</h4><p>Ch19 appears twice in the archive: seq 023 (v1 — early version) and seq 027 (v1b — revision). The later 027 version is likely the approved deliverable, but confirm before importing the new recording.</p></div>
+      <div class="detail-group"><h4>Action</h4><p>Confirm 027_SOTE_chapter19_v1b is the working session. Import new recording into that session.</p></div>
+    </div></td></tr>
+
+    <tr class="section-header"><td colspan="6">Session Issues — Need Verification</td></tr>
+
+    <tr data-status="session" data-detail="s1">
+      <td><div class="ch-label">Ch 6</div><div class="ch-sub">Crash recovery</div></td>
+      <td><span class="badge badge-session">⚙ Session</span></td>
+      <td class="note">v4c RECOVERD.ptx alongside v4d in Mixes folder.</td>
+      <td class="note">Confirm v4d is clean. Discard v4c RECOVERD after verifying.</td>
+      <td class="note note-warn">Needs Confirm</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="session" data-detail="s2">
+      <td><div class="ch-label">Ch 10</div><div class="ch-sub">Empty archive</div></td>
+      <td><span class="badge badge-session">⚙ Session</span></td>
+      <td class="note">Session only in MIX folder — numbered archive folder is empty.</td>
+      <td class="note">After final print, copy session into Audio Assets/ProTools archive folder.</td>
+      <td class="note note-warn">Post-print</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="session" data-detail="s3">
+      <td><div class="ch-label">Ch 16</div><div class="ch-sub">Crash recovery</div></td>
+      <td><span class="badge badge-session">⚙ Session</span></td>
+      <td class="note">Crash recovery session found in session folder.</td>
+      <td class="note">Verify V3a (latest) is intact. Confirm all audio regions present.</td>
+      <td class="note note-warn">Needs Verify</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="session ai" data-detail="s4">
+      <td><div class="ch-label">Epilogue</div><div class="ch-sub">Missing human session</div></td>
+      <td><span class="badge badge-session">⚙ Session</span> <span class="badge badge-ai">✦ AI</span></td>
+      <td class="note">No human narration PT session found — only SpectraLayers .slp + WAV bounces. Only AI sessions exist.</td>
+      <td class="note">Locate missing human session (may be on unmounted drive) or rebuild. Cannot deliver AI as human narration.</td>
+      <td class="note note-crit">Missing</td>
+      <td><button class="expand-btn" onclick="toggleDetail('s4', this)">▾</button></td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-s4"><td colspan="6"><div class="detail-content">
+      <div class="detail-group"><h4>What Was Found</h4><p>Only SpectraLayers .slp files + WAV bounces found for Epilogue. No .ptx session. Two AI sessions cover both Ch25 and Epilogue together.</p></div>
+      <div class="detail-group"><h4>Action</h4><p>Search all mounted and unmounted drives for a human narration PT session for the Epilogue. If none exists, the Epilogue must be re-recorded by Robert and a new session built. Check the SOTE Logic folder (Logic Pro project) as a possible source.</p></div>
+      <div class="detail-group"><h4>AI Sessions Found</h4><p>SOTE CHapter25+Epologue(allAI).ptx (4 backups) and SOTE_CHapter25_Epologue_v1_AIVOX.ptx. Neither may be delivered as human narration.</p></div>
+    </div></td></tr>
+
+    <tr data-status="session" data-detail="s5">
+      <td><div class="ch-label">End Credits</div></td>
+      <td><span class="badge badge-session">⚙ Session</span></td>
+      <td class="note">PT session folder exists but .ptx file not confirmed present.</td>
+      <td class="note">Open folder and confirm the .ptx file is there and intact.</td>
+      <td class="note note-warn">Needs Confirm</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="session" data-detail="s6">
+      <td><div class="ch-label">Ch 032<br>Acknowledgements</div></td>
+      <td><span class="badge badge-session">⚙ Session</span></td>
+      <td class="note">No PT session anywhere. No MP3 anywhere. Completely missing.</td>
+      <td class="note">Investigate all drives. May need to be created from scratch.</td>
+      <td class="note note-crit">Completely Missing</td>
+      <td></td>
+    </tr>
+
+    <tr class="section-header"><td colspan="6">Audible Technical Flags — Delivery Blockers</td></tr>
+
+    <tr data-status="audible" data-detail="a1">
+      <td><div class="ch-label">Ch 10</div></td>
+      <td><span class="badge badge-audible">📤 Audible</span></td>
+      <td class="note note-crit">~2 minutes of trailing silence at end of file — will cause automatic rejection.</td>
+      <td class="note">Trim to ≤ 1 second before final bounce. Do this AFTER AI pickups are complete.</td>
+      <td class="note note-crit">Rejection Risk</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="audible" data-detail="a2">
+      <td><div class="ch-label">Ch 24</div></td>
+      <td><span class="badge badge-audible">📤 Audible</span></td>
+      <td class="note note-warn">Trailing silence at end of file.</td>
+      <td class="note">Trim before delivery.</td>
+      <td class="note note-warn">Needs Trim</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="audible" data-detail="a3">
+      <td><div class="ch-label">All Chapters</div></td>
+      <td><span class="badge badge-audible">📤 Audible</span></td>
+      <td class="note">Final bounces must meet Audible spec.</td>
+      <td class="note">192 kbps CBR MP3 · –3 dBFS peak · –18 LUFS integrated. Check every bounce.</td>
+      <td class="note note-warn">Every Chapter</td>
+      <td></td>
+    </tr>
+
+    <tr class="section-header"><td colspan="6">AI Session Warning — Do Not Deliver as Human Narration</td></tr>
+
+    <tr data-status="ai" data-detail="ai1">
+      <td><div class="ch-label">Ch 25 + Epilogue</div></td>
+      <td><span class="badge badge-ai">✦ Full AI</span></td>
+      <td class="note note-crit">Both PT sessions for this material are fully AI-generated. allAI session has 4 backup iterations.</td>
+      <td class="note">Must NOT deliver as human narration. Confirm re-record plan or SAG-AFTRA/Pushkin clearance.</td>
+      <td class="note note-crit">⛔ Hard Stop</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="ai" data-detail="ai2">
+      <td><div class="ch-label">Ch 10</div></td>
+      <td><span class="badge badge-ai">✦ Partial AI</span></td>
+      <td class="note note-warn">19 AI hash-ID files in active mix — replacement in progress.</td>
+      <td class="note">Do not print until all 9 pickup sections re-recorded and AI files removed. See Ch10 Pickups sheet.</td>
+      <td class="note note-warn">Blocked on Pickups</td>
+      <td></td>
+    </tr>
+
+    <tr class="section-header"><td colspan="6">Meeting Actions — April 12, 2026 (12:59 PDT Session)</td></tr>
+
+    <tr data-status="meeting" data-detail="m1">
+      <td><div class="ch-label">Opening Credits</div><div class="ch-sub">Gio</div></td>
+      <td><span class="badge badge-meeting">📋 Gio</span></td>
+      <td class="note">Mix Opening Credits: add logo instrumental wave, print final mix as V2A.</td>
+      <td class="note">Instrumental found in Dropbox / Audio Assets / Pushkin folder. Start at 5.8 seconds to match logo example timing.</td>
+      <td class="note note-warn">Assigned</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="meeting" data-detail="m2">
+      <td><div class="ch-label">Prologue</div><div class="ch-sub">Gio</div></td>
+      <td><span class="badge badge-meeting">📋 Gio</span></td>
+      <td class="note">Restore missing music cue + sound effects. V2 mix is missing them; they exist in V0A and V1.</td>
+      <td class="note">Use V1 delivered mix as reference. Restore for V3A version.</td>
+      <td class="note note-warn">Assigned</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="meeting" data-detail="m3">
+      <td><div class="ch-label">Prologue</div><div class="ch-sub">Gio</div></td>
+      <td><span class="badge badge-meeting">📋 Gio</span></td>
+      <td class="note">Adjust narration timing — Robert's voice in at 1:42 over music cue.</td>
+      <td class="note">V3A mix: narration running too long in the clear before entry. Target: Robert enters at ~1:42.</td>
+      <td class="note note-warn">Assigned</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="meeting" data-detail="m4">
+      <td><div class="ch-label">Ch 1</div><div class="ch-sub">Gio</div></td>
+      <td><span class="badge badge-meeting">📋 Gio</span></td>
+      <td class="note">Remove paper shuffling sounds. Insert missing audio "Grandmir was a formidable woman" at 4:51.</td>
+      <td class="note">Also restore: "our hideout" passage and "blue-collar working man's club" — both in raw Descript files (Dan located and clipped).</td>
+      <td class="note note-warn">Assigned</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="meeting" data-detail="m5">
+      <td><div class="ch-label">Ch 3</div><div class="ch-sub">Gio</div></td>
+      <td><span class="badge badge-meeting">📋 Gio</span></td>
+      <td class="note">Save as V2A/V2B after removing Gloria section. Fix audio dip at 17:41.</td>
+      <td class="note">Confirm save as V2A or V2B. Then investigate and repair the sound dip at the 17:41 mark.</td>
+      <td class="note note-warn">Assigned</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="meeting" data-detail="m6">
+      <td><div class="ch-label">Ch 4</div><div class="ch-sub">Gio</div></td>
+      <td><span class="badge badge-meeting">📋 Gio</span></td>
+      <td class="note">Level narration audio — sounds uneven in current mix.</td>
+      <td class="note">Ensure Ch4 narration level is even and consistent throughout before print.</td>
+      <td class="note note-warn">Assigned</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="meeting dan" data-detail="m7">
+      <td><div class="ch-label">Ch 1</div><div class="ch-sub">Dan</div></td>
+      <td><span class="badge badge-dan">👤 Dan</span></td>
+      <td class="note">Investigate missing email re: Ch1 legal note.</td>
+      <td class="note">Find and review missing correspondence. Report findings to Gio.</td>
+      <td class="note note-warn">Dan Assigned</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="meeting dan" data-detail="m8">
+      <td><div class="ch-label">Ch 1</div><div class="ch-sub">Dan</div></td>
+      <td><span class="badge badge-dan">👤 Dan</span></td>
+      <td class="note">Provide all available takes for missing Ch1 audio sections.</td>
+      <td class="note">Send Gio all available takes for "Grandmir", "our hideout", and "blue-collar" sections.</td>
+      <td class="note note-warn">Dan Assigned</td>
+      <td></td>
+    </tr>
+
+    <tr data-status="meeting dan" data-detail="m9">
+      <td><div class="ch-label">Post-Project</div><div class="ch-sub">Dan</div></td>
+      <td><span class="badge badge-dan">👤 Dan</span></td>
+      <td class="note">Schedule visit with Tonto after project completion.</td>
+      <td class="note">Coordinate timing once the book is delivered.</td>
+      <td class="note" style="color:var(--text-muted)">Post-Delivery</td>
+      <td></td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<!-- FILE PATHS -->
+<div class="paths-card">
+  <div class="paths-card-header">Key File Locations</div>
+  <div class="path-row"><div class="path-key">Active PT Sessions</div><div class="path-val">Dropbox / Giorgio Bertuccelli / BOB BOOK / MIX /</div></div>
+  <div class="path-row"><div class="path-key">Archive PT Sessions</div><div class="path-val">Dropbox / Audio Assets / ProTools /</div></div>
+  <div class="path-row"><div class="path-key">April 2026 Pick-Ups</div><div class="path-val">Dropbox / Giorgio Bertuccelli / BOB BOOK / Pick Ups April 2026 /</div></div>
+  <div class="path-row"><div class="path-key">NuMixes (April 1)</div><div class="path-val">Dropbox / Giorgio Bertuccelli / BOB BOOK / MIX / NuMixes April1 /</div></div>
+  <div class="path-row"><div class="path-key">Session Hit List</div><div class="path-val">Dropbox / Giorgio Bertuccelli / BOB BOOK / outputs / SOTE_session_hitlist.html</div></div>
+  <div class="path-row"><div class="path-key">AI Audit Report</div><div class="path-val">Dropbox / Giorgio Bertuccelli / BOB BOOK / SOTE_AI_AUDIT_v3.html</div></div>
+  <div class="path-row"><div class="path-key">Ch10 Pickup Sheet</div><div class="path-val">Dropbox / Giorgio Bertuccelli / BOB BOOK / SOTE_Ch10_Pickups_v2.html</div></div>
+  <div class="path-row"><div class="path-key">Final Prints</div><div class="path-val">Dropbox / Giorgio Bertuccelli / BOB BOOK / FINAL PRINTS / (create when ready)</div></div>
+</div>
+
+<!-- PRINT RUN -->
+<div class="print-card">
+  <h3>Final Print Run — Steps</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Gio says: "start the final print run"</strong><span>Confirm all legal items are resolved. All new recordings are edited in. Ch10 AI pickups are complete and AI files removed.</span></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Share updated Word doc with Dan's notes from today</strong><span>Dan logs resolutions during Google Meet. Sync the Word doc before beginning the print run.</span></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Go chapter by chapter — open session, confirm the fix</strong><span>Work in order. Open each session, verify the fix is in place, then proceed to bounce.</span></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Bounce → FINAL PRINTS folder</strong><span>192 kbps CBR MP3 · –3 dBFS peak · –18 LUFS integrated. Destination: BOB BOOK / FINAL PRINTS /</span></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Track each file — check against Audible spec</strong><span>Spot-check loudness and peak. Flag anything that doesn't pass before moving to the next chapter.</span></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><strong>Flag anything needing another pass</strong><span>Fix it, re-bounce, re-check. Don't move on if something sounds wrong.</span></div></div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>SOTE TASK LIST · April 12–13, 2026 · Sources: SOTE_MASTER_TASKLIST.md + DOCX + Gemini Apr 12 session notes</span>
+  <span>6 legal · 5 recordings · 6 sessions · 2 Audible flags · 2 full AI sessions · 9+ meeting actions</span>
+</div>
+
+<script>
+function filterTable(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const rows = document.querySelectorAll('#mainTable tbody tr[data-status]');
+  rows.forEach(row => {
+    if (filter === 'all') { row.classList.remove('hidden'); return; }
+    const status = row.getAttribute('data-status') || '';
+    row.classList.toggle('hidden', !status.includes(filter));
+  });
+}
+function toggleDetail(id, btn) {
+  const row = document.getElementById('detail-' + id);
+  if (!row) return;
+  const isHidden = row.classList.contains('hidden');
+  row.classList.toggle('hidden', !isHidden);
+  btn.classList.toggle('open', isHidden);
+  btn.textContent = isHidden ? '▴' : '▾';
+}
+</script>
+</body>
+</html>

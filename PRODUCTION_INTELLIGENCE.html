@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Production Intelligence — GioSound</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #06060a; --bg2: #0c0c14; --bg3: #14141f; --bg4: #1c1c2a;
+  --text: #e8e8f0; --text2: #8888a8; --text3: #555570;
+  --accent: #ff3366; --accent2: #ff6699;
+  --green: #00cc88; --green-bg: rgba(0,204,136,0.1);
+  --orange: #ff9500; --orange-bg: rgba(255,149,0,0.1);
+  --red: #ff2244; --red-bg: rgba(255,34,68,0.1);
+  --blue: #4488ff; --blue-bg: rgba(68,136,255,0.1);
+  --purple: #aa66ff; --purple-bg: rgba(170,102,255,0.1);
+  --yellow: #ffcc00; --yellow-bg: rgba(255,204,0,0.08);
+  --border: #1a1a2e; --border2: #252540;
+  --glass: rgba(255,255,255,0.02);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text); overflow:hidden; height:100vh; }
+
+/* ══ LAYOUT ══ */
+.app { display:grid; grid-template-columns:56px 260px 1fr; grid-template-rows:1fr; height:100vh; }
+
+/* ── Rail (left icon strip) ── */
+.rail {
+  background:var(--bg); border-right:1px solid var(--border); display:flex;
+  flex-direction:column; align-items:center; padding:16px 0; gap:4px; z-index:100;
+}
+.rail-logo { width:32px; height:32px; border-radius:8px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:14px; color:#fff; margin-bottom:16px; cursor:pointer; }
+.rail-btn {
+  width:40px; height:40px; border-radius:10px; border:none; background:transparent;
+  color:var(--text3); cursor:pointer; display:flex; align-items:center; justify-content:center;
+  font-size:18px; transition:all 0.15s; position:relative;
+}
+.rail-btn:hover { background:var(--bg3); color:var(--text2); }
+.rail-btn.active { background:var(--bg3); color:var(--accent); }
+.rail-btn .dot { position:absolute; top:8px; right:8px; width:6px; height:6px; border-radius:50%; background:var(--accent); }
+.rail-spacer { flex:1; }
+.rail-avatar { width:32px; height:32px; border-radius:50%; background:var(--bg4); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:var(--text2); cursor:pointer; }
+
+/* ── Sidebar ── */
+.sidebar {
+  background:var(--bg2); border-right:1px solid var(--border);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.sidebar-header { padding:20px 16px 12px; border-bottom:1px solid var(--border); }
+.sidebar-title { font-size:11px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:1.5px; }
+.sidebar-mode { font-size:20px; font-weight:800; margin-top:4px; }
+.sidebar-scroll { flex:1; overflow-y:auto; padding:8px; }
+
+.sidebar-section { margin-bottom:16px; }
+.sidebar-section-title { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1.5px; padding:8px 8px 4px; }
+
+.sidebar-item {
+  display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px;
+  cursor:pointer; transition:all 0.12s; font-size:13px; color:var(--text2);
+}
+.sidebar-item:hover { background:var(--bg3); color:var(--text); }
+.sidebar-item.active { background:var(--bg3); color:var(--text); }
+.sidebar-item .icon { font-size:16px; width:20px; text-align:center; }
+.sidebar-item .badge { margin-left:auto; font-size:10px; font-weight:700; padding:2px 7px; border-radius:8px; }
+
+/* ── Main Content ── */
+.main { display:flex; flex-direction:column; overflow:hidden; }
+.main-header {
+  padding:16px 32px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:16px; flex-shrink:0;
+  background:var(--bg2);
+}
+.main-header h2 { font-size:16px; font-weight:700; }
+.main-header .view-toggle {
+  margin-left:auto; display:flex; gap:2px; background:var(--bg); border-radius:8px; padding:2px;
+}
+.view-toggle button {
+  padding:6px 14px; font-size:11px; font-weight:600; border:none; border-radius:6px;
+  background:transparent; color:var(--text2); cursor:pointer; transition:all 0.15s;
+}
+.view-toggle button.active { background:var(--bg3); color:var(--text); }
+.view-toggle button:hover { color:var(--text); }
+
+.main-scroll { flex:1; overflow-y:auto; }
+
+/* ── Panels ── */
+.panel { display:none; padding:32px; }
+.panel.active { display:block; }
+
+/* ── Producer Console specific ── */
+.console-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+.console-card {
+  background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:20px;
+  transition:border-color 0.2s;
+}
+.console-card:hover { border-color:var(--border2); }
+.console-card .card-label { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; }
+.console-card .card-value { font-size:28px; font-weight:900; line-height:1; }
+.console-card .card-detail { font-size:12px; color:var(--text2); margin-top:6px; }
+
+/* Input fields */
+.input-group { margin-bottom:16px; }
+.input-label { font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; display:block; }
+.input-field {
+  width:100%; padding:10px 14px; background:var(--bg); border:1px solid var(--border);
+  border-radius:8px; color:var(--text); font-family:'Inter'; font-size:13px;
+  outline:none; transition:border-color 0.2s;
+}
+.input-field:focus { border-color:var(--accent); }
+.input-field::placeholder { color:var(--text3); }
+textarea.input-field { resize:vertical; min-height:80px; }
+select.input-field { cursor:pointer; }
+
+.btn {
+  padding:10px 20px; border-radius:8px; border:none; font-family:'Inter';
+  font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s;
+}
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary:hover { background:var(--accent2); }
+.btn-ghost { background:transparent; color:var(--text2); border:1px solid var(--border); }
+.btn-ghost:hover { border-color:var(--text2); color:var(--text); }
+
+/* Chapter rows in producer view */
+.ch-row {
+  display:grid; grid-template-columns:40px 1fr 100px 80px 60px 1fr;
+  gap:12px; align-items:center; padding:12px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.03); font-size:13px;
+  transition:background 0.1s;
+}
+.ch-row:hover { background:var(--glass); }
+.ch-row-header { position:sticky; top:0; background:var(--bg2); z-index:5; font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; font-weight:600; }
+.ch-num { font-family:'JetBrains Mono'; font-size:12px; color:var(--text3); }
+.ch-name { font-weight:600; }
+.ch-action { font-size:12px; color:var(--text2); }
+
+.pill { display:inline-block; font-size:10px; font-weight:700; padding:3px 10px; border-radius:10px; text-transform:uppercase; letter-spacing:0.5px; }
+.p-clean { background:var(--green-bg); color:var(--green); }
+.p-spot { background:var(--orange-bg); color:var(--orange); }
+.p-rework { background:var(--red-bg); color:var(--red); }
+.p-critical { background:var(--red-bg); color:var(--red); animation:pulse 2s infinite; }
+.p-confirm { background:var(--blue-bg); color:var(--blue); }
+.p-rebuild { background:var(--purple-bg); color:var(--purple); }
+
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
+
+.pct-bar { display:flex; align-items:center; gap:6px; }
+.pct-track { width:50px; height:4px; background:var(--bg); border-radius:2px; overflow:hidden; }
+.pct-fill { height:100%; border-radius:2px; }
+.pct-num { font-family:'JetBrains Mono'; font-size:11px; }
+
+/* ── Client View ── */
+.client-hero {
+  background:linear-gradient(135deg, var(--bg3) 0%, #0a1020 100%);
+  border-radius:16px; padding:40px; margin-bottom:24px;
+  border:1px solid var(--border);
+}
+.client-hero h1 { font-size:32px; font-weight:900; margin-bottom:4px; }
+.client-hero .sub { font-size:14px; color:var(--text2); margin-bottom:24px; }
+.client-stats { display:flex; gap:32px; }
+.client-stat .num { font-size:36px; font-weight:900; }
+.client-stat .label { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:1px; }
+
+.client-chapter-list { margin-top:8px; }
+.client-ch {
+  display:flex; align-items:center; gap:16px; padding:14px 0;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+}
+.client-ch-name { font-weight:600; min-width:140px; }
+.client-ch-bar { flex:1; height:8px; background:var(--bg3); border-radius:4px; overflow:hidden; }
+.client-ch-fill { height:100%; border-radius:4px; transition:width 0.5s; }
+.client-ch-status { min-width:100px; text-align:right; }
+
+/* ── Vendor/Input Panel ── */
+.input-panel {
+  background:var(--bg3); border:1px solid var(--border); border-radius:12px;
+  padding:24px; margin-bottom:16px;
+}
+.input-panel h3 { font-size:14px; font-weight:700; margin-bottom:16px; }
+
+/* ── Dataset view ── */
+.dataset-block {
+  background:var(--bg); border:1px solid var(--border); border-radius:8px;
+  padding:16px; font-family:'JetBrains Mono'; font-size:11px; color:var(--text2);
+  overflow-x:auto; max-height:400px; overflow-y:auto; white-space:pre-wrap;
+  line-height:1.6;
+}
+
+/* ── Timeline mini ── */
+.tl-mini { padding:0; list-style:none; }
+.tl-mini li {
+  position:relative; padding:8px 0 8px 24px; border-left:2px solid var(--border);
+  font-size:13px; margin-left:8px;
+}
+.tl-mini li::before {
+  content:''; position:absolute; left:-5px; top:12px;
+  width:8px; height:8px; border-radius:50%; background:var(--accent); border:2px solid var(--bg);
+}
+.tl-mini .tl-date { font-family:'JetBrains Mono'; font-size:11px; color:var(--accent); }
+.tl-mini .tl-text { color:var(--text2); margin-top:2px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ══ RAIL ══ -->
+<div class="rail">
+  <div class="rail-logo">G</div>
+  <button class="rail-btn active" onclick="switchMode('producer')" title="Producer Console">&#9881;</button>
+  <button class="rail-btn" onclick="switchMode('client')" title="Client View">&#9671;</button>
+  <button class="rail-btn" onclick="switchMode('vendor')" title="Vendor Input">&#8644;</button>
+  <button class="rail-btn" onclick="switchMode('dataset')" title="Raw Dataset">&#9636;</button>
+  <div class="rail-spacer"></div>
+  <button class="rail-btn" title="Intelligence"><span class="dot"></span>&#9733;</button>
+  <div class="rail-avatar">GB</div>
+</div>
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar" id="sidebar">
+  <!-- Populated by JS based on mode -->
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+  <div class="main-header" id="mainHeader">
+    <!-- Populated by JS -->
+  </div>
+  <div class="main-scroll" id="mainContent">
+    <!-- Populated by JS -->
+  </div>
+</div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// THE DATASET — Single source of truth
+// ══════════════════════════════════════════════════════
+const DATASET = {
+  project: {
+    title: "Standing On The Edge",
+    subtitle: "Shaping Sounds: Stevie Wonder, DEVO, The Synth Revolution",
+    author: "Robert Margouleff",
+    publisher: "Pushkin Industries",
+    release: "May 19, 2026",
+    type: "Audiobook",
+    compliance: "SAG-AFTRA",
+    auditTool: "Descript Underlord v3/v4",
+    totalScans: 65,
+    sessions: 69,
+  },
+  team: [
+    {name:"Robert Margouleff", role:"Author/Narrator", note:"Bob. Original voice on all recordings."},
+    {name:"Dan Kavanaugh", role:"Producer/Editor", note:"Managing edit, delivery decisions."},
+    {name:"Gio Bertuccelli", role:"Audio Engineer/AI Compliance", note:"Audit, mixing, Descript/Pro Tools/Logic."},
+    {name:"Mark Allen Hall", role:"Recording Engineer", note:"Saturday pickup sessions."},
+    {name:"Jasmine/Sarah", role:"Pushkin Producer", note:"Set audio treatment standard."},
+  ],
+  deadlines: [
+    {date:"Apr 11", event:"Saturday pickup session (1-5pm LA)", status:"upcoming"},
+    {date:"Apr 13", event:"3rd mix deliverables due", status:"upcoming"},
+    {date:"Apr 15", event:"SAG-AFTRA compliance deadline", status:"critical"},
+    {date:"Apr 17-18", event:"Mastering sessions", status:"upcoming"},
+    {date:"Apr 24", event:"Final masters delivery", status:"upcoming"},
+    {date:"May 19", event:"Book release", status:"milestone"},
+  ],
+  chapters: [
+    {name:"Opening Credits",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Ready for mix"},
+    {name:"Foreword",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Ready for mix"},
+    {name:"Preface",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Ready for mix"},
+    {name:"Prologue",status:"SPOT FIX",cls:"spot",pct:1.5,files:4,action:"Remove 4 TTS segments (5.2s)"},
+    {name:"Chapter 1",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Disable Studio Sound"},
+    {name:"Chapter 2",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Quarantine test comps"},
+    {name:"Chapter 3",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Quarantine Dr Ross comps"},
+    {name:"Chapter 4",status:"SPOT FIX",cls:"spot",pct:2.5,files:2,action:"Part B: Remove EL 7.4s + overdub 0.9s"},
+    {name:"Chapter 5",status:"NEAR-CLEAN",cls:"clean",pct:0.1,files:2,action:"Optional: 2 scratch fills (0.8s)"},
+    {name:"Chapter 6",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Finalize v4c edits per Dan's notes"},
+    {name:"Chapter 7",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Ready for mix"},
+    {name:"Chapter 8",status:"NEAR-CLEAN",cls:"clean",pct:0.3,files:1,action:"Optional: 1 scratch (1.65s)"},
+    {name:"Chapter 9",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Ready for mix"},
+    {name:"Chapter 10",status:"CRITICAL",cls:"critical",pct:18,files:55,action:"REBUILD from original sessions"},
+    {name:"Chapter 11",status:"REWORK",cls:"rework",pct:17,files:20,action:"Use Chapter11_Duplicates_Removed"},
+    {name:"Chapter 12",status:"CONFIRM",cls:"confirm",pct:20,files:44,action:"Awaiting Dan: which project?"},
+    {name:"Chapter 13",status:"RE-RECORDED",cls:"rework",pct:18,files:63,action:"Apr 3 re-record — edit + mix"},
+    {name:"Chapter 14",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Ready for mix"},
+    {name:"Chapter 15",status:"CONFIRM",cls:"confirm",pct:15,files:59,action:"Awaiting Dan: which project?"},
+    {name:"Chapter 16",status:"NEAR-CLEAN",cls:"clean",pct:0.2,files:1,action:"Trivial 1 sub-1s fix"},
+    {name:"Chapter 17",status:"SPOT FIX",cls:"spot",pct:2.7,files:4,action:"Remove 4 EL clips (34.9s)"},
+    {name:"Chapter 18",status:"SPOT FIX",cls:"spot",pct:1,files:1,action:"Use RAW project (1 regen)"},
+    {name:"Chapter 19",status:"SPOT FIX",cls:"spot",pct:0.3,files:3,action:"Remove TTS + regen (2.8s)"},
+    {name:"Chapter 20",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Use Copy of Guy Edit"},
+    {name:"Chapter 21",status:"REBUILD",cls:"rebuild",pct:15,files:8,action:"Rebuild from RAW (98 min)"},
+    {name:"Chapter 22",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Main edit clean — use it"},
+    {name:"Chapter 23",status:"SPOT FIX",cls:"spot",pct:1.5,files:3,action:"Use Copy #1 (RAW files)"},
+    {name:"Chapter 24",status:"USE RAW",cls:"confirm",pct:0,files:0,action:"RAW project is 100% clean"},
+    {name:"Chapter 25",status:"CLEAN",cls:"clean",pct:0,files:0,action:"Ready for mix"},
+    {name:"Epilogue",status:"SPOT FIX",cls:"spot",pct:0.1,files:1,action:"Replace 1 AI clip (1.8s)"},
+    {name:"End Credits",status:"SPOT FIX",cls:"spot",pct:1.7,files:1,action:"Replace EL voice clone (2s)"},
+  ],
+  timeline: [
+    {date:"Jul 21, 2025",phase:"recording",text:"Recording Day 3 with Bob Margouleff"},
+    {date:"Jul 23, 2025",phase:"recording",text:"Prologue sample cut + first Descript test"},
+    {date:"Jul 25, 2025",phase:"recording",text:"Recording Day 4 — Chapter 4 session"},
+    {date:"Jul 28, 2025",phase:"editing",text:"First full rough assembly (V1)"},
+    {date:"Aug–Nov 2025",phase:"editing",text:"Descript editing phase — ElevenLabs voice clone introduced"},
+    {date:"Nov 12, 2025",phase:"editing",text:"Manuscript script finalized (499 comments, 1390 tracked changes)"},
+    {date:"Feb 28, 2026",phase:"recording",text:"BOB BOOK SPOT pickup sessions"},
+    {date:"Mar 26, 2026",phase:"mixing",text:"Clean bounces from Descript — mix begins"},
+    {date:"Mar 29, 2026",phase:"audit",text:"SAG-AFTRA AI audit begins — Underlord v1/v2/v3"},
+    {date:"Mar 30, 2026",phase:"audit",text:"Full scorecard completed — all 29 chapters scanned"},
+    {date:"Apr 1, 2026",phase:"remediation",text:"Pushkin response plan + Ch6 RAW rebuild"},
+    {date:"Apr 3, 2026",phase:"remediation",text:"Chapter 13 re-recorded + pickup sessions"},
+    {date:"Apr 7, 2026",phase:"remediation",text:"Ch6 editorial review + Pro Tools version tracking"},
+    {date:"Apr 9, 2026",phase:"delivery",text:"FOR_DAN package prepared — hit lists + analysis"},
+    {date:"Apr 10, 2026",phase:"delivery",text:"Production Hub built — manuscript highlights + full dashboard"},
+  ],
+  decisions: [
+    {title:"Ch12: Which Descript project?",owner:"Dan",status:"pending",priority:"critical"},
+    {title:"Ch15: Which Descript project?",owner:"Dan",status:"pending",priority:"critical"},
+    {title:"Ch21: Accept with disclosure or rebuild?",owner:"Dan/Pushkin",status:"pending",priority:"high"},
+    {title:"Descript project sharing with Pushkin",owner:"Dan/Gio",status:"pending",priority:"medium"},
+    {title:"Ch13 re-record",owner:"Dan",status:"resolved",priority:"resolved"},
+    {title:"Audio treatment standard",owner:"Pushkin",status:"resolved",priority:"resolved"},
+  ],
+  standards: {
+    compliance: "SAG-AFTRA zero AI-generated words/lines in deliverable",
+    audioTreatment: "Light EQ, light compression, minimal RX De-noise, room tone preserved, Studio Sound OFF",
+    goldStandard: "Chapters 16 & 25",
+    reference: "Paul McCartney vibe — intimate, authentic, not over-processed",
+  }
+};
+
+// ══ Computed stats ══
+const stats = {
+  total: DATASET.chapters.length,
+  clean: DATASET.chapters.filter(c=>c.cls==='clean').length,
+  spot: DATASET.chapters.filter(c=>c.cls==='spot').length,
+  rework: DATASET.chapters.filter(c=>['rework','critical'].includes(c.cls)).length,
+  confirm: DATASET.chapters.filter(c=>['confirm','rebuild'].includes(c.cls)).length,
+  totalAI: DATASET.chapters.reduce((s,c)=>s+c.files,0),
+  pendingDecisions: DATASET.decisions.filter(d=>d.status==='pending').length,
+};
+
+// ══ Pill helpers ══
+function pillClass(cls) {
+  const map = {clean:'p-clean',spot:'p-spot',rework:'p-rework',critical:'p-critical',confirm:'p-confirm',rebuild:'p-rebuild'};
+  return map[cls]||'p-clean';
+}
+function barColor(cls) {
+  const map = {clean:'var(--green)',spot:'var(--orange)',rework:'var(--red)',critical:'var(--red)',confirm:'var(--blue)',rebuild:'var(--purple)'};
+  return map[cls]||'var(--green)';
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER FUNCTIONS — Different views of same data
+// ══════════════════════════════════════════════════════
+
+function switchMode(mode) {
+  document.querySelectorAll('.rail-btn').forEach((b,i)=>{
+    b.classList.toggle('active', ['producer','client','vendor','dataset'][i]===mode);
+  });
+  const renderers = {producer:renderProducer, client:renderClient, vendor:renderVendor, dataset:renderDataset};
+  if(renderers[mode]) renderers[mode]();
+}
+
+// ── PRODUCER CONSOLE ──
+function renderProducer() {
+  document.getElementById('sidebar').innerHTML = `
+    <div class="sidebar-header">
+      <div class="sidebar-title">Producer Console</div>
+      <div class="sidebar-mode">GioSound</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Project</div>
+        <div class="sidebar-item active" onclick="showProducerPanel('overview')"><span class="icon">&#9673;</span> Overview</div>
+        <div class="sidebar-item" onclick="showProducerPanel('chapters')"><span class="icon">&#9776;</span> Chapters <span class="badge" style="background:var(--red-bg);color:var(--red);">${stats.rework}</span></div>
+        <div class="sidebar-item" onclick="showProducerPanel('timeline')"><span class="icon">&#8986;</span> Timeline</div>
+        <div class="sidebar-item" onclick="showProducerPanel('decisions')"><span class="icon">&#9888;</span> Decisions <span class="badge" style="background:var(--orange-bg);color:var(--orange);">${stats.pendingDecisions}</span></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Intelligence</div>
+        <div class="sidebar-item" onclick="showProducerPanel('standards')"><span class="icon">&#9733;</span> Standards</div>
+        <div class="sidebar-item" onclick="showProducerPanel('team')"><span class="icon">&#9787;</span> Team</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Deadlines</div>
+        ${DATASET.deadlines.map(d=>`
+          <div class="sidebar-item" style="font-size:12px;">
+            <span style="font-family:'JetBrains Mono';color:${d.status==='critical'?'var(--red)':'var(--accent)'};font-size:11px;">${d.date}</span>
+            <span style="color:var(--text2);">${d.event.split('(')[0].trim()}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+
+  document.getElementById('mainHeader').innerHTML = `
+    <h2>${DATASET.project.title}</h2>
+    <span style="font-size:12px;color:var(--text2);">${DATASET.project.publisher} &bull; ${DATASET.project.release}</span>
+    <div class="view-toggle">
+      <button class="active" onclick="showProducerPanel('overview')">Overview</button>
+      <button onclick="showProducerPanel('chapters')">Chapters</button>
+      <button onclick="showProducerPanel('audit')">Audit</button>
+    </div>`;
+
+  showProducerPanel('overview');
+}
+
+function showProducerPanel(panel) {
+  const el = document.getElementById('mainContent');
+  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
+
+  if(panel==='overview') {
+    el.innerHTML = `<div style="padding:32px;">
+      <div class="console-grid">
+        <div class="console-card"><div class="card-label">Chapters</div><div class="card-value">${stats.total}</div><div class="card-detail">${stats.clean} clean, ${stats.spot} spot fix, ${stats.rework} rework, ${stats.confirm} awaiting</div></div>
+        <div class="console-card"><div class="card-label">AI Files Found</div><div class="card-value" style="color:var(--red);">${stats.totalAI}</div><div class="card-detail">Across ${DATASET.project.totalScans} Underlord scans</div></div>
+        <div class="console-card"><div class="card-label">Pending Decisions</div><div class="card-value" style="color:var(--orange);">${stats.pendingDecisions}</div><div class="card-detail">${DATASET.decisions.filter(d=>d.status==='pending').map(d=>d.title.split(':')[0]).join(', ')}</div></div>
+        <div class="console-card"><div class="card-label">Sessions Logged</div><div class="card-value">${DATASET.project.sessions}</div><div class="card-detail">Cowork sessions on this project</div></div>
+      </div>
+      <div style="display:flex;gap:3px;height:32px;border-radius:8px;overflow:hidden;margin-bottom:8px;">
+        ${DATASET.chapters.map(c=>`<div style="flex:1;background:${barColor(c.cls)};opacity:0.7;" title="${c.name}: ${c.status}"></div>`).join('')}
+      </div>
+      <div style="display:flex;gap:16px;font-size:11px;color:var(--text2);margin-bottom:24px;">
+        <span>&#9632; Clean (${stats.clean})</span>
+        <span style="color:var(--orange);">&#9632; Spot Fix (${stats.spot})</span>
+        <span style="color:var(--red);">&#9632; Rework (${stats.rework})</span>
+        <span style="color:var(--blue);">&#9632; Confirm (${stats.confirm})</span>
+      </div>
+      <h3 style="font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Recent Activity</h3>
+      <ul class="tl-mini">
+        ${DATASET.timeline.slice(-6).reverse().map(t=>`
+          <li><div class="tl-date">${t.date}</div><div class="tl-text">${t.text}</div></li>
+        `).join('')}
+      </ul>
+    </div>`;
+  }
+  else if(panel==='chapters') {
+    el.innerHTML = `<div style="padding:16px 32px;">
+      <div class="ch-row ch-row-header"><span>#</span><span>Chapter</span><span>Status</span><span>AI %</span><span>Files</span><span>Action</span></div>
+      ${DATASET.chapters.map((c,i)=>`
+        <div class="ch-row">
+          <span class="ch-num">${i+1}</span>
+          <span class="ch-name">${c.name}</span>
+          <span><span class="pill ${pillClass(c.cls)}">${c.status}</span></span>
+          <span class="pct-bar"><span class="pct-track"><span class="pct-fill" style="width:${Math.min(c.pct*5,100)}%;background:${barColor(c.cls)};"></span></span><span class="pct-num" style="color:${barColor(c.cls)};">${c.pct}%</span></span>
+          <span class="ch-num">${c.files}</span>
+          <span class="ch-action">${c.action}</span>
+        </div>
+      `).join('')}
+    </div>`;
+  }
+  else if(panel==='timeline') {
+    el.innerHTML = `<div style="padding:32px;">
+      <ul class="tl-mini">
+        ${DATASET.timeline.map(t=>`
+          <li><div class="tl-date">${t.date}</div><div class="tl-text">${t.text}</div></li>
+        `).join('')}
+      </ul>
+    </div>`;
+  }
+  else if(panel==='decisions') {
+    el.innerHTML = `<div style="padding:32px;">
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;">Pending Decisions</h3>
+      ${DATASET.decisions.filter(d=>d.status==='pending').map(d=>`
+        <div style="background:var(--bg3);border-left:3px solid ${d.priority==='critical'?'var(--red)':'var(--orange)'};border-radius:0 10px 10px 0;padding:16px;margin-bottom:12px;">
+          <div style="font-weight:700;margin-bottom:4px;">${d.title}</div>
+          <div style="font-size:12px;color:var(--text2);">Owner: ${d.owner}</div>
+        </div>
+      `).join('')}
+      <h3 style="font-size:14px;font-weight:700;margin:24px 0 16px;">Resolved</h3>
+      ${DATASET.decisions.filter(d=>d.status==='resolved').map(d=>`
+        <div style="background:var(--bg3);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:16px;margin-bottom:12px;opacity:0.6;">
+          <div style="font-weight:700;margin-bottom:4px;">${d.title}</div>
+          <div style="font-size:12px;color:var(--green);">RESOLVED</div>
+        </div>
+      `).join('')}
+    </div>`;
+  }
+  else if(panel==='standards') {
+    const s = DATASET.standards;
+    el.innerHTML = `<div style="padding:32px;">
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;">Production Standards</h3>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Compliance</div>
+        <div style="font-size:15px;font-weight:600;">${s.compliance}</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Audio Treatment</div>
+        <div style="font-size:15px;font-weight:600;">${s.audioTreatment}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:8px;">Gold Standard: ${s.goldStandard} &bull; "${s.reference}"</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">AI Types to Flag</div>
+        <div style="font-size:13px;line-height:2;">
+          <span style="color:var(--red);">&#9632;</span> ElevenLabs "BOB new pro" voice clone — <strong>zero tolerance</strong><br>
+          <span style="color:var(--orange);">&#9632;</span> Descript TTS / scratch fills — <strong>must remove</strong><br>
+          <span style="color:var(--yellow);">&#9632;</span> Descript regeneration (isAISpeech=true) — <strong>must remove</strong>
+        </div>
+      </div>
+    </div>`;
+  }
+  else if(panel==='team') {
+    el.innerHTML = `<div style="padding:32px;">
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;">Team</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        ${DATASET.team.map(t=>`
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;">
+            <div style="font-weight:700;">${t.name}</div>
+            <div style="font-size:11px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin:4px 0 8px;">${t.role}</div>
+            <div style="font-size:12px;color:var(--text2);">${t.note}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  }
+}
+
+// ── CLIENT VIEW ──
+function renderClient() {
+  document.getElementById('sidebar').innerHTML = `
+    <div class="sidebar-header">
+      <div class="sidebar-title">Client Portal</div>
+      <div class="sidebar-mode">Pushkin</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Views</div>
+        <div class="sidebar-item active" onclick="showClientPanel('status')"><span class="icon">&#9673;</span> Project Status</div>
+        <div class="sidebar-item" onclick="showClientPanel('chapters')"><span class="icon">&#9776;</span> Chapter Progress</div>
+        <div class="sidebar-item" onclick="showClientPanel('milestones')"><span class="icon">&#8986;</span> Milestones</div>
+      </div>
+    </div>`;
+
+  document.getElementById('mainHeader').innerHTML = `
+    <h2>Project Status</h2>
+    <span style="font-size:12px;color:var(--text2);">${DATASET.project.title} &bull; ${DATASET.project.author}</span>`;
+
+  showClientPanel('status');
+}
+
+function showClientPanel(panel) {
+  const el = document.getElementById('mainContent');
+  const readyCount = DATASET.chapters.filter(c=>c.pct===0).length;
+  const progressPct = Math.round((readyCount/stats.total)*100);
+
+  if(panel==='status') {
+    el.innerHTML = `<div style="padding:32px;">
+      <div class="client-hero">
+        <h1>${DATASET.project.title}</h1>
+        <div class="sub">${DATASET.project.subtitle} — by ${DATASET.project.author}</div>
+        <div class="client-stats">
+          <div class="client-stat"><div class="num" style="color:var(--green);">${progressPct}%</div><div class="label">Complete</div></div>
+          <div class="client-stat"><div class="num">${readyCount}</div><div class="label">Chapters Ready</div></div>
+          <div class="client-stat"><div class="num">${stats.total - readyCount}</div><div class="label">In Progress</div></div>
+          <div class="client-stat"><div class="num" style="color:var(--accent);">Apr 15</div><div class="label">Compliance Date</div></div>
+        </div>
+      </div>
+      <h3 style="font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Upcoming Milestones</h3>
+      ${DATASET.deadlines.map(d=>`
+        <div style="display:flex;align-items:center;gap:16px;padding:12px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">
+          <span style="font-family:'JetBrains Mono';font-size:13px;color:${d.status==='critical'?'var(--red)':'var(--blue)'};min-width:70px;font-weight:600;">${d.date}</span>
+          <span style="font-size:13px;">${d.event}</span>
+        </div>
+      `).join('')}
+    </div>`;
+  }
+  else if(panel==='chapters') {
+    el.innerHTML = `<div style="padding:32px;">
+      <div class="client-chapter-list">
+        ${DATASET.chapters.map(c=>{
+          const pct = c.pct===0 ? 100 : Math.max(100-c.pct*5, 10);
+          const color = c.pct===0 ? 'var(--green)' : c.pct<5 ? 'var(--orange)' : 'var(--red)';
+          const label = c.pct===0 ? 'Ready' : 'In Progress';
+          return `<div class="client-ch">
+            <span class="client-ch-name">${c.name}</span>
+            <div class="client-ch-bar"><div class="client-ch-fill" style="width:${pct}%;background:${color};"></div></div>
+            <span class="client-ch-status"><span class="pill" style="background:${c.pct===0?'var(--green-bg)':'var(--orange-bg)'};color:${c.pct===0?'var(--green)':'var(--orange)'};">${label}</span></span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+  else if(panel==='milestones') {
+    el.innerHTML = `<div style="padding:32px;">
+      <ul class="tl-mini">
+        ${DATASET.deadlines.map(d=>`<li><div class="tl-date">${d.date}</div><div class="tl-text">${d.event}</div></li>`).join('')}
+      </ul>
+    </div>`;
+  }
+}
+
+// ── VENDOR INPUT ──
+function renderVendor() {
+  document.getElementById('sidebar').innerHTML = `
+    <div class="sidebar-header">
+      <div class="sidebar-title">Vendor Input</div>
+      <div class="sidebar-mode">Data In</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Input Sources</div>
+        <div class="sidebar-item active"><span class="icon">&#9881;</span> Producer Input</div>
+        <div class="sidebar-item"><span class="icon">&#9671;</span> Client Input</div>
+        <div class="sidebar-item"><span class="icon">&#9836;</span> Audio Analysis</div>
+        <div class="sidebar-item"><span class="icon">&#9888;</span> Compliance Scan</div>
+      </div>
+    </div>`;
+
+  document.getElementById('mainHeader').innerHTML = `<h2>Input Interface</h2><span style="font-size:12px;color:var(--text2);">Feed data into the intelligence layer</span>`;
+
+  document.getElementById('mainContent').innerHTML = `<div style="padding:32px;">
+    <div class="input-panel">
+      <h3>Add Chapter Update</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="input-group">
+          <label class="input-label">Chapter</label>
+          <select class="input-field">
+            <option>Select chapter...</option>
+            ${DATASET.chapters.map(c=>`<option>${c.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="input-group">
+          <label class="input-label">New Status</label>
+          <select class="input-field">
+            <option>CLEAN</option><option>SPOT FIX</option><option>REWORK</option><option>CRITICAL</option><option>CONFIRM</option><option>REBUILD</option>
+          </select>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Notes</label>
+        <textarea class="input-field" placeholder="What changed? What was decided?"></textarea>
+      </div>
+      <button class="btn btn-primary">Update Dataset</button>
+    </div>
+
+    <div class="input-panel">
+      <h3>Add Compliance Scan Result</h3>
+      <div class="input-group">
+        <label class="input-label">Paste Underlord output</label>
+        <textarea class="input-field" placeholder="Paste the Descript Underlord scan output here..." style="min-height:120px;font-family:'JetBrains Mono';font-size:12px;"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary">Parse & Import</button>
+        <button class="btn btn-ghost">Preview</button>
+      </div>
+    </div>
+
+    <div class="input-panel">
+      <h3>Add Decision</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="input-group">
+          <label class="input-label">Decision Title</label>
+          <input class="input-field" placeholder="e.g., Ch12: Use Project A">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Owner</label>
+          <select class="input-field">
+            ${DATASET.team.map(t=>`<option>${t.name}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Details</label>
+        <textarea class="input-field" placeholder="What was decided and why?"></textarea>
+      </div>
+      <button class="btn btn-primary">Log Decision</button>
+    </div>
+  </div>`;
+}
+
+// ── RAW DATASET VIEW ──
+function renderDataset() {
+  document.getElementById('sidebar').innerHTML = `
+    <div class="sidebar-header">
+      <div class="sidebar-title">Raw Dataset</div>
+      <div class="sidebar-mode">JSON</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Data Objects</div>
+        <div class="sidebar-item active"><span class="icon">{ }</span> Full Dataset</div>
+        <div class="sidebar-item"><span class="icon">&#9776;</span> project (${Object.keys(DATASET.project).length} fields)</div>
+        <div class="sidebar-item"><span class="icon">&#9776;</span> chapters (${DATASET.chapters.length} items)</div>
+        <div class="sidebar-item"><span class="icon">&#9776;</span> team (${DATASET.team.length} items)</div>
+        <div class="sidebar-item"><span class="icon">&#9776;</span> timeline (${DATASET.timeline.length} items)</div>
+        <div class="sidebar-item"><span class="icon">&#9776;</span> decisions (${DATASET.decisions.length} items)</div>
+        <div class="sidebar-item"><span class="icon">&#9776;</span> standards (${Object.keys(DATASET.standards).length} fields)</div>
+      </div>
+    </div>`;
+
+  document.getElementById('mainHeader').innerHTML = `
+    <h2>Dataset</h2>
+    <span style="font-size:12px;color:var(--text2);">The single source of truth — every view reads from this</span>`;
+
+  document.getElementById('mainContent').innerHTML = `<div style="padding:32px;">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">
+      This is the intelligence. Every interface — producer, client, vendor — is a different lens on this same data.
+      The data grows as the project evolves. It becomes the equity.
+    </div>
+    <div class="dataset-block">${JSON.stringify(DATASET, null, 2).replace(/</g,'&lt;')}</div>
+  </div>`;
+}
+
+// ── Init ──
+renderProducer();
+</script>
+</body>
+</html>

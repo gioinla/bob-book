@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SOTE — Master Task List for Dan</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0e0e0e;color:#ddd;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;padding-bottom:80px}
+nav{position:sticky;top:0;z-index:100;background:#111;border-bottom:1px solid #222;display:flex;gap:0;flex-wrap:wrap;padding:8px 16px;align-items:center}
+nav a{color:#666;text-decoration:none;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:3px}
+nav a:hover{color:#fff;background:#1a1a1a}
+.nav-title{color:#444;font-size:10px;letter-spacing:3px;margin-right:12px}
+.page-header{padding:32px 24px 24px;border-bottom:1px solid #1a1a1a}
+.page-header h1{font-size:22px;font-weight:900;letter-spacing:2px;color:#fff;margin-bottom:4px}
+.page-header .sub{font-size:11px;letter-spacing:2px;color:#555;margin-bottom:12px}
+.page-header .lede{font-size:12px;color:#888;line-height:1.6;max-width:800px}
+section{padding:28px 24px;border-bottom:1px solid #181818}
+section h2{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:20px;padding-bottom:8px;border-bottom:1px solid #1c1c1c}
+.task-table{width:100%;border-collapse:collapse;margin-bottom:0}
+.task-table th{text-align:left;font-size:9px;letter-spacing:2px;color:#444;text-transform:uppercase;padding:6px 10px;border-bottom:1px solid #1c1c1c}
+.task-table td{padding:9px 10px;border-bottom:1px solid #161616;vertical-align:top;font-size:11px}
+.task-table tr:hover td{background:#141414}
+.ch{font-weight:700;color:#aaa;font-size:12px;white-space:nowrap}
+.issue{color:#999;line-height:1.5}
+.action{color:#666;line-height:1.5}
+.badge{display:inline-block;padding:2px 7px;border-radius:2px;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.badge.red{background:#3a1010;color:#e05050}
+.badge.yellow{background:#2a1e00;color:#c09020}
+.badge.green{background:#0a2a0a;color:#4ec94e}
+.badge.blue{background:#0a1e3a;color:#4a9ef0}
+.badge.teal{background:#0a2020;color:#20b0a0}
+.badge.gray{background:#1a1a1a;color:#555}
+.section-note{font-size:11px;color:#666;line-height:1.6;margin-bottom:16px;padding:10px 14px;background:#141414;border-radius:4px;border-left:3px solid #333}
+.meeting-item{background:#141414;border:1px solid #1c1c1c;border-radius:5px;padding:14px 16px;margin-bottom:10px}
+.meeting-item .who{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:6px}
+.meeting-item .what{font-size:12px;color:#ccc;font-weight:700;margin-bottom:4px}
+.meeting-item .detail{font-size:11px;color:#777;line-height:1.5}
+.meeting-item.gio .who{color:#2a5a2a}
+.meeting-item.dan .who{color:#2a2a5a}
+.path-table{width:100%;border-collapse:collapse}
+.path-table td{padding:8px 12px;border-bottom:1px solid #161616;font-size:11px}
+.path-table td:first-child{color:#555;font-size:10px;letter-spacing:1px;text-transform:uppercase;width:200px}
+.path-table td:last-child{font-family:monospace;color:#20b0a0;font-size:11px}
+.print-steps{display:flex;flex-direction:column;gap:8px}
+.print-step{display:flex;gap:14px;padding:12px 14px;background:#141414;border-radius:4px}
+.step-num{font-size:20px;font-weight:900;color:#333;line-height:1;flex-shrink:0;min-width:28px}
+.step-body{flex:1}
+.step-body strong{color:#ccc;display:block;margin-bottom:3px}
+.step-body p{color:#666;font-size:11px;line-height:1.5}
+.sticky-bottom{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #222;padding:8px 20px;font-size:11px;color:#555;display:flex;gap:24px;flex-wrap:wrap}
+.sticky-bottom b{color:#aaa}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">SOTE · TASK LIST</span>
+  <a href="#legal">Legal</a>
+  <a href="#recordings">New Recordings</a>
+  <a href="#sessions">Session Issues</a>
+  <a href="#audible">Audible Flags</a>
+  <a href="#ai-warning">AI Warning</a>
+  <a href="#meeting">Meeting Actions</a>
+  <a href="#paths">File Paths</a>
+  <a href="#print">Print Run</a>
+</nav>
+
+<div class="page-header">
+  <h1>SHAPING SOUNDS — MASTER TASK LIST FOR DAN</h1>
+  <div class="sub">APRIL 12–13, 2026 · GIO + DAN WORKING SESSION · REBUILT WITH MEETING NOTES (12:59 PDT)</div>
+  <div class="lede">
+    All outstanding items for the Shaping Sounds audiobook, organized by category. Sources: SOTE_MASTER_TASKLIST.md, SOTE_TaskList_ForDan.docx, Google Meet session notes (Apr 12 12:59 PDT), Pro Tools session audit. Dan is logging resolutions in the Word doc during the Google Meet session. All Jasmine notes are in the session hit list HTML — also on Dan's desktop.
+  </div>
+</div>
+
+<!-- LEGAL -->
+<section id="legal">
+  <h2>Legal — Must Resolve Before Delivery</h2>
+  <div class="section-note">All items below require either clearance confirmation, legal review, or replacement audio before the book can be delivered. These are hard stops.</div>
+  <table class="task-table">
+    <thead>
+      <tr><th>Chapter</th><th>Issue</th><th>Action Needed</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ch">Ch 3</td>
+        <td class="issue">Beethoven recording — possibly unlicensed version used. (Note: Apr 12 meeting — "Gloria" music clip removed, file saved as V2A or V2B.)</td>
+        <td class="action">Confirm which recording, replace or get clearance. Apr 12 meeting: section removed — confirm save as V2A/V2B and log as resolved.</td>
+        <td><span class="badge yellow">In Progress</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 12</td>
+        <td class="issue">Stevie Wonder clips — must stay under 60 seconds total per song used.</td>
+        <td class="action">Time each clip, cut if over the limit.</td>
+        <td><span class="badge red">Open</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 14</td>
+        <td class="issue">Grammy footage / award reference — possible rights issue.</td>
+        <td class="action">Remove or replace the segment.</td>
+        <td><span class="badge red">Open</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 15</td>
+        <td class="issue">Charles Bukowski poem — copyright status unclear.</td>
+        <td class="action">Confirm fair use or remove.</td>
+        <td><span class="badge red">Open</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 17</td>
+        <td class="issue">DEVO song name mentioned — clearance needed.</td>
+        <td class="action">Confirm clearance or remove reference.</td>
+        <td><span class="badge red">Open</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 18</td>
+        <td class="issue">Song identified as unlicensable.</td>
+        <td class="action">Remove and replace with cleared music.</td>
+        <td><span class="badge red">Open</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 1</td>
+        <td class="issue">Legal correspondence note — email investigation needed (from Apr 12 meeting).</td>
+        <td class="action">Dan: Investigate missing email correspondence related to the Ch1 legal note.</td>
+        <td><span class="badge yellow">Dan assigned</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- NEW RECORDINGS -->
+<section id="recordings">
+  <h2>New Recordings — Not Yet Imported Into Any Mix</h2>
+  <div class="section-note">These files are in the <code style="color:#20b0a0">Pick Ups April 2026</code> folder in Dropbox. They need to be imported into the active Pro Tools sessions and edited in before the chapter can be printed.</div>
+  <table class="task-table">
+    <thead>
+      <tr><th>Chapter</th><th>Pick-Up Files</th><th>What To Do</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ch">Ch 6</td>
+        <td class="issue">New Bob recording in Pick Ups April 2026 folder</td>
+        <td class="action">Import into active session (v4d). Note: Most recent AI render for Ch6 was March 27 — confirm human pickup replaces AI before print. Also confirm v4d is clean (v4c RECOVERD exists alongside it).</td>
+        <td><span class="badge red">Not imported</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 9</td>
+        <td class="issue">New Bob recording in Pick Ups April 2026 folder</td>
+        <td class="action">Import into active session (v2f).</td>
+        <td><span class="badge red">Not imported</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 13</td>
+        <td class="issue">6 new WAV takes (arrived April 2–3)</td>
+        <td class="action">Pick the best take from the 6 WAVs. Edit into session. Print as v3 or v4.</td>
+        <td><span class="badge red">Not imported — pick best take</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 15</td>
+        <td class="issue">New Bob recording in Pick Ups April 2026 folder</td>
+        <td class="action">Import into session. Note: Ch15 has no numbered archive session — likely needs a new PT session built.</td>
+        <td><span class="badge red">Not imported</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 19</td>
+        <td class="issue">New Bob recording in Pick Ups April 2026 folder</td>
+        <td class="action">Import into active session. Note: Ch19 appears twice in archive (023 v1 + 027 v1b) — confirm which is the approved deliverable version before importing.</td>
+        <td><span class="badge red">Not imported</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- SESSION ISSUES -->
+<section id="sessions">
+  <h2>Session Issues — Need Verification</h2>
+  <table class="task-table">
+    <thead>
+      <tr><th>Chapter</th><th>Issue</th><th>Action</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ch">Ch 6</td>
+        <td class="issue">Crash recovery session <code>v4c RECOVERD.ptx</code> exists alongside <code>v4d</code> in Mixes folder.</td>
+        <td class="action">Confirm v4d is clean and intact. Discard the recovered session after confirming all regions are in v4d.</td>
+        <td><span class="badge yellow">Needs confirm</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 10</td>
+        <td class="issue">Session only in MIX folder — numbered archive folder is empty. Also: 19 AI files must be replaced before print.</td>
+        <td class="action">See Ch10 Pickups sheet. After final print, archive the session properly to Audio Assets/ProTools.</td>
+        <td><span class="badge red">Blocked on pickups</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 16</td>
+        <td class="issue">Crash recovery session found in session folder.</td>
+        <td class="action">Verify current session (V3a) is intact. Confirm all audio regions present before treating as deliverable.</td>
+        <td><span class="badge yellow">Needs verify</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Epilogue</td>
+        <td class="issue">No human narration Pro Tools session found — only SpectraLayers .slp files + WAV bounces. Two sessions exist but both are AI-only.</td>
+        <td class="action">Locate the missing human narration session (may be on an unmounted drive). Or rebuild from SpectraLayers + WAV if human session truly doesn't exist. Cannot deliver AI session as human narration.</td>
+        <td><span class="badge red">Missing — investigate</span></td>
+      </tr>
+      <tr>
+        <td class="ch">End Credits</td>
+        <td class="issue">PT session folder exists but .ptx file not confirmed present.</td>
+        <td class="action">Open folder and confirm the .ptx file is there and intact.</td>
+        <td><span class="badge yellow">Needs confirm</span></td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 032<br><span style="font-size:10px;color:#555">Acknowledgements</span></td>
+        <td class="issue">No PT session found anywhere. No MP3 found anywhere.</td>
+        <td class="action">Investigate — may need to be created from scratch. Check all external drives and Logic sessions.</td>
+        <td><span class="badge red">Completely missing</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- AUDIBLE FLAGS -->
+<section id="audible">
+  <h2>Audible Technical Flags — Delivery Blockers</h2>
+  <div class="section-note">Audible's ingest system will automatically reject files that don't meet these specs. All chapters must pass before submission.</div>
+  <table class="task-table">
+    <thead>
+      <tr><th>Chapter</th><th>Issue</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ch">Ch 10</td>
+        <td class="issue"><span class="badge red">Rejection risk</span> ~2 minutes of trailing silence at end of file.</td>
+        <td class="action">Trim trailing silence to ≤ 1 second before final bounce. (Do this after AI pickups are in and session is ready to print.)</td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 24</td>
+        <td class="issue"><span class="badge yellow">Rejection risk</span> Trailing silence at end of file.</td>
+        <td class="action">Trim trailing silence before delivery.</td>
+      </tr>
+      <tr>
+        <td class="ch">All Chapters</td>
+        <td class="issue">Final bounces must meet Audible specs.</td>
+        <td class="action"><strong>192 kbps CBR MP3 · –3 dBFS peak · –18 LUFS integrated loudness.</strong> Check every bounce before submission.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- AI WARNING -->
+<section id="ai-warning">
+  <h2>AI Session Warning — Do Not Deliver as Human Narration</h2>
+  <div class="section-note" style="border-left-color:#5a1a1a">These chapters have fully AI-generated narration sessions. They MUST NOT be delivered to Audible or Pushkin as human narration without explicit clearance or re-recording by Robert.</div>
+  <table class="task-table">
+    <thead>
+      <tr><th>Chapter</th><th>Note</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      <tr style="background:#1e0808">
+        <td class="ch">Ch 25</td>
+        <td class="issue"><span class="badge red">Full AI session</span> "SOTE CHapter25+Epologue(allAI).ptx" + "SOTE_CHapter25_Epologue_v1_AIVOX.ptx" — both sessions are labeled as AI. 4 backup iterations on the allAI version.</td>
+        <td class="action">Confirm with Gio: are these chapters being re-recorded by Robert, or is AI delivery intentional and cleared with SAG-AFTRA and Pushkin?</td>
+      </tr>
+      <tr style="background:#1e0808">
+        <td class="ch">Epilogue</td>
+        <td class="issue"><span class="badge red">Full AI session</span> Same sessions as above cover both Ch25 and Epilogue. No human narration PT session found for the Epilogue.</td>
+        <td class="action">Same as Ch25 — confirm re-record plan or clearance. If re-recording: locate or rebuild a human narration session.</td>
+      </tr>
+      <tr>
+        <td class="ch">Ch 10</td>
+        <td class="issue"><span class="badge yellow">Partial AI</span> 19 AI files in active mix — replacement in progress. Human pickups needed before delivery. See Ch10 Pickups sheet.</td>
+        <td class="action">Do not print Ch10 until all AI files are replaced and removed from the session.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- MEETING ACTIONS APR 12 -->
+<section id="meeting">
+  <h2>April 12 Meeting Actions — From 12:59 PDT Session Notes</h2>
+  <div class="section-note">Action items captured from the Gemini auto-notes of the April 12, 2026 12:59 PDT Google Meet session between Gio and Dan.</div>
+
+  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:12px">Gio's Actions</div>
+
+  <div class="meeting-item gio">
+    <div class="who">Gio · Opening Credits</div>
+    <div class="what">Mix Opening Credits: Incorporate logo instrumental wave; print final mix as V2A</div>
+    <div class="detail">Logo instrumental found in Dropbox / Audio Assets / Pushkin folder. Start the instrumental at 5.8 seconds to align with the logo example timing. Print as V2A.</div>
+  </div>
+
+  <div class="meeting-item gio">
+    <div class="who">Gio · Prologue</div>
+    <div class="what">Restore missing music cue + sound effects to Prologue mix</div>
+    <div class="detail">Music cue was inadvertently removed from the V2 mix. It was present in V0A and V1. Use V1 of the delivered mix as reference — locate the music and restore it. This is part of the V3A version.</div>
+  </div>
+
+  <div class="meeting-item gio">
+    <div class="who">Gio · Prologue</div>
+    <div class="what">Adjust narration timing — Robert's voice in at 1:42</div>
+    <div class="detail">Prologue V3A mix: narration is running too long in the clear. Move Robert's entry to approximately 1 minute 42 seconds over the music cue.</div>
+  </div>
+
+  <div class="meeting-item gio">
+    <div class="who">Gio · Chapter 1</div>
+    <div class="what">Remove paper shuffling sounds from Chapter 1 mix</div>
+    <div class="detail">Check mix for shuffling sounds; remove them from the audio.</div>
+  </div>
+
+  <div class="meeting-item gio">
+    <div class="who">Gio · Chapter 1</div>
+    <div class="what">Insert missing audio "Grandmir was a formidable woman" at 4:51</div>
+    <div class="detail">This text is in the raw Descript files. Dan created a clip of the missing section. Insert into the Ch1 mix at 4 minutes 51 seconds. Also: restore "our hideout" passage (missing from current delivery) and "blue-collar working man's club" section — both located by Dan in raw Descript files.</div>
+  </div>
+
+  <div class="meeting-item gio">
+    <div class="who">Gio · Chapter 3</div>
+    <div class="what">Save Ch3 file as V2A or V2B after removing Beethoven/Gloria music section</div>
+    <div class="detail">The Gloria music clip was removed due to licensing qualification issues. Save the revised session as V2A or V2B.</div>
+  </div>
+
+  <div class="meeting-item gio">
+    <div class="who">Gio · Chapter 3</div>
+    <div class="what">Investigate and fix audio dip at 17:41</div>
+    <div class="detail">There is a sound dip occurring around the 17:41 mark in Chapter 3. Locate and repair.</div>
+  </div>
+
+  <div class="meeting-item gio">
+    <div class="who">Gio · Chapter 4</div>
+    <div class="what">Level narration audio — ensure even, consistent levels throughout Ch4</div>
+    <div class="detail">Narration audio level sounds uneven in the current mix. Even it out before print.</div>
+  </div>
+
+  <div class="meeting-item gio">
+    <div class="who">Gio · Workflow</div>
+    <div class="what">Create hit list for Dan based on these session notes</div>
+    <div class="detail">This document is that hit list. Dan requested a version structured the same as Gio's list, generated from the meeting message notes.</div>
+  </div>
+
+  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#444;margin:16px 0 12px">Dan's Actions</div>
+
+  <div class="meeting-item dan">
+    <div class="who">Dan · Chapter 1</div>
+    <div class="what">Investigate missing email — Chapter 1 legal note</div>
+    <div class="detail">Missing email correspondence related to the Ch1 legal note. Dan assigned to self to investigate.</div>
+  </div>
+
+  <div class="meeting-item dan">
+    <div class="who">Dan · Chapter 1</div>
+    <div class="what">Provide all available takes for missing audio sections</div>
+    <div class="detail">Send Gio all available takes for the missing Ch1 sections so Gio can comp and edit in.</div>
+  </div>
+
+  <div class="meeting-item dan">
+    <div class="who">Dan · Tonto</div>
+    <div class="what">Schedule visit with Tonto after current project completion</div>
+    <div class="detail">Dan to coordinate timing once the book is delivered.</div>
+  </div>
+</section>
+
+<!-- FILE PATHS -->
+<section id="paths">
+  <h2>Key File Locations</h2>
+  <table class="path-table">
+    <tr><td>Active PT Sessions</td><td>Dropbox / Giorgio Bertuccelli / BOB BOOK / MIX /</td></tr>
+    <tr><td>Archive PT Sessions</td><td>Dropbox / Audio Assets / ProTools /</td></tr>
+    <tr><td>April 2026 Pick-Ups</td><td>Dropbox / Giorgio Bertuccelli / BOB BOOK / Pick Ups April 2026 /</td></tr>
+    <tr><td>NuMixes (April 1)</td><td>Dropbox / Giorgio Bertuccelli / BOB BOOK / MIX / NuMixes April1 /</td></tr>
+    <tr><td>Session Hit List</td><td>Dropbox / Giorgio Bertuccelli / BOB BOOK / outputs / SOTE_session_hitlist.html</td></tr>
+    <tr><td>Final Prints (tomorrow)</td><td>Dropbox / Giorgio Bertuccelli / BOB BOOK / FINAL PRINTS / (create when ready)</td></tr>
+    <tr><td>AI Audit Report</td><td>Dropbox / Giorgio Bertuccelli / BOB BOOK / SOTE_AI_AUDIT_v2.html</td></tr>
+    <tr><td>Ch10 Pickup Sheet</td><td>Dropbox / Giorgio Bertuccelli / BOB BOOK / SOTE_Ch10_Pickups.html</td></tr>
+  </table>
+</section>
+
+<!-- PRINT RUN -->
+<section id="print">
+  <h2>Tomorrow — Final Print Run</h2>
+  <div class="print-steps">
+    <div class="print-step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Gio says: "start the final print run"</strong>
+        <p>Confirm all legal items are resolved or deferred by Pushkin. Confirm all new recordings are edited in. Confirm Ch10 AI pickups are complete.</p>
+      </div>
+    </div>
+    <div class="print-step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Share the updated Word doc with Dan's notes from today</strong>
+        <p>Dan logs resolutions during the Google Meet. Make sure the Word doc is shared / synced before beginning the print run.</p>
+      </div>
+    </div>
+    <div class="print-step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>Go chapter by chapter — open session, confirm the fix</strong>
+        <p>Work down the chapter list in order. Open each session, verify the relevant fix is in place, then proceed to bounce.</p>
+      </div>
+    </div>
+    <div class="print-step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <strong>Bounce the chapter — file lands in FINAL PRINTS folder</strong>
+        <p>192 kbps CBR MP3 · –3 dBFS peak · –18 LUFS integrated. Destination: BOB BOOK / FINAL PRINTS /</p>
+      </div>
+    </div>
+    <div class="print-step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <strong>Track each file as it arrives — check against Audible spec</strong>
+        <p>Verify the bounce file appears in FINAL PRINTS. Spot-check loudness and peak using a metering tool. Flag anything that doesn't pass spec before moving on.</p>
+      </div>
+    </div>
+    <div class="print-step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <strong>Flag anything needing another pass</strong>
+        <p>Don't move to the next chapter if something sounds wrong. Fix it, re-bounce, re-check. Keep a running list of chapters printed and confirmed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sticky-bottom">
+  <span>SOTE TASK LIST · APR 12–13 2026</span>
+  <span><b>6</b> legal items open</span>
+  <span><b>5</b> new recordings not yet imported</span>
+  <span><b>6</b> session issues</span>
+  <span><b>2</b> Audible rejection risks (Ch10, Ch24)</span>
+  <span><b>2</b> Full AI sessions (Ch25+Epi)</span>
+</div>
+
+</body>
+</html>

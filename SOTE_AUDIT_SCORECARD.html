@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SOTE SAG-AFTRA Audit</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a22;
+    --surface2: #22222e;
+    --border: #2e2e3e;
+    --text: #e8e8f0;
+    --muted: #888899;
+    --clean: #22c55e;
+    --clean-bg: #052012;
+    --clean-border: #166534;
+    --spotfix: #f59e0b;
+    --spotfix-bg: #1c1200;
+    --spotfix-border: #78350f;
+    --rework: #ef4444;
+    --rework-bg: #1a0000;
+    --rework-border: #7f1d1d;
+    --unverifiable: #a855f7;
+    --unverifiable-bg: #150d1e;
+    --unverifiable-border: #581c87;
+    --accent: #6366f1;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, 'SF Pro Text', BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    padding-bottom: 60px;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 16px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .header-subtitle {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .header-meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* SUMMARY CARDS */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 16px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+  .stat-card.clean .stat-number { color: var(--clean); }
+  .stat-card.spotfix .stat-number { color: var(--spotfix); }
+  .stat-card.rework .stat-number { color: var(--rework); }
+  .stat-card.total .stat-number { color: var(--accent); }
+  .stat-card.unverif .stat-number { color: var(--unverifiable); }
+  .stat-card.nearcln .stat-number { color: #84cc16; }
+
+  /* SECTION HEADERS */
+  .section-header {
+    padding: 8px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  /* CHAPTER CARDS */
+  .chapter-list {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .chapter-card {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .chapter-card.clean { background: var(--clean-bg); border-color: var(--clean-border); }
+  .chapter-card.spotfix { background: var(--spotfix-bg); border-color: var(--spotfix-border); }
+  .chapter-card.rework { background: var(--rework-bg); border-color: var(--rework-border); }
+  .chapter-card.unverifiable { background: var(--unverifiable-bg); border-color: var(--unverifiable-border); }
+  .chapter-card.nearcln { background: #0a1800; border-color: #365314; }
+
+  .chapter-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  .chapter-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .clean .chapter-badge { background: var(--clean); color: #000; }
+  .spotfix .chapter-badge { background: var(--spotfix); color: #000; }
+  .rework .chapter-badge { background: var(--rework); color: #fff; }
+  .unverifiable .chapter-badge { background: var(--unverifiable); color: #fff; }
+  .nearcln .chapter-badge { background: #84cc16; color: #000; }
+
+  .chapter-info { flex: 1; min-width: 0; }
+  .chapter-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chapter-status-pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 3px;
+  }
+  .clean .chapter-status-pill { background: #166534; color: #bbf7d0; }
+  .spotfix .chapter-status-pill { background: #78350f; color: #fde68a; }
+  .rework .chapter-status-pill { background: #7f1d1d; color: #fecaca; }
+  .unverifiable .chapter-status-pill { background: #581c87; color: #e9d5ff; }
+  .nearcln .chapter-status-pill { background: #365314; color: #d9f99d; }
+
+  .chapter-chevron {
+    color: var(--muted);
+    font-size: 12px;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  .chapter-card.open .chapter-chevron { transform: rotate(90deg); }
+
+  .chapter-body {
+    display: none;
+    padding: 0 14px 14px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .chapter-card.open .chapter-body { display: block; }
+
+  .note-text {
+    font-size: 13px;
+    color: #c8c8d8;
+    line-height: 1.6;
+    padding-top: 10px;
+  }
+  .note-text strong { color: var(--text); }
+
+  /* TIMECODE PILLS */
+  .timecodes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .tc {
+    background: rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 4px 9px;
+    font-size: 12px;
+    font-family: 'SF Mono', Menlo, monospace;
+    color: #f59e0b;
+  }
+
+  /* WARNINGS */
+  .warning-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 8px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .warning-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .warning-text { font-size: 12px; color: #c8c8d8; line-height: 1.5; }
+
+  /* ACTION ITEMS SECTION */
+  .action-section {
+    padding: 0 16px;
+    margin-top: 8px;
+  }
+  .action-card {
+    background: var(--rework-bg);
+    border: 1px solid var(--rework-border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .action-card.studio-sound {
+    background: #0d0d00;
+    border-color: #713f12;
+  }
+  .action-card.library {
+    background: #0a0a0a;
+    border-color: #1e3a5f;
+  }
+  .action-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .action-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .action-title {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .action-body {
+    display: none;
+    padding: 0 14px 14px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .action-card.open .action-body { display: block; }
+  .action-card.open .chapter-chevron { transform: rotate(90deg); }
+
+  .action-item {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 13px;
+    color: #c8c8d8;
+    line-height: 1.6;
+  }
+  .action-item:last-child { border-bottom: none; }
+  .action-item strong { color: var(--text); display: block; margin-bottom: 2px; }
+
+  /* KEY INFO */
+  .key-info {
+    margin: 8px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .key-row {
+    display: flex;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+    font-size: 13px;
+  }
+  .key-row:last-child { border-bottom: none; }
+  .key-label {
+    color: var(--muted);
+    flex-shrink: 0;
+    width: 80px;
+    font-size: 12px;
+  }
+  .key-val { color: var(--text); }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .d-clean { background: var(--clean); }
+  .d-near { background: #84cc16; }
+  .d-spot { background: var(--spotfix); }
+  .d-rework { background: var(--rework); }
+  .d-unverif { background: var(--unverifiable); }
+
+  /* DIVIDER */
+  .spacer { height: 16px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">SAG-AFTRA AI Compliance</div>
+  <div class="header-subtitle">SOTE Audit Scorecard</div>
+  <div class="header-meta">Shaping Sounds — Robert Margouleff &nbsp;·&nbsp; Updated Mar 30, 2026</div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot d-clean"></div> Clean</div>
+  <div class="legend-item"><div class="legend-dot d-near"></div> Near-clean</div>
+  <div class="legend-item"><div class="legend-dot d-spot"></div> Spot fix</div>
+  <div class="legend-item"><div class="legend-dot d-rework"></div> Rework / Critical</div>
+  <div class="legend-item"><div class="legend-dot d-unverif"></div> Unverifiable</div>
+</div>
+
+<!-- SUMMARY -->
+<div class="summary-grid">
+  <div class="stat-card total">
+    <div class="stat-number">31</div>
+    <div class="stat-label">Chapters<br>Complete</div>
+  </div>
+  <div class="stat-card clean">
+    <div class="stat-number">14</div>
+    <div class="stat-label">Clean<br>Main Edits</div>
+  </div>
+  <div class="stat-card rework">
+    <div class="stat-number">4</div>
+    <div class="stat-label">Significant<br>Rework</div>
+  </div>
+  <div class="stat-card spotfix">
+    <div class="stat-number">7</div>
+    <div class="stat-label">Spot<br>Fixes</div>
+  </div>
+  <div class="stat-card nearcln">
+    <div class="stat-number">2</div>
+    <div class="stat-label">Near<br>Clean</div>
+  </div>
+  <div class="stat-card unverif">
+    <div class="stat-number">1</div>
+    <div class="stat-label">Un-<br>verifiable</div>
+  </div>
+</div>
+
+<!-- CHAPTERS -->
+<div class="section-header">✅ Clean Chapters</div>
+<div class="chapter-list">
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">OC</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Opening Credits</div>
+        <div class="chapter-status-pill">Clean</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">100% clean. No AI detected.</div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">FW</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Foreword</div>
+        <div class="chapter-status-pill">Clean</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">100% clean. No AI detected.</div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">PR</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Preface</div>
+        <div class="chapter-status-pill">Clean</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">100% clean. No AI detected.</div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C1</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 1 — Planting Seeds</div>
+        <div class="chapter-status-pill">Clean</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Clean. Multiple projects scanned, all clear.</div>
+      <div class="warning-row">
+        <div class="warning-icon">⚠️</div>
+        <div class="warning-text"><strong>Studio Sound ON</strong> on early recording comp — must disable before bounce per Pushkin.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C2</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 2 — Learning</div>
+        <div class="chapter-status-pill">Clean (main edit)</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Main edit clean. 1 ElevenLabs file (43s "BOB new pro") exists in test comps only — not on timeline.</div>
+      <div class="warning-row">
+        <div class="warning-icon">🗑</div>
+        <div class="warning-text">Quarantine test comps. Remove ElevenLabs from library.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C3</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 3 — Finding My Voice</div>
+        <div class="chapter-status-pill">Clean (main edit)</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Main edit clean. 24 ElevenLabs "BOB new pro" files in project — ALL confined to "Dr Ross" test comps, not on deliverable timeline.</div>
+      <div class="warning-row">
+        <div class="warning-icon">⚠️</div>
+        <div class="warning-text">EDITV2 has Studio Sound ON. "mmm no Descript audio fx.wav" flagged for Dan's manual review.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C6</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 6 — Tuning In</div>
+        <div class="chapter-status-pill">Clean ✓</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">"Guy EDIT Fixes Love at NAMMSOTE" confirmed deliverable. Studio Sound OFF. Zero AI files. Multiple scans confirmed. <strong>DELIVERED.</strong></div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C7</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 7 — Total Chaos</div>
+        <div class="chapter-status-pill">Clean</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">RAW + both edited comps clean. Studio Sound OFF on deliverables. Flattened comp has SS ON (not deliverable). 4 scans confirmed.</div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C9</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 9 — Two Minds, One TONTO</div>
+        <div class="chapter-status-pill">Clean</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Main edit "Chapter 9 - Two Minds, One Tonto" (28:27) — 100% original recording. Studio Sound OFF. Zero AI.</div>
+      <div class="warning-row">
+        <div class="warning-icon">❓</div>
+        <div class="warning-text">Confirm with Dan: is "Two Minds One Tonto" the final Ch9, or is there still a 9B?</div>
+      </div>
+      <div class="warning-row">
+        <div class="warning-icon">⚠️</div>
+        <div class="warning-text">Raw session project (33:41) has Studio Sound ON — needs OFF. 1 ElevenLabs in other project library, not on timeline.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C14</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 14 — All Good Things</div>
+        <div class="chapter-status-pill">Clean (timeline)</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">AI files in project library only — not on deliverable timeline.</div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C20</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 20 — Flying Down to Rio</div>
+        <div class="chapter-status-pill">Clean</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Use <strong>"Copy of SOTE_chapter20_EDIT- Guy"</strong> (21:36) — 58 clips, all verifiable. Zero AI on timeline. 17 ElevenLabs in library — NOT on timeline.</div>
+      <div class="warning-row">
+        <div class="warning-icon">⚠️</div>
+        <div class="warning-text">Studio Sound ON — must disable. Do NOT use main edit (flattened source). Delete ElevenLabs from library.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C22</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 22 — Immersive Audio</div>
+        <div class="chapter-status-pill">Clean (main edit)</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Main edit "SOTE_chapter22_RAW__08-18-25" (20:10) — 100% original. Studio Sound OFF. Zero AI on timeline. Copy comp has ElevenLabs — NOT the deliverable.</div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C24</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 24 — Use RAW Project</div>
+        <div class="chapter-status-pill">Clean (use RAW)</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text"><strong>Use "SOTE_chapter24_RAW__08-20-25"</strong> — 72 clips, 3 original .aif recordings. Zero AI. 100% verifiable.</div>
+      <div class="warning-row">
+        <div class="warning-icon">🚫</div>
+        <div class="warning-text">Do NOT use edited project — has 6 ElevenLabs on timeline (~128.6s, 7.7% AI) and flattened source.</div>
+      </div>
+      <div class="warning-row">
+        <div class="warning-icon">⚠️</div>
+        <div class="warning-text">Studio Sound ON on RAW project — must disable before bounce.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card clean" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C25</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 25</div>
+        <div class="chapter-status-pill">Clean</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">3 compositions, all clean. Use <strong>"Clean Edit" (8:55)</strong> — tightest cut, zero AI, Studio Sound OFF.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NEAR CLEAN -->
+<div class="section-header">🟢 Near-Clean Chapters</div>
+<div class="chapter-list">
+
+  <div class="chapter-card nearcln" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C5</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 5 — Ciao! Baby</div>
+        <div class="chapter-status-pill">Near-clean</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Guy EDIT 2 has 2 tiny scratch fills (0.8s total) — optional removal under strict policy.</div>
+      <div class="timecodes">
+        <span class="tc">13:14 "Chelseathe"</span>
+        <span class="tc">13:30 "room."</span>
+      </div>
+      <div class="warning-row">
+        <div class="warning-icon">⚠️</div>
+        <div class="warning-text">Studio Sound ON in multiple comps — must disable.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card nearcln" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C8</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 8 — Fire Island</div>
+        <div class="chapter-status-pill">Near-clean</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">1 Descript scratch segment (1.65s). No ElevenLabs. Optional removal under strict zero-AI policy.</div>
+      <div class="timecodes">
+        <span class="tc">4:29 "me. That"</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SPOT FIXES -->
+<div class="section-header">🟡 Spot Fixes Required</div>
+<div class="chapter-list">
+
+  <div class="chapter-card spotfix" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">PRO</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Prologue</div>
+        <div class="chapter-status-pill">AI on main edit</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Dan EDIT2 has <strong>4 Descript TTS segments (~5.2s total)</strong>. 3 ElevenLabs files in library.</div>
+      <div class="timecodes">
+        <span class="tc">1:02 "gigs. The" (1.76s)</span>
+        <span class="tc">4:26 "a baseline." (2.0s)</span>
+        <span class="tc">4:28 "So" (0.36s)</span>
+        <span class="tc">4:47 "our door. He made" (1.65s)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card spotfix" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C17</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 17 — Journeyman Years</div>
+        <div class="chapter-status-pill">Spot fix</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Use <strong>"chapter17_Edit- Guy"</strong> (21:08) — 97.3% clean. 4 ElevenLabs clips (34.9s, 2.7%) to remove.</div>
+      <div class="timecodes">
+        <span class="tc">8:02–8:17 (15s)</span>
+        <span class="tc">8:17–8:32 (14.6s)</span>
+        <span class="tc">10:04–10:06 (1.6s)</span>
+        <span class="tc">10:06–10:10 (3.7s)</span>
+      </div>
+      <div class="warning-row">
+        <div class="warning-icon">🚫</div>
+        <div class="warning-text">Do NOT use Gio edit — flattened, 27+ ElevenLabs, SS ON.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card spotfix" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C18</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 18 — The 80s</div>
+        <div class="chapter-status-pill">Spot fix</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Use <strong>"SOTE_chapter18_RAW__08-15-25"</strong> (16:52) — 98.9% clean. 1 Descript regen (~1%, 10.77s) to remove.</div>
+      <div class="warning-row">
+        <div class="warning-icon">⚠️</div>
+        <div class="warning-text">Studio Sound ON — must disable.</div>
+      </div>
+      <div class="warning-row">
+        <div class="warning-icon">🚫</div>
+        <div class="warning-text">Do NOT use Gio version — 18.1% AI.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card spotfix" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C19</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 19 — Nice Gay Man</div>
+        <div class="chapter-status-pill">Spot fix</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">"SOTE_chapter19_Dan EDIT_01-08-26" (14:26) — 99.68% clean. 3 minor AI instances (2.8s total, 0.32%).</div>
+      <div class="timecodes">
+        <span class="tc">5:19 TTS scratch</span>
+        <span class="tc">10:36 Descript regen</span>
+      </div>
+      <div class="note-text" style="margin-top:8px">Studio Sound OFF. Two alternate clean comps available as fallback.</div>
+    </div>
+  </div>
+
+  <div class="chapter-card spotfix" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C23</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 23 — Mi Casa Setup</div>
+        <div class="chapter-status-pill">Spot fix</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Dan Edit has 3 ElevenLabs on timeline (5s total). Main edit uses flattened source (unverifiable). <strong>Use Copy #1 (original RAW files) as deliverable.</strong></div>
+      <div class="timecodes">
+        <span class="tc">4:18 "just as Bobby Anderson did" (2.0s)</span>
+        <span class="tc">4:20 "back in the days of Edie" (1.5s)</span>
+        <span class="tc">6:58 "How right he was" (1.5s)</span>
+      </div>
+      <div class="warning-row">
+        <div class="warning-icon">⚠️</div>
+        <div class="warning-text">Studio Sound ON — needs OFF. 7 ElevenLabs in library to delete.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card spotfix" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">EPL</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Epilogue</div>
+        <div class="chapter-status-pill">Spot fix</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">99.88% clean. 1 AI clip (~1.8s) — check RAW for original take or schedule 5s re-record. Under 30 min to remediate.</div>
+      <div class="timecodes">
+        <span class="tc">0:47.33–0:49.12 "a Tech for Support"</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card spotfix" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">EC</div>
+      <div class="chapter-info">
+        <div class="chapter-name">End Credits</div>
+        <div class="chapter-status-pill">Spot fix — CRITICAL</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">98.3% clean. 1 ElevenLabs voice clone clip (~2s) — "Edited by Dan" phrase.</div>
+      <div class="warning-row">
+        <div class="warning-icon">🚨</div>
+        <div class="warning-text"><strong>CRITICAL SAG-AFTRA violation</strong> — external AI voice, zero tolerance. Replace with original studio take or schedule 2s re-record.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NEEDS FIXES -->
+<div class="section-header">🟡 Chapter 4 — Part B (Needs Fix)</div>
+<div class="chapter-list">
+  <div class="chapter-card spotfix" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C4</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 4 — East Village</div>
+        <div class="chapter-status-pill">Part A: Clean / Part B: AI</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Part A: Clean deliverable. Part B: has ElevenLabs (7.4s) + Descript overdub (0.9s) on timeline.</div>
+      <div class="timecodes">
+        <span class="tc">8:18–8:25 ElevenLabs (7.4s)</span>
+        <span class="tc">2:12 Descript overdub (0.9s)</span>
+      </div>
+      <div class="note-text" style="margin-top:8px">ElevenLabs says: "We named our Venture Centar films because I felt that the mythical creature, half man, half horse, was heroic."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNIFICANT REWORK -->
+<div class="section-header">🔴 Significant Rework Required</div>
+<div class="chapter-list">
+
+  <div class="chapter-card rework" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C10</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 10 — It's Stevie Time!</div>
+        <div class="chapter-status-pill">Critical — Rebuild</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text"><strong>55 AI files in project.</strong> Main edit has 36 ElevenLabs "BOB new pro" clips (17 on timeline) + 19 Descript regens. ~5–7 min AI in 36-min chapter (15–20%).</div>
+      <div class="warning-row">
+        <div class="warning-icon">🚨</div>
+        <div class="warning-text">Strip ALL AI. Rebuild from 3 original session files (4h11m total). Delete ElevenLabs test comp. Studio Sound ON — must disable.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card rework" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C11</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 11 — Go West</div>
+        <div class="chapter-status-pill">Significant rework / Conditional</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Guy Edit FAILS: 17 ElevenLabs (~7min) + 3 Descript regens (36s) + scratch tags. FINAL_CLEAN has 16-min scratch block (8:26–24:46).</div>
+      <div class="warning-row">
+        <div class="warning-icon">✅</div>
+        <div class="warning-text"><strong>BEST OPTION:</strong> Use "Chapter11_Duplicates_Removed" (41:49) — zero AI detected. If quality OK, this is the deliverable.</div>
+      </div>
+      <div class="warning-row">
+        <div class="warning-icon">❓</div>
+        <div class="warning-text">Verify FINAL_CLEAN scratch block origin. Was 8:26–24:46 (Record Plant description) ever recorded? If not → schedule 16-min re-record.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-card rework" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C12</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 12 — The Magic We Created</div>
+        <div class="chapter-status-pill">Confirm with Dan</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text"><strong>TWO projects.</strong></div>
+      <div class="warning-row">
+        <div class="warning-icon">✅</div>
+        <div class="warning-text"><strong>Project A "SOTE_chapter12_EDIT__08-11-25"</strong> (32:21) — CLEAN. 89 clips, all original. 1 ungenerated scratch tag (0.4s). Studio Sound ON.</div>
+      </div>
+      <div class="warning-row">
+        <div class="warning-icon">🚨</div>
+        <div class="warning-text"><strong>Project B</strong> — 42 ElevenLabs + 2 Descript regens, ~16–25% AI. Significant rework if this is the deliverable.</div>
+      </div>
+      <div class="note-text" style="margin-top:8px">⚠️ Confirm with Dan which project is the deliverable.</div>
+    </div>
+  </div>
+
+  <div class="chapter-card rework" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C13</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 13 — Non-Stop Studio</div>
+        <div class="chapter-status-pill">Critical — Re-record candidate</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text"><strong>63 AI files in project.</strong> Main edit (10:19) — 18% AI content (111s of 619s). 6 ElevenLabs "BOB new pro" (~103s) + 1 BOB external AI (~5s) + 3 Descript regens (~3s).</div>
+      <div class="timecodes">
+        <span class="tc">0:04–0:17</span>
+        <span class="tc">0:59–1:10</span>
+        <span class="tc">1:47–1:48</span>
+        <span class="tc">3:06–3:32</span>
+        <span class="tc">6:34–6:35</span>
+        <span class="tc">6:59–7:00</span>
+      </div>
+      <div class="warning-row">
+        <div class="warning-icon">🚨</div>
+        <div class="warning-text">2x full 10-hour ElevenLabs audiobook files in library — delete. Raw recordings (1h16m) available for rebuild. Dan flagged for possible full re-record. Dan re-recorded Apr 3 — raw in Descript.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CONDITIONAL REWORK -->
+<div class="section-header">🔴 Conditional Rework (Confirm Deliverable)</div>
+<div class="chapter-list">
+
+  <div class="chapter-card rework" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C15</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 15 — Life After Wonder</div>
+        <div class="chapter-status-pill">Confirm with Dan</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text"><strong>TWO projects.</strong></div>
+      <div class="warning-row">
+        <div class="warning-icon">✅</div>
+        <div class="warning-text"><strong>Project A "SOTE_chapter15_EDIT"</strong> (33:03) — 100% CLEAN. 99 clips, all from 6 original .aif recordings. Zero AI. Studio Sound ON.</div>
+      </div>
+      <div class="warning-row">
+        <div class="warning-icon">🚨</div>
+        <div class="warning-text"><strong>Project B "015_SOTE_Chapter15_v0b FIX"</strong> (32:48) — 60+ AI segments (39 ElevenLabs + 20 Descript regens), ~12–18% AI. Studio Sound OFF.</div>
+      </div>
+      <div class="note-text" style="margin-top:8px">⚠️ Confirm with Dan which is deliverable. If Project A → CLEAN.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- UNVERIFIABLE -->
+<div class="section-header">🟣 Unverifiable — Rebuild Required</div>
+<div class="chapter-list">
+
+  <div class="chapter-card unverifiable" onclick="toggle(this)">
+    <div class="chapter-header">
+      <div class="chapter-badge">C21</div>
+      <div class="chapter-info">
+        <div class="chapter-name">Chapter 21 — Crossroads</div>
+        <div class="chapter-status-pill">Rebuild required</div>
+      </div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="chapter-body">
+      <div class="note-text">Both comps use flattened sources. Cannot verify if 8 ElevenLabs "BOB new pro" files (~2:10 total) were baked in before flatten. No Descript AI detected. Studio Sound OFF.</div>
+      <div class="warning-row">
+        <div class="warning-icon">🚨</div>
+        <div class="warning-text">Must rebuild edit from RAW files (#55.aif 68:07 + #56.aif 29:50) to certify clean. Delete all ElevenLabs from library.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ACTION ITEMS -->
+<div class="section-header">🔴 Dan Action Items — Must Fix</div>
+<div class="action-section">
+  <div class="action-card" onclick="toggle(this)">
+    <div class="action-header">
+      <div class="action-icon">🚨</div>
+      <div class="action-title">8 Critical Fixes Before Delivery</div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="action-body">
+      <div class="action-item">
+        <strong>1. Prologue</strong>
+        Remove 4 Descript TTS segments (~5.2s): 1:02, 4:26, 4:28, 4:47
+      </div>
+      <div class="action-item">
+        <strong>2. Ch4 Part B</strong>
+        Remove ElevenLabs (8:18–8:25, 7.4s) + Descript overdub (2:12, 0.9s)
+      </div>
+      <div class="action-item">
+        <strong>3. Ch10 — REBUILD</strong>
+        Strip 17 ElevenLabs + 19 Descript regens (~5–7 min AI). Rebuild from 3 original sessions (4h11m).
+      </div>
+      <div class="action-item">
+        <strong>4. Ch11 — Use Duplicates_Removed</strong>
+        "Chapter11_Duplicates_Removed" (41:49) is cleanest — zero AI. Verify quality. If FINAL_CLEAN scratch at 8:26–24:46 was never recorded → schedule re-record.
+      </div>
+      <div class="action-item">
+        <strong>5. Ch12 — Confirm deliverable</strong>
+        If Project B → significant rework (42 ElevenLabs + 2 regens). If Project A → just disable Studio Sound.
+      </div>
+      <div class="action-item">
+        <strong>6. Ch15 — Confirm deliverable</strong>
+        If Project A → CLEAN (just turn SS off). If Project B → rework 60+ AI segments.
+      </div>
+      <div class="action-item">
+        <strong>7. Ch13 — Re-record or rebuild</strong>
+        111s AI in 619s. Dan re-recorded Apr 3 — raw in Descript. Edit and deliver by Apr 13.
+      </div>
+      <div class="action-item">
+        <strong>8. Ch24 — Switch to RAW project</strong>
+        Use "SOTE_chapter24_RAW__08-20-25" — NOT the edited version. Disable Studio Sound before bounce.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STUDIO SOUND -->
+<div class="action-section">
+  <div class="action-card studio-sound" onclick="toggle(this)">
+    <div class="action-header">
+      <div class="action-icon">🔇</div>
+      <div class="action-title">Studio Sound — Must Disable</div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="action-body">
+      <div class="action-item">Ch1 (early recording comp), Ch5 (multiple comps), Ch7 (flattened comp), Ch9 (script track), Ch10 (all comps), Ch11 (all edited comps), Ch15 (script track)</div>
+    </div>
+  </div>
+</div>
+
+<!-- LIBRARY CLEANUP -->
+<div class="action-section">
+  <div class="action-card library" onclick="toggle(this)">
+    <div class="action-header">
+      <div class="action-icon">🗑</div>
+      <div class="action-title">Library Cleanup (Recommended)</div>
+      <div class="chapter-chevron">▶</div>
+    </div>
+    <div class="action-body">
+      <div class="action-item"><strong>Prologue</strong> — Remove 3 ElevenLabs + 1 generated audio</div>
+      <div class="action-item"><strong>Ch2</strong> — Remove 1 ElevenLabs, delete test comps</div>
+      <div class="action-item"><strong>Ch3</strong> — Remove 24 ElevenLabs, quarantine Dr Ross comps</div>
+      <div class="action-item"><strong>Ch4</strong> — Remove 2 ElevenLabs</div>
+      <div class="action-item"><strong>Ch10</strong> — Remove 36 ElevenLabs + 19 Descript regens, delete test comps</div>
+      <div class="action-item"><strong>Ch11</strong> — Remove 17 ElevenLabs + 3 Descript regens from Guy Edit</div>
+      <div class="action-item"><strong>Ch12</strong> — Remove 42 ElevenLabs + 2 Descript regens</div>
+      <div class="action-item"><strong>Ch13</strong> — Remove 46 "BOB new pro" + 3 regens + 2x 10hr ElevenLabs audiobook files + voice clone</div>
+      <div class="action-item"><strong>Ch14</strong> — Remove AI files from library</div>
+      <div class="action-item"><strong>Ch20</strong> — Delete 17 ElevenLabs from library</div>
+      <div class="action-item"><strong>Ch21</strong> — Delete all ElevenLabs from library</div>
+      <div class="action-item"><strong>Ch22</strong> — Delete ElevenLabs from copy comp library</div>
+      <div class="action-item"><strong>Ch23</strong> — Delete 7 ElevenLabs from library</div>
+      <div class="action-item"><strong>End Credits</strong> — Delete all ElevenLabs</div>
+    </div>
+  </div>
+</div>
+
+<!-- KEY INFO -->
+<div class="section-header">📋 Key Reference</div>
+<div class="key-info">
+  <div class="key-row">
+    <div class="key-label">Prompt</div>
+    <div class="key-val">/BOB BOOK/UNDERLORD_AUDIT_PROMPT_v3.md</div>
+  </div>
+  <div class="key-row">
+    <div class="key-label">AI Voices</div>
+    <div class="key-val">"BOB new pro", "DEVO mark", "Bob Verdecchio", "Eddie Sedgwick tv"</div>
+  </div>
+  <div class="key-row">
+    <div class="key-label">Pushkin Rule</div>
+    <div class="key-val">No Studio Sound from Descript</div>
+  </div>
+  <div class="key-row">
+    <div class="key-label">SAG-AFTRA Rule</div>
+    <div class="key-val">No AI-generated full words/lines in deliverable</div>
+  </div>
+  <div class="key-row">
+    <div class="key-label">Severity</div>
+    <div class="key-val">MINOR &lt;2s · MAJOR 2–10s · CRITICAL 10–60s · CRITICAL-FULL &gt;60s</div>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
+<script>
+function toggle(card) {
+  card.classList.toggle('open');
+}
+</script>
+</body>
+</html>
