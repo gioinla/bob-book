@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gio — Script Comment Fixes</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0d0d0d;
+    color: #e8e8e8;
+    padding: 28px 20px 100px;
+    max-width: 700px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+
+  .header { margin-bottom: 28px; }
+  .header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+  .header .sub {
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+  .header .sub strong { color: #ccc; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 28px;
+  }
+  .progress-bar-bg {
+    flex: 1; height: 6px; background: #2a2a2a; border-radius: 3px; overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; background: #3fb950; border-radius: 3px;
+    width: 0%; transition: width 0.4s;
+  }
+  .progress-label {
+    font-size: 12px; color: #aaa; font-family: 'SF Mono', monospace; white-space: nowrap;
+  }
+
+  /* ── CHAPTER HEADER ── big, clear, impossible to miss */
+  .chapter-block { margin-bottom: 36px; }
+
+  .chapter-header {
+    background: #1a1a2a;
+    border: 1px solid #2a2a44;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+  }
+  .chapter-header .ch-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8888cc;
+    margin-bottom: 3px;
+  }
+  .chapter-header .ch-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+  }
+  .chapter-header .ch-meta {
+    font-size: 12px;
+    color: #8888aa;
+    margin-top: 5px;
+    line-height: 1.5;
+  }
+  .chapter-header .ch-meta strong { color: #aaaacc; }
+  .chapter-header .ch-save {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #3fb950;
+    background: #0a1f0a;
+    border: 1px solid #1a4a1a;
+    padding: 3px 10px;
+    border-radius: 5px;
+    letter-spacing: 0.5px;
+  }
+
+  .fix {
+    background: #181818;
+    border: 1px solid #282828;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    cursor: pointer;
+    transition: opacity 0.15s, background 0.15s;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .fix:active { background: #202020; }
+  .fix.done { opacity: 0.35; }
+  .fix.done .fix-title { text-decoration: line-through; color: #666; }
+
+  .fix.restore { border-color: #1a3a6a; background: #080f1a; }
+  .fix.restore .cb { border-color: #2a5aaa; }
+  .fix.noise  { border-color: #3a2600; background: #120d00; }
+  .fix.noise .cb  { border-color: #6a4a00; }
+  .fix.level  { border-color: #1a3a1a; background: #080f08; }
+  .fix.level .cb  { border-color: #2a6a2a; }
+  .fix.timing { border-color: #3a1a3a; background: #120812; }
+  .fix.timing .cb { border-color: #6a2a6a; }
+
+  .cb {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 2px solid #2a2a2a;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .fix.done .cb {
+    background: #1a7f37;
+    border-color: #1a7f37;
+  }
+  .fix.done .cb::after {
+    content: '✓';
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .fix-body { flex: 1; min-width: 0; }
+
+  .fix-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 5px;
+    flex-wrap: wrap;
+  }
+  .ts {
+    font-size: 12px;
+    font-family: 'SF Mono', monospace;
+    font-weight: 700;
+    color: #f0c27f;
+    background: #1a1200;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .fix-type-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .tag-restore { background: #001530; color: #4488ff; }
+  .tag-noise   { background: #1a0f00; color: #ff9933; }
+  .tag-level   { background: #001a08; color: #33cc77; }
+  .tag-timing  { background: #1a0020; color: #cc77ff; }
+
+  .fix-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #e0e0e0;
+    line-height: 1.35;
+    margin-bottom: 4px;
+  }
+
+  .fix-detail {
+    font-size: 13px;
+    color: #aaa;
+    line-height: 1.55;
+  }
+  .fix-detail strong { color: #ccc; }
+  .fix-detail a {
+    color: #6699ff;
+    text-decoration: none;
+    font-size: 12px;
+    word-break: break-all;
+  }
+  .fix-detail a:hover { text-decoration: underline; }
+
+  .descript-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 4px 10px;
+    background: #001020;
+    border: 1px solid #003060;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #4488ff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .descript-link:hover { background: #001830; }
+
+  .save-as {
+    display: inline-block;
+    margin-top: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #3fb950;
+    background: #0a1a0a;
+    border: 1px solid #1a4a1a;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .divider { height: 1px; background: #141414; margin: 28px 0; }
+
+  .note-box {
+    background: #111118;
+    border: 1px solid #2a2a44;
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 13px;
+    color: #aaa;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+  .note-box strong { color: #ccc; }
+  .note-box .warn { color: #ffaa44; }
+
+  .legend {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #bbb;
+  }
+  .legend-dot {
+    width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0;
+  }
+
+  .footer {
+    margin-top: 48px;
+    text-align: center;
+    font-size: 11px;
+    color: #222;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  #bth { position:fixed; bottom:24px; right:24px; z-index:9999; background:#ff3366; color:#fff; text-decoration:none; font-family:-apple-system,sans-serif; font-size:13px; font-weight:700; padding:10px 18px; border-radius:30px; box-shadow:0 4px 20px rgba(255,51,102,0.4); transition:all 0.2s; }
+  #bth:hover { background:#ff1a55; transform:translateY(-2px); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Script Comment Fixes</h1>
+  <div class="sub">
+    All <strong>@Gio-tagged comments</strong> from the annotated script PDF.<br>
+    Jasmine (JF) flagged → Dan (@Gio) assigned → fix in Descript or PT.
+  </div>
+</div>
+
+<div class="progress-row">
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbar"></div></div>
+  <div class="progress-label" id="plabel">0 done</div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#4488ff"></div> Restore clip from Descript</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ff9933"></div> Remove noise / click / shuffle</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#33cc77"></div> Level / volume fix</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#cc77ff"></div> Timing / gap / silence fix</div>
+</div>
+
+<!-- ============ PROLOGUE ============ -->
+<div class="chapter-block">
+  <div class="chapter-header">
+    <div class="ch-num">Prologue</div>
+    <div class="ch-title">Opening of the Book</div>
+    <div class="ch-meta">Music cue restore + narration timing fix</div>
+    <span class="ch-save">→ Save as V3A</span>
+  </div>
+
+  <div class="fix restore" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">0:01–0:40</span><span class="fix-type-tag tag-restore">Restore</span></div>
+      <div class="fix-title">Restore music/SFX cue — was removed from V2 mix</div>
+      <div class="fix-detail">JF flagged music cue missing from V2. DK: restore as it was in V1. <span class="save-as">→ Save as V3A</span></div>
+    </div>
+  </div>
+
+  <div class="fix timing" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">1:35–2:05</span><span class="fix-type-tag tag-timing">Timing</span></div>
+      <div class="fix-title">Narration comes in too late — push to 1:42</div>
+      <div class="fix-detail">JF: narration is too long in clear, should come back at ~1:41. DK: confirmed. <span class="save-as">→ Save as V3A</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CH1 ============ -->
+<div class="chapter-block">
+  <div class="chapter-header">
+    <div class="ch-num">Chapter 1</div>
+    <div class="ch-title">Planting Seeds</div>
+    <div class="ch-meta">Descript session: <strong>SOTE.Chapter01_RAW_08-21-25</strong> · 7 noise/restore items</div>
+    <span class="ch-save">→ Save as V2A</span>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~4:46</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Page turning sound — remove</div>
+      <div class="fix-detail">JF: page turning sound. DK: @Gio — restore from Clips.<br>
+        <a class="descript-link" href="https://web.descript.com/ea536de2-2343-4c96-957a-54ece9120855/lef32" target="_blank">↗ Descript Ch1 RAW</a>
+        <span class="save-as">→ Save as V2A</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~5:13</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Pen stroke / weird sound — remove</div>
+      <div class="fix-detail">JF: ~5:13 another weird sound, like a pen stroke. GB: addressed best as possible.<br>
+        <span class="fix-detail" style="color:#3a3a3a">Partially addressed — confirm in mix.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~6:01</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Paper shuffling sound — remove</div>
+      <div class="fix-detail">JF: ~6:01-6:03 page turning sound. DK: @Gio.<br>
+        <a class="descript-link" href="https://web.descript.com/ea536de2-2343-4c96-957a-54ece9120855/lef32" target="_blank">↗ Descript Ch1 RAW</a>
+        <span class="save-as">→ Save as V2A</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fix restore" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~8:41</span><span class="fix-type-tag tag-restore">Restore</span></div>
+      <div class="fix-title">Missing section — "Grand-mère was a formidable woman"</div>
+      <div class="fix-detail">JF: section missing from V2. DK: @Gio restore from Clips.<br>
+        <a class="descript-link" href="https://web.descript.com/ea536de2-2343-4c96-957a-54ece9120855/lef32" target="_blank">↗ Descript Ch1 RAW</a>
+        <span class="save-as">→ Save as V2A</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~9:14</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Shuffling sound — remove</div>
+      <div class="fix-detail">JF: ~9:14 this is missing. DK: @Gio restore from Clips.<br>
+        <a class="descript-link" href="https://web.descript.com/ea536de2-2343-4c96-957a-54ece9120855/lef32" target="_blank">↗ Descript Ch1 RAW</a>
+        <span class="save-as">→ Save as V2A</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~9:46</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Paper shuffle — remove</div>
+      <div class="fix-detail">JF: ~9:46 paper shuffle sound. DK: @Gio.</div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~11:32</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Click / paper shuffle at ~11:32</div>
+      <div class="fix-detail">JF: I hear a click here or a paper shuffle of some kind. DK: @Gio.</div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~18:19</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Shuffling sound — remove</div>
+      <div class="fix-detail">JF: ~18:19 shuffling sound. DK: @Gio.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CH2 ============ -->
+<div class="chapter-block">
+  <div class="chapter-header">
+    <div class="ch-num">Chapter 2</div>
+    <div class="ch-title">Learning Became Living</div>
+    <div class="ch-meta">Descript session: <strong>SOTE.Chapter02_RAW_08-21-25</strong> · 5 items: missing clips + noise</div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~1:51</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Crinkling sound in background — fix</div>
+      <div class="fix-detail">JF: I can hear a crinkling sound in the background. DK: @Gio.<br>
+        <a class="descript-link" href="https://web.descript.com/c44efaef-5959-4c45-beed-b849d76150e7/f8f28" target="_blank">↗ Descript Ch2 RAW</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="fix restore" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~2:36</span><span class="fix-type-tag tag-restore">Restore</span></div>
+      <div class="fix-title">Missing section at ~2:36</div>
+      <div class="fix-detail">JF: ~2:36 This is missing. Please confirm it was removed from V2 on purpose. DK: @Gio.<br>
+        <a class="descript-link" href="https://web.descript.com/c44efaef-5959-4c45-beed-b849d76150e7/f8f28" target="_blank">↗ Descript Ch2 RAW</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="fix restore" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~7:42</span><span class="fix-type-tag tag-restore">Restore</span></div>
+      <div class="fix-title">Missing section at ~7:42</div>
+      <div class="fix-detail">JF: ~7:42 This is missing. Removed from V2 on purpose? DK: @Gio.<br>
+        <a class="descript-link" href="https://web.descript.com/c44efaef-5959-4c45-beed-b849d76150e7/b653b" target="_blank">↗ Descript Ch2 RAW (b653b)</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~9:12–9:13</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Small rustling sound — remove</div>
+      <div class="fix-detail">JF: ~9:12-9:13 I hear another small rustling sound here. DK: @Gio.</div>
+    </div>
+  </div>
+
+  <div class="fix restore" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~19:54</span><span class="fix-type-tag tag-restore">Restore</span></div>
+      <div class="fix-title">Missing section at ~19:54</div>
+      <div class="fix-detail">JF: ~19:54 This is missing. Confirm removed from V2 on purpose. DK: @Gio.<br>
+        <a class="descript-link" href="https://web.descript.com/c44efaef-5959-4c45-beed-b849d76150e7/f8f28" target="_blank">↗ Descript Ch2 RAW</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CH3 ============ -->
+<div class="chapter-block">
+  <div class="chapter-header">
+    <div class="ch-num">Chapter 3</div>
+    <div class="ch-title">Finding My Voice</div>
+    <div class="ch-meta">Beethoven Gloria removed (clearance) · audio level dip at 17:41</div>
+    <span class="ch-save">→ Save as V2A</span>
+  </div>
+
+  <div class="fix restore" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">12:38–13:13</span><span class="fix-type-tag tag-restore">Music Removed</span></div>
+      <div class="fix-title">Beethoven "Gloria" clip removed — clearance issue resolved</div>
+      <div class="fix-detail">Music cue [MUSIC CUE + SFX - Beethoven "Gloria"] removed — licensing/fair use issue. DK: Done. DK: @Gio print as V2A → <strong>save/export as V2A</strong>. <span class="save-as">→ Save as V2A</span></div>
+    </div>
+  </div>
+
+  <div class="fix level" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~17:41</span><span class="fix-type-tag tag-level">Level</span></div>
+      <div class="fix-title">Audio dip at 17:41 — investigate and fix</div>
+      <div class="fix-detail">JF: audio level sounds like it dips here. DK: @Gio.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CH4 ============ -->
+<div class="chapter-block">
+  <div class="chapter-header">
+    <div class="ch-num">Chapter 4</div>
+    <div class="ch-title">The East Village via Uncle Sam</div>
+    <div class="ch-meta">2 items: level fix + missing line restore</div>
+  </div>
+
+  <div class="fix level" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~7:03</span><span class="fix-type-tag tag-level">Level</span></div>
+      <div class="fix-title">Narration audio level sounds different from rest — even it out</div>
+      <div class="fix-detail">JF: ~7:03 audio level on this line sounds quite different from rest of narration. Please make it more even. DK: @Gio.</div>
+    </div>
+  </div>
+
+  <div class="fix restore" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~14:53</span><span class="fix-type-tag tag-restore">Restore</span></div>
+      <div class="fix-title">Missing line: "I'd just left my office and was headed..."</div>
+      <div class="fix-detail">JF: ~14:53 This line is missing. DK: @Gio Restore.<br>
+        <a class="descript-link" href="https://web.descript.com/5Zd3a1ee-2853-4c22-8984-0f2c29b82898/aa077" target="_blank">↗ Descript Ch4</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CH5 ============ -->
+<div class="chapter-block">
+  <div class="chapter-header">
+    <div class="ch-num">Chapter 5</div>
+    <div class="ch-title">Ciao! Baby</div>
+    <div class="ch-meta">Descript session: <strong>SOTE_Chapter05_GuyDanEDIT</strong> · 4 items: timing, noise, level</div>
+  </div>
+
+  <div class="fix timing" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~8:49–8:51</span><span class="fix-type-tag tag-timing">Timing</span></div>
+      <div class="fix-title">Awkward pause between two words — find better take</div>
+      <div class="fix-detail">JF: ~8:49 awkward pause between two words — is there a better/smoother take? DK: @Gio.<br>
+        <a class="descript-link" href="https://web.descript.com/90882a93-4eb5-4f6d-a1c6-03e1faf39a15/g3Z4b" target="_blank">↗ Descript Ch5 RAW</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="fix timing" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~11:08</span><span class="fix-type-tag tag-timing">Timing</span></div>
+      <div class="fix-title">Add .75 sec to gap between "...crazier" and "the film..."</div>
+      <div class="fix-detail">JF: ~11:08 Can you add just a hair of a pause before this line comes in? DK: @gio add .75 sec to the gap between "…crazier" and "the film…"</div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~14:15</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Strange noise at end of word "weeks" — remove</div>
+      <div class="fix-detail">JF: ~14:15 strange noise at end of this word. Almost sounds like the S is pronounced twice. DK: @gio.</div>
+    </div>
+  </div>
+
+  <div class="fix level" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">17:13–17:32</span><span class="fix-type-tag tag-level">Level</span></div>
+      <div class="fix-title">Boost movie clip level per RJM</div>
+      <div class="fix-detail">[MOVIE CLIP Ciao! Manhattan] at 17:13-17:32. DK: @thecroomsouth Gio, boost level of movie clip per RJM.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CH6 ============ -->
+<div class="chapter-block">
+  <div class="chapter-header">
+    <div class="ch-num">Chapter 6</div>
+    <div class="ch-title">Tuning Into the Future</div>
+    <div class="ch-meta">2 items: Dropbox V4D notes + theremin music placement</div>
+    <span class="ch-save">→ Save as V5A</span>
+  </div>
+
+  <div class="fix restore" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">General</span><span class="fix-type-tag tag-restore">Address Notes</span></div>
+      <div class="fix-title">Address Dan's notes on Dropbox V4D</div>
+      <div class="fix-detail">DK111: @gio Address my notes on Dropbox v4d. Check Dropbox for the V4D session notes and work through them.</div>
+    </div>
+  </div>
+
+  <div class="fix restore" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">6:28–7:00</span><span class="fix-type-tag tag-restore">Music Placement</span></div>
+      <div class="fix-title">Restore theremin music to position from Dropbox V3A → save as V5A</div>
+      <div class="fix-detail">DK123: @gio place the theremin music where it was in dropbox v3a. <span class="save-as">→ Save as V5A</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CH7 ============ -->
+<div class="chapter-block">
+  <div class="chapter-header">
+    <div class="ch-num">Chapter 7</div>
+    <div class="ch-title">Total Chaos</div>
+    <div class="ch-meta">1 item: mix "Driving Verdecchio" — lower music, balance with narration</div>
+    <span class="ch-save">→ Save as V2B</span>
+  </div>
+
+  <div class="fix level" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~4:04–14:49</span><span class="fix-type-tag tag-level">Mix / Level</span></div>
+      <div class="fix-title">Mix "Driving Verdecchio" section — lower music, balance with narration → save as V2B</div>
+      <div class="fix-detail">JF: music is drowning out Robert's narration at ~14:25. Lower it. Have cue come in around ~13:15. DK: @Gio Please mix. Print as V2B → <strong>save as V2B</strong>. Music is "Driving Verdecchio" from Ciao! Manhattan soundtrack (Gino's music). <span class="save-as">→ Save as V2B</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CH8 ============ -->
+<div class="chapter-block">
+  <div class="chapter-header">
+    <div class="ch-num">Chapter 8</div>
+    <div class="ch-title">Fire Island</div>
+    <div class="ch-meta">3 items: music confirm out, lower SFX level, trim 19-sec silence at end</div>
+    <span class="ch-save">→ Save as V3A</span>
+  </div>
+
+  <div class="fix level" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~1:08</span><span class="fix-type-tag tag-level">Level</span></div>
+      <div class="fix-title">Music at 1:08 — confirmed removed, verify it's out</div>
+      <div class="fix-detail">Music cue at 1:08 was removed per 4:40 PM session decision. DK: Music at 1:08 removed; sound design retained. Confirm this in current mix.</div>
+    </div>
+  </div>
+
+  <div class="fix level" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">5:10–6:30</span><span class="fix-type-tag tag-level">Level</span></div>
+      <div class="fix-title">Lower music/SFX level — competing with narration</div>
+      <div class="fix-detail">JF: music is competing with Robert's narration throughout this section. Lower the music a little bit. DK: @Gio lower the music/sfx at end of chapter. <span class="save-as">→ Save as V3A</span></div>
+    </div>
+  </div>
+
+  <div class="fix timing" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">End of file</span><span class="fix-type-tag tag-timing">Silence</span></div>
+      <div class="fix-title">~19 seconds of extra silence at end of chapter — trim</div>
+      <div class="fix-detail">JF: there's about 19 seconds of extra silence at the end of this chapter. Please fix. DK: @Gio. <span class="save-as">→ Save as V3A</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CH9 ============ -->
+<div class="chapter-block">
+  <div class="chapter-header">
+    <div class="ch-num">Chapter 9</div>
+    <div class="ch-title">Two Minds, One TONTO</div>
+    <div class="ch-meta">Descript session: <strong>SOTE_Chapter09</strong> · 9 items: timing, noise, missing lines, word fix</div>
+    <span class="ch-save">→ Save as V3A</span>
+  </div>
+
+  <div class="fix timing" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~0:09</span><span class="fix-type-tag tag-timing">Timing</span></div>
+      <div class="fix-title">Trim pause at opening — sounds bit awkward</div>
+      <div class="fix-detail">JF: ~0:09 please trim the pause down here a hair. It sounds a bit awkward as is. DK: @Gio. Next version will be v3a. <span class="save-as">→ Save as V3A</span></div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~1:53</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Page turn at ~1:53 — remove</div>
+      <div class="fix-detail">JF: ~1:53 I hear a page turn here. DK: @Gio.</div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~4:39</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Odd background noise at ~4:39 — check and confirm</div>
+      <div class="fix-detail">JF: ~4:39 there's some odd background noise. Maybe a page turning? DK: I can't hear this. @Gio Please listen and confirm.</div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~9:56</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Page turn at ~9:56 — remove</div>
+      <div class="fix-detail">JF: ~9:56 I think I hear a page turn here. DK: @Gio.</div>
+    </div>
+  </div>
+
+  <div class="fix restore" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~13:12</span><span class="fix-type-tag tag-restore">Restore</span></div>
+      <div class="fix-title">Robert garbles word at ~13:12 — restore better take</div>
+      <div class="fix-detail">JF: ~13:12 He garbles this word. Is there a better take? DK: @Gio.<br>
+        <a class="descript-link" href="https://web.descript.com/ccc38c6a-01d7-467f-93c2-81faeea17ce5/6ba61" target="_blank">↗ Descript Ch9</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="fix restore" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~14:02</span><span class="fix-type-tag tag-restore">Restore</span></div>
+      <div class="fix-title">Missing line at ~14:02 — insert</div>
+      <div class="fix-detail">JF: ~14:02 This line is missing. Left out on purpose? DK226: Gio, please insert.</div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~14:43</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Background noise / pages turning at ~14:43 — remove</div>
+      <div class="fix-detail">JF: ~14:43 there's some background noise. Maybe pages turning. DK: @Gio.</div>
+    </div>
+  </div>
+
+  <div class="fix noise" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~16:17</span><span class="fix-type-tag tag-noise">Noise</span></div>
+      <div class="fix-title">Weird noise at ~16:17 — remove</div>
+      <div class="fix-detail">JF: ~16:17 there's another weird noise here. DK: @Gio.</div>
+    </div>
+  </div>
+
+  <div class="fix restore" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~24:21</span><span class="fix-type-tag tag-restore">Restore</span></div>
+      <div class="fix-title">Robert says "brought" instead of "bought" — fix word</div>
+      <div class="fix-detail">JF: ~24:21 He says "bought" rather than "brought" which doesn't make sense. GB: will address. DK: Still says "brought" in v2e. DK243: @Gio.<br>
+        <a class="descript-link" href="https://web.descript.com/ccc38c6a-01d7-467f-93c2-81faeea17ce5/af4d" target="_blank">↗ Descript Ch9 (af4d)</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="fix level" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="fix-body">
+      <div class="fix-meta"><span class="ts">~26:02</span><span class="fix-type-tag tag-level">Level</span></div>
+      <div class="fix-title">Audio muffled at ~26:02 — Robert sounds muffled</div>
+      <div class="fix-detail">JF: ~26:02 something odd with the audio. Robert sounds muffled all of a sudden. DK245: @Gio.<br>
+        <a class="descript-link" href="https://web.descript.com/ccc38c6a-01d7-467f-93c2-81faeea17ce5/8a8a7" target="_blank">↗ Descript Ch9 (8a8a7)</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="note-box">
+  <strong>⚠️ More chapters in the script (Ch10–Epilogue) still unreviewed.</strong><br>
+  This list covers <strong>Prologue through Ch9</strong> based on today's script scan. When Dan's back at 2, ask him about remaining chapter comments or do another pass through the PDF.<br><br>
+  <strong class="warn">No printing / no final mix delivery today.</strong> These are all internal fixes in Descript and PT sessions only.<br><br>
+  <strong>Descript sessions referenced:</strong><br>
+  Ch1 RAW: <code style="color:#f0c27f;font-size:11px">ea536de2-2343-4c96-957a-54ece9120855</code><br>
+  Ch2 RAW: <code style="color:#f0c27f;font-size:11px">c44efaef-5959-4c45-beed-b849d76150e7</code><br>
+  Ch4: <code style="color:#f0c27f;font-size:11px">5Zd3a1ee-2853-4c22-8984-0f2c29b82898</code><br>
+  Ch5 RAW: <code style="color:#f0c27f;font-size:11px">90882a93-4eb5-4f6d-a1c6-03e1faf39a15</code><br>
+  Ch9: <code style="color:#f0c27f;font-size:11px">ccc38c6a-01d7-467f-93c2-81faeea17ce5</code>
+</div>
+
+<div class="footer">Shaping Sounds · Pushkin · Prologue–Ch9 · Apr 13 2026</div>
+
+<a id="bth" href="index.html">← Hub</a>
+
+<script>
+  const fixes = document.querySelectorAll('.fix');
+  const TOTAL = fixes.length;
+
+  function updateProgress() {
+    const done = document.querySelectorAll('.fix.done').length;
+    const pct = TOTAL > 0 ? (done / TOTAL * 100) : 0;
+    document.getElementById('pbar').style.width = pct + '%';
+    document.getElementById('plabel').textContent = done + ' / ' + TOTAL + ' done';
+  }
+
+  function toggle(el) {
+    el.classList.toggle('done');
+    const idx = Array.from(fixes).indexOf(el);
+    if (el.classList.contains('done')) {
+      localStorage.setItem('gio_script_fixes_' + idx, 'done');
+    } else {
+      localStorage.removeItem('gio_script_fixes_' + idx);
+    }
+    updateProgress();
+  }
+
+  fixes.forEach((fix, i) => {
+    if (localStorage.getItem('gio_script_fixes_' + i) === 'done') {
+      fix.classList.add('done');
+    }
+  });
+  updateProgress();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Gio — Master Task List</title>
+<style>
+:root {
+  --bg: #08080d;
+  --bg2: #0e0e18;
+  --bg3: #14141f;
+  --bg4: #1c1c2e;
+  --text: #e8e8f2;
+  --text2: #8888aa;
+  --text3: #55556a;
+  --green: #00cc88;
+  --green-dim: rgba(0,204,136,0.12);
+  --green-border: rgba(0,204,136,0.3);
+  --red: #ff3355;
+  --red-dim: rgba(255,51,85,0.12);
+  --red-border: rgba(255,51,85,0.3);
+  --amber: #ffcc00;
+  --amber-dim: rgba(255,204,0,0.10);
+  --amber-border: rgba(255,204,0,0.3);
+  --blue: #448aff;
+  --blue-dim: rgba(68,138,255,0.10);
+  --blue-border: rgba(68,138,255,0.28);
+  --purple: #aa66ff;
+  --purple-dim: rgba(170,102,255,0.10);
+  --purple-border: rgba(170,102,255,0.28);
+  --border: #1e1e30;
+  --accent: #ff3366;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 0 0 100px;
+  min-height: 100vh;
+}
+
+/* HEADER */
+.top-bar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.top-bar-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.top-bar-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+}
+.top-bar-meta {
+  font-size: 11px;
+  color: var(--text3);
+  font-family: 'SF Mono', monospace;
+}
+
+/* HERO */
+.hero {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 24px 32px;
+}
+.hero h1 {
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1.0;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.hero h1 span { color: var(--green); }
+.hero-sub {
+  font-size: 15px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pill {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 20px;
+}
+.pill-green { background: var(--green-dim); border: 1px solid var(--green-border); color: var(--green); }
+.pill-red   { background: var(--red-dim);   border: 1px solid var(--red-border);   color: var(--red); }
+.pill-amber { background: var(--amber-dim); border: 1px solid var(--amber-border); color: var(--amber); }
+.pill-blue  { background: var(--blue-dim);  border: 1px solid var(--blue-border);  color: var(--blue); }
+
+/* PROGRESS */
+.progress-wrap {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 24px 28px;
+}
+.progress-bg {
+  height: 5px;
+  background: var(--bg4);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.35s;
+}
+.progress-label {
+  font-size: 11px;
+  color: var(--text3);
+  font-family: 'SF Mono', monospace;
+}
+
+/* SECTION */
+.section {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 24px 8px;
+}
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 28px 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* TASK */
+.task {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s, border-color 0.15s;
+  background: var(--bg2);
+  -webkit-user-select: none;
+  user-select: none;
+}
+.task:hover { border-color: #333; }
+.task.done { opacity: 0.3; }
+.task.done .t-title { text-decoration: line-through; color: var(--text3); }
+
+.cb {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  border: 2px solid #2a2a3a;
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.task.done .cb { background: var(--green); border-color: var(--green); }
+.task.done .cb::after { content: '✓'; color: #000; font-size: 15px; font-weight: 900; }
+
+.t-body { flex: 1; min-width: 0; }
+.t-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.t-tag-pt      { color: var(--blue); }
+.t-tag-desc    { color: var(--green); }
+.t-tag-hot     { color: var(--red); }
+.t-tag-amber   { color: var(--amber); }
+.t-tag-purple  { color: var(--purple); }
+.t-tag-plain   { color: var(--text3); }
+
+.t-title {
+  font-size: 17px; font-weight: 700;
+  color: var(--text); line-height: 1.35; margin-bottom: 5px;
+}
+.t-detail {
+  font-size: 13px; color: var(--text2); line-height: 1.6;
+}
+.t-detail strong { color: var(--text); }
+.t-detail code {
+  font-family: 'SF Mono', monospace; font-size: 11.5px;
+  color: #f0c27f; background: rgba(240,194,127,0.08);
+  padding: 1px 6px; border-radius: 4px;
+}
+
+/* task border accents */
+.task.t-fire   { border-color: rgba(255,51,85,0.35); background: rgba(255,51,85,0.04); }
+.task.t-now    { border-color: rgba(255,204,0,0.3);  background: rgba(255,204,0,0.03); }
+.task.t-soon   { border-color: var(--border); }
+.task.t-dan    { border-color: rgba(170,102,255,0.3); background: rgba(170,102,255,0.04); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text2); font-size: 12px; font-weight: 700;
+  padding: 3px 10px; border-radius: 5px;
+}
+
+/* NOTE */
+.note {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 20px;
+  font-size: 13px; color: var(--text2); line-height: 1.7;
+  margin-bottom: 10px;
+}
+.note strong { color: var(--text); }
+
+.divider { max-width: 700px; margin: 8px auto; height: 1px; background: var(--border); }
+
+/* BACK BTN */
+#bth {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  background: var(--accent); color: #fff; text-decoration: none;
+  font-family: -apple-system, sans-serif; font-size: 13px; font-weight: 700;
+  padding: 10px 18px; border-radius: 30px;
+  box-shadow: 0 4px 20px rgba(255,51,102,0.4);
+  transition: all 0.2s;
+}
+#bth:hover { background: #ff1a55; transform: translateY(-2px); }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <div class="top-bar-title">For Gio — Task List</div>
+    <div class="top-bar-meta">Apr 13, 2026 · Deadline Apr 24</div>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>For <span>Gio</span></h1>
+  <p class="hero-sub">Everything you need to do — top to bottom, in order. Based on all three Apr 12 sessions + today. Work down the list.</p>
+  <div class="pills">
+    <span class="pill pill-red">Dan out until after 2</span>
+    <span class="pill pill-amber">Reconvene 1:30 PM</span>
+    <span class="pill pill-green">11 solo tasks ready</span>
+    <span class="pill pill-blue">Deadline Apr 24</span>
+  </div>
+  <div style="margin-top:14px;">
+    <a href="GIO_SCRIPT_FIXES.html" style="display:inline-flex;align-items:center;gap:7px;background:#001020;border:1px solid rgba(68,136,255,0.5);color:#4488ff;text-decoration:none;font-size:13px;font-weight:700;padding:8px 16px;border-radius:8px;">
+      📄 Script Comment Fixes — Prologue→Ch9 (timestamp by timestamp) →
+    </a>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-bg"><div class="progress-fill" id="pbar"></div></div>
+  <div class="progress-label" id="plabel">0 / 0 done</div>
+</div>
+
+<!-- ════════════════════════════════ RIGHT NOW ════════════════════════════════ -->
+<div class="section">
+  <div class="section-label t-tag-hot">🔴 Right Now — Solo, No Dan Needed</div>
+
+  <div class="task t-fire" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-hot">🎛 Opening Credits · Fix</div>
+      <div class="t-title">Confirm instrumental at 5.8 sec, save session as V2A</div>
+      <div class="t-detail">Instrumental starts at exactly <strong>5.8 seconds</strong> — confirmed in 12:59 PM session. Verify timing in PT and save session as V2A. No delivery yet.</div>
+    </div>
+  </div>
+
+  <div class="task t-fire" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-hot">🎛 Prologue · Mix</div>
+      <div class="t-title">Restore music cue + push Robert's narration to 1:42</div>
+      <div class="t-detail">Music cue was accidentally removed from V2 — restore from <strong>V1</strong>. Robert's narration comes in at <strong>1 min 42 sec</strong>. Save as <strong>V3A</strong>.</div>
+    </div>
+  </div>
+
+  <div class="task t-fire" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-hot">🎛 Ch1 · Mix</div>
+      <div class="t-title">Remove shuffle sounds + insert missing "Grandmir" line at 4:51</div>
+      <div class="t-detail">Paper shuffling sounds — pull them out. Missing line: <em>"Grandmir was a formidable woman"</em> — insert at <strong>4 min 51 sec</strong>.</div>
+    </div>
+  </div>
+
+  <div class="task t-fire" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-hot">🎛 Ch3 · Mix</div>
+      <div class="t-title">Save Ch3 as V2A — Beethoven/Gloria removed, fix dip at 17:41</div>
+      <div class="t-detail">Gloria music clip is out (clearance issue — confirmed in session). Fix the audio dip around <strong>17:41</strong>. Save as V2A or V2B.</div>
+    </div>
+  </div>
+
+  <div class="task t-fire" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-hot">🎛 Ch4 · Mix</div>
+      <div class="t-title">Even out the narration level</div>
+      <div class="t-detail">Narration audio level sounds uneven through the chapter. Automate or adjust so it's consistent. No big moves — just level it out.</div>
+    </div>
+  </div>
+
+  <div class="task t-now" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-amber">🎛 Ch8 · Verify</div>
+      <div class="t-title">Confirm music cue at 1:08 is out</div>
+      <div class="t-detail">Music cue at <strong>1 min 8 sec</strong> was removed in the 4:40 PM session — sitting under narration and not working. Just open and confirm it's gone.</div>
+    </div>
+  </div>
+
+  <div class="task t-now" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-pt">📥 Pickup Imports · Pro Tools</div>
+      <div class="t-title">Import Apr 2–3 pickup WAVs into each PT session</div>
+      <div class="t-detail">Files are organized and waiting in <code>BOB BOOK / PICKUP_IMPORTS_APR2026 /</code> — drag into each chapter session.</div>
+      <div class="chips">
+        <span class="chip">Ch6</span>
+        <span class="chip">Ch9</span>
+        <span class="chip">Ch13</span>
+        <span class="chip">Ch15</span>
+        <span class="chip">Ch19</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="task t-now" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-desc">✂️ Descript · Studio Sound</div>
+      <div class="t-title">Verify Studio Sound is OFF in all open Descript projects</div>
+      <div class="t-detail">Must be off before any bounce. Check all of these — <strong>Ch1, Ch5, Ch7, Ch9, Ch10, Ch11, Ch15, Ch18, Ch20, Ch24</strong>. For Ch24: turn it off in the <strong>RAW project specifically</strong>, not the edited version.</div>
+    </div>
+  </div>
+
+  <div class="task t-now" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-desc">✂️ Descript · Ch10 Test</div>
+      <div class="t-title">Test recording pickup lines directly into Descript</div>
+      <div class="t-detail">Same mic + pre setup. AI clips in Ch10 are mostly under 1 second — test the workflow before Tuesday's full session. Record 1–2 lines and hear how they blend. This is the method we confirmed Apr 12.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ 1:30 RECONVENE ════════════════════════════════ -->
+<div class="section">
+  <div class="section-label t-tag-amber">🟡 1:30 PM — Reconvene with Dan</div>
+
+  <div class="task t-now" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-amber">📋 Before 1:30</div>
+      <div class="t-title">Skim Jasmine's notes so you're ready</div>
+      <div class="t-detail">Quick pass — know which chapters still have open comments before Dan joins. Faster session if you're not reading them cold. Notes are in the shared Google Doc (manuscript comments).</div>
+    </div>
+  </div>
+
+  <div class="task t-dan" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-purple">👥 With Dan · 1:30 PM</div>
+      <div class="t-title">Go through Jasmine's notes chapter by chapter</div>
+      <div class="t-detail">Every comment from Jasmine Faustino (Pushkin) must be incorporated before the 3rd mix delivery. Resolve or flag each one. Dan logs decisions. Gio generates the issue hit list after.</div>
+    </div>
+  </div>
+
+  <div class="task t-dan" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-purple">👥 With Dan · After Notes Review</div>
+      <div class="t-title">Generate the issue hit list from that session</div>
+      <div class="t-detail">Take everything that came out of the Jasmine notes review — make a priority task list. Use the session recording or Dan's Word doc as source. This becomes the next working document.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ AFTER 2 / THIS WEEK ════════════════════════════════ -->
+<div class="section">
+  <div class="section-label t-tag-plain">🔵 This Week — When Dan Is Back</div>
+
+  <div class="task t-soon" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-desc">✂️ Descript · All Chapters</div>
+      <div class="t-title">Generate pickup scripts for all AI chapters</div>
+      <div class="t-detail">Use Underlord to isolate each overdub cluster with 10 sec of context (method confirmed in 10:01 AM session). Compile into Google Doc for Robert to read. Dan is building the master script — yours feeds into that.</div>
+      <div class="chips">
+        <span class="chip">Ch10</span>
+        <span class="chip">Ch11</span>
+        <span class="chip">Ch13</span>
+        <span class="chip">Prologue</span>
+        <span class="chip">Ch4B</span>
+        <span class="chip">Ch17</span>
+        <span class="chip">Ch18</span>
+        <span class="chip">Epilogue</span>
+        <span class="chip">End Credits</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="task t-soon" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-pt">🎛 Ch10 · Re-record Session</div>
+      <div class="t-title">Record Ch10 AI replacement pickups — Target: Tuesday</div>
+      <div class="t-detail">Dan is completing the full pickup script. Target recording is <strong>Tuesday</strong>. Ch10 confirmed: 2 ElevenLabs files + 18 overdubs (20 instances). Record directly into Descript, same mic/pre setup. Do NOT print until all replacements are in.</div>
+    </div>
+  </div>
+
+  <div class="task t-soon" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-pt">🎙 2nd Pickup Session</div>
+      <div class="t-title">Book session with Robert + Mark Allen Hall</div>
+      <div class="t-detail">Nothing ships without this. Must cover: Ch10 (20 AI instances), Ch11 (17 ElevenLabs ~7 min), Ch13 remaining gaps. Spot fixes total ~63 sec: Prologue (5s), Ch4B (8s), Ch17 (35s), Ch18 (11s), Epilogue (2s), End Credits (2s).</div>
+      <div class="chips">
+        <span class="chip">Ch10</span>
+        <span class="chip">Ch11</span>
+        <span class="chip">Ch13</span>
+        <span class="chip">Ch17</span>
+        <span class="chip">Ch18</span>
+        <span class="chip">Epilogue</span>
+        <span class="chip">Credits</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="task t-soon" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-amber">⚖️ Music · "Ciao" / "Driving Verdeo"</div>
+      <div class="t-title">Locate and lock in original Gino Kazerio track</div>
+      <div class="t-detail">Must use the original "Ciao" / <strong>"Driving Verdeo"</strong> — Moog-composed electronic soundtrack by Gino Kazerio. Confirmed in 4:40 PM session. No substitutes. Find the source file and lock it in.</div>
+    </div>
+  </div>
+
+  <div class="task t-soon" onclick="toggle(this)">
+    <div class="cb"></div>
+    <div class="t-body">
+      <div class="t-tag t-tag-pt">📋 Delivery Prep</div>
+      <div class="t-title">Final bounces — spec check before sending to Pushkin</div>
+      <div class="t-detail">Every chapter: <strong>192kbps CBR MP3 · −3dBFS peak · −18 LUFS integrated</strong>. Trailing silence: trim Ch10 (~2 min) and Ch24. Studio Sound OFF in all Descript projects before any bounce. Ch24: use RAW project only.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="padding-top:16px;">
+  <div class="note">
+    <strong>Music rule:</strong> Original "Ciao" / "Driving Verdeo" by Gino Kazerio only. Authenticity required — no substitutes.<br><br>
+    <strong>Gold standard:</strong> Match Ch16 + Ch25. Light EQ, light compression, minimal RX De-noise. Room tone stays in.<br><br>
+    <strong>Chapters with NO AI — ready for treatment pass:</strong> Ch1–5, Ch7–8, Ch14, Ch16, Ch20, Ch22–24, Ch25 (human version only).<br><br>
+    <strong>Dan back after 2 PM. Reconvene at 1:30.</strong> After Jasmine notes review, generate the issue hit list from that session.
+  </div>
+</div>
+
+<div class="footer" style="max-width:700px;margin:32px auto 0;padding:0 24px 40px;text-align:center;font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;">
+  Shaping Sounds · Pushkin · Apr 13, 2026 · Deadline Apr 24
+</div>
+
+<a id="bth" href="index.html">← Hub</a>
+
+<script>
+  const STORE_KEY = 'gio_master_apr13';
+
+  function updateProgress() {
+    const all  = document.querySelectorAll('.task');
+    const done = document.querySelectorAll('.task.done');
+    const pct  = all.length ? (done.length / all.length * 100) : 0;
+    document.getElementById('pbar').style.width = pct + '%';
+    document.getElementById('plabel').textContent = done.length + ' / ' + all.length + ' done';
+  }
+
+  function toggle(task) {
+    task.classList.toggle('done');
+    const tasks = Array.from(document.querySelectorAll('.task'));
+    const state = tasks.map(t => t.classList.contains('done') ? 1 : 0);
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    updateProgress();
+  }
+
+  // Restore
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+    document.querySelectorAll('.task').forEach((t, i) => {
+      if (saved[i]) t.classList.add('done');
+    });
+  } catch(e) {}
+  updateProgress();
+</script>
+
+</body>
+</html>
