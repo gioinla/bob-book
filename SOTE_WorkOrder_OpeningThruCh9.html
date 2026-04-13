@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOTE — Work Order · Opening Credits → Ch9</title>
+<style>
+  :root {
+    --bg: #0e1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3348;
+    --accent: #6366f1;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --teal: #14b8a6;
+    --orange: #f97316;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 32px 24px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  h1, h2, h3 { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 600; }
+  .header {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 { font-size: 22px; margin-bottom: 4px; }
+  .header .sub { color: var(--muted); font-size: 12px; }
+  .header .session-badge {
+    display: inline-block;
+    background: rgba(234,179,8,0.12);
+    border: 1px solid rgba(234,179,8,0.35);
+    color: #fde68a;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 12px;
+    margin-top: 8px;
+    font-family: -apple-system, sans-serif;
+  }
+  .progress-bar-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  .progress-bar-wrap .pbar-label {
+    font-family: -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .chapter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .cpill {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-family: -apple-system, sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .cpill-hot { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.35); color: #fca5a5; }
+  .cpill-mid { background: rgba(234,179,8,0.12); border-color: rgba(234,179,8,0.35); color: #fde68a; }
+  .cpill-low { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.35); color: #86efac; }
+  .cpill:hover { opacity: 0.8; }
+
+  /* Chapter cards */
+  .chapter-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .chapter-card.urgent { border-left: 3px solid var(--red); }
+  .chapter-card.normal { border-left: 3px solid var(--yellow); }
+  .chapter-card.import { border-left: 3px solid var(--teal); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .card-header:hover { background: #1c2333; }
+  .card-title {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    font-family: -apple-system, sans-serif;
+    white-space: nowrap;
+  }
+  .badge-urgent { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #fca5a5; }
+  .badge-normal { background: rgba(234,179,8,0.15); border: 1px solid rgba(234,179,8,0.4); color: #fde68a; }
+  .badge-import { background: rgba(20,184,166,0.15); border: 1px solid rgba(20,184,166,0.4); color: #5eead4; }
+  .badge-count { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
+  .chevron {
+    color: var(--muted);
+    font-size: 14px;
+    transition: transform 0.15s;
+  }
+  .card-body {
+    display: none;
+    padding: 0 18px 18px 18px;
+    border-top: 1px solid var(--border);
+  }
+  .card-body.open { display: block; }
+
+  .step-list { list-style: none; margin-top: 14px; }
+  .step-list li {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: -apple-system, sans-serif;
+    margin-top: 1px;
+  }
+  .step-text { color: var(--text); font-size: 13px; line-height: 1.6; }
+  .step-text .note { color: var(--muted); font-size: 11px; display: block; margin-top: 1px; }
+  .step-text .timecode {
+    font-family: 'SF Mono', monospace;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 11px;
+    color: var(--teal);
+  }
+  .step-text .file {
+    font-family: 'SF Mono', monospace;
+    font-size: 11px;
+    color: #a5b4fc;
+  }
+  .step-text em { color: #fde68a; font-style: normal; }
+
+  .session-note {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 14px;
+    line-height: 1.7;
+  }
+  .session-note strong { color: var(--text); }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 6px 0 12px 0;
+  }
+
+  .no-work-card {
+    background: rgba(34,197,94,0.06);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .no-work-card .chname {
+    font-family: -apple-system, sans-serif;
+    font-weight: 600;
+    color: #86efac;
+    font-size: 14px;
+    min-width: 120px;
+  }
+
+  .footer {
+    color: var(--muted);
+    font-size: 11px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>WORK ORDER — OPENING CREDITS → CHAPTER 9</h1>
+  <div class="sub">Gio · ProTools + Mix Session · In-order task list for 1:30pm session with Dan</div>
+  <div class="session-badge">April 13, 2026 · 1:30pm Reconvene</div>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="pbar-label">Chapter Status at a Glance — click to jump</div>
+  <div class="chapter-pills">
+    <div class="cpill cpill-hot" onclick="openCard('c-oc')">Opening Credits</div>
+    <div class="cpill cpill-hot" onclick="openCard('c-pro')">Prologue</div>
+    <div class="cpill cpill-hot" onclick="openCard('c-ch1')">Chapter 1</div>
+    <div class="cpill cpill-low" onclick="openCard('c-ch2')">Chapter 2</div>
+    <div class="cpill cpill-hot" onclick="openCard('c-ch3')">Chapter 3</div>
+    <div class="cpill cpill-mid" onclick="openCard('c-ch4')">Chapter 4</div>
+    <div class="cpill cpill-low" onclick="openCard('c-ch5')">Chapter 5</div>
+    <div class="cpill cpill-mid" onclick="openCard('c-ch6')">Chapter 6</div>
+    <div class="cpill cpill-hot" onclick="openCard('c-ch7')">Chapter 7</div>
+    <div class="cpill cpill-mid" onclick="openCard('c-ch8')">Chapter 8</div>
+    <div class="cpill cpill-mid" onclick="openCard('c-ch9')">Chapter 9</div>
+  </div>
+</div>
+
+<!-- OPENING CREDITS -->
+<div class="chapter-card urgent" id="c-oc">
+  <div class="card-header" onclick="toggleCard('c-oc')">
+    <div>
+      <div class="card-title">Opening Credits</div>
+    </div>
+    <div class="card-meta">
+      <span class="badge badge-count">2 steps</span>
+      <span class="badge badge-urgent">urgent</span>
+      <span class="chevron" id="ch-c-oc">▸</span>
+    </div>
+  </div>
+  <div class="card-body open" id="body-c-oc">
+    <ul class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-text">
+          Open the Opening Credits ProTools session.
+          <span class="note">Located in: <span class="file">BOB BOOK / MIX /</span></span>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-text">
+          Locate the <em>logo instrumental wave</em> file. Dan confirmed it's in
+          <span class="file">Dropbox / Audio Assets / Pushkin /</span> — import if not already in session.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-text">
+          Place the instrumental so it begins exactly at <span class="timecode">5.8s</span> from the start of the file.
+          <span class="note">Decision from 12:59 session — this timing was confirmed after Dan listened to the logo example.</span>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-text">
+          Bounce/print the final mix as <em>V2A</em>. 192kbps CBR MP3, –3dBFS peak, –18 LUFS.
+        </div>
+      </li>
+    </ul>
+    <div class="session-note"><strong>Source:</strong> 12:59 PDT session. Robert already recorded the Pushkin announcement. The only remaining task is adding the logo instrumental and printing V2A.</div>
+  </div>
+</div>
+
+<!-- PROLOGUE -->
+<div class="chapter-card urgent" id="c-pro">
+  <div class="card-header" onclick="toggleCard('c-pro')">
+    <div>
+      <div class="card-title">Prologue</div>
+    </div>
+    <div class="card-meta">
+      <span class="badge badge-count">3 steps</span>
+      <span class="badge badge-urgent">urgent</span>
+      <span class="chevron" id="ch-c-pro">▸</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-c-pro">
+    <ul class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-text">
+          Open Prologue session. Reference <em>V1</em> (or the V1 bounce) — that version has the correct music cue and sound effects that were accidentally removed.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-text">
+          Restore the music cue and sound effects to the V3A session using V1 as reference. Check the automation and clip positions.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-text">
+          Adjust narration timing in V3A: Robert's narration should begin over the restored music cue at <span class="timecode">1:40</span> (1 minute 40 seconds).
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-text">
+          Bounce Prologue as <em>V3A</em>. Verify music + narration timing before printing.
+        </div>
+      </li>
+    </ul>
+    <div class="session-note"><strong>Source:</strong> 12:59 PDT session. V3A is the target version. Music was accidentally removed at some point — V1 is the reference for where it should be.</div>
+  </div>
+</div>
+
+<!-- CHAPTER 1 -->
+<div class="chapter-card urgent" id="c-ch1">
+  <div class="card-header" onclick="toggleCard('c-ch1')">
+    <div>
+      <div class="card-title">Chapter 1</div>
+    </div>
+    <div class="card-meta">
+      <span class="badge badge-count">5 fixes</span>
+      <span class="badge badge-urgent">urgent</span>
+      <span class="chevron" id="ch-c-ch1">▸</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-c-ch1">
+    <ul class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-text">
+          Open Ch1 session. Scan for paper shuffling / handling sounds — likely between takes or at the top. Remove any audible shuffling.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-text">
+          Insert the missing audio snippet <em>"Grandmir was a formidable woman"</em> at <span class="timecode">4:51</span>.
+          <span class="note">This passage is missing from the current mix. Source from raw files or pick-up folder.</span>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-text">
+          Restore the <em>"our hideout"</em> passage — missing from current mix. Locate in raw session or Pick Ups April 2026 folder and splice in.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-text">
+          Restore the <em>"blue-collar"</em> passage — also missing. Same sourcing approach as above.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-text">
+          Check with Dan on the <em>Ch1 legal email</em> — Dan is investigating the correspondence. Don't remove or add anything related to the legal flag until that's resolved.
+          <span class="note">Dan's task — just flag it and move on during today's session.</span>
+        </div>
+      </li>
+    </ul>
+    <div class="session-note"><strong>Source:</strong> 12:59 PDT session. The four audio fixes (shuffling + three missing passages) can all be done in the session today. The legal email is Dan's follow-up item.</div>
+  </div>
+</div>
+
+<!-- CHAPTER 2 -->
+<div class="no-work-card" id="c-ch2">
+  <div class="chname">Chapter 2</div>
+  <div>No new action items from the April 12 sessions. If Jasmine's notes include Ch2 flagged items, check the SOTE_HIGHLIGHTED_SCRIPT_FOR_DAN.docx.</div>
+</div>
+
+<!-- CHAPTER 3 -->
+<div class="chapter-card urgent" id="c-ch3">
+  <div class="card-header" onclick="toggleCard('c-ch3')">
+    <div>
+      <div class="card-title">Chapter 3</div>
+    </div>
+    <div class="card-meta">
+      <span class="badge badge-count">3 steps</span>
+      <span class="badge badge-urgent">legal flag</span>
+      <span class="chevron" id="ch-c-ch3">▸</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-c-ch3">
+    <ul class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-text">
+          Open Ch3 session. Locate the Beethoven <em>"Gloria"</em> music section. This is the flagged unlicensed recording — remove the clip entirely.
+          <span class="note">Legal flag from task list. Beethoven is public domain but the specific recording may not be — safest to remove.</span>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-text">
+          After removing the Beethoven section, save the session and bounce the new version as <em>V2A</em>. If a second revision is needed in-session, use <em>V2B</em>.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-text">
+          Investigate the audio dip at <span class="timecode">17:41</span>. Check: clip gain, automation breakpoints, crossfade, or a corrupted region. Fix and include in V2A bounce.
+        </div>
+      </li>
+    </ul>
+    <div class="session-note"><strong>Source:</strong> 12:59 PDT session. Beethoven removal is a legal requirement before delivery. The dip at 17:41 is a technical QC catch from the session.</div>
+  </div>
+</div>
+
+<!-- CHAPTER 4 -->
+<div class="chapter-card normal" id="c-ch4">
+  <div class="card-header" onclick="toggleCard('c-ch4')">
+    <div>
+      <div class="card-title">Chapter 4</div>
+    </div>
+    <div class="card-meta">
+      <span class="badge badge-count">1 step</span>
+      <span class="badge badge-normal">level pass</span>
+      <span class="chevron" id="ch-c-ch4">▸</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-c-ch4">
+    <ul class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-text">
+          Open Ch4. Run through narration level — it's inconsistent. Automation pass or clip-gain adjustment to make the narration even and consistent throughout.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-text">
+          Bounce final as current version + A/B letter suffix. Verify –18 LUFS before printing.
+        </div>
+      </li>
+    </ul>
+    <div class="session-note"><strong>Source:</strong> 12:59 PDT session. Jasmine's note about Ch4 narration level flagged by Dan.</div>
+  </div>
+</div>
+
+<!-- CHAPTER 5 -->
+<div class="no-work-card" id="c-ch5">
+  <div class="chname">Chapter 5</div>
+  <div>No new action items from the April 12 sessions. Check Jasmine's notes for any flagged items. Session archive in <span style="font-family:'SF Mono',monospace; font-size:11px; color:#a5b4fc;">Audio Assets / ProTools / 005...</span></div>
+</div>
+
+<!-- CHAPTER 6 -->
+<div class="chapter-card normal" id="c-ch6">
+  <div class="card-header" onclick="toggleCard('c-ch6')">
+    <div>
+      <div class="card-title">Chapter 6</div>
+    </div>
+    <div class="card-meta">
+      <span class="badge badge-count">2 steps</span>
+      <span class="badge badge-import">import pickup</span>
+      <span class="chevron" id="ch-c-ch6">▸</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-c-ch6">
+    <ul class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-text">
+          Locate new Bob recording for Ch6 in <span class="file">Dropbox / Giorgio Bertuccelli / BOB BOOK / Pick Ups April 2026 /</span> — it has not been imported yet.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-text">
+          Import the pickup WAV into the Ch6 ProTools session. Edit in place. Note: Ch6 has a crash recovery (v4c RECOVERD alongside v4d) — confirm you're in the <em>v4d</em> clean session.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-text">
+          After import + edit, bounce updated Ch6.
+        </div>
+      </li>
+    </ul>
+    <div class="session-note"><strong>Source:</strong> Task list (SOTE_TaskList_ForDan.docx). New Bob recording in Pick Ups folder not yet imported. Session note: use v4d, not the crash recovery v4c.</div>
+  </div>
+</div>
+
+<!-- CHAPTER 7 -->
+<div class="chapter-card urgent" id="c-ch7">
+  <div class="card-header" onclick="toggleCard('c-ch7')">
+    <div>
+      <div class="card-title">Chapter 7</div>
+    </div>
+    <div class="card-meta">
+      <span class="badge badge-count">4 steps</span>
+      <span class="badge badge-urgent">music fix</span>
+      <span class="chevron" id="ch-c-ch7">▸</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-c-ch7">
+    <ul class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-text">
+          Open Ch7 session. Locate the current music cue (the "inspired by Gino" composition). Remove it.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-text">
+          Import <em>"Driving Verdeo"</em> from the Ciao Music assets. Path: <span class="file">Audio Assets / music from ciao / licensed music /</span> (or similar).
+          <span class="note">Decision: must use the actual Ciao music — not the inspired-by version. Dan flagged content integrity concern.</span>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-text">
+          Mix Driving Verdeo into the scene. Take time to get the levels and transitions right. Gio was assigned to do this on his own.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-text">
+          Resolve any noise issues flagged in Jasmine's notes for Ch7.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-text">
+          Print final mix as <em>V2B</em>.
+          <span class="note">Dan said explicitly: "You're going to print this as V2B."</span>
+        </div>
+      </li>
+    </ul>
+    <div class="session-note"><strong>Source:</strong> 16:40 PDT session. Music authenticity issue — replace Gio's "inspired by" cue with the real Ciao Music "Driving Verdeo" for content integrity.</div>
+  </div>
+</div>
+
+<!-- CHAPTER 8 -->
+<div class="chapter-card normal" id="c-ch8">
+  <div class="card-header" onclick="toggleCard('c-ch8')">
+    <div>
+      <div class="card-title">Chapter 8 — Fire Island</div>
+    </div>
+    <div class="card-meta">
+      <span class="badge badge-count">2 steps</span>
+      <span class="badge badge-normal">music/level</span>
+      <span class="chevron" id="ch-c-ch8">▸</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-c-ch8">
+    <ul class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-text">
+          Open Ch8 V1A. Confirm the music cue at <span class="timecode">1:08</span> is muted/removed.
+          <span class="note">This was done in-session (16:40) — Gio confirmed removal. Just verify it's saved and the train + ocean SFX are intact. Deliver as V2A.</span>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-text">
+          Lower the remaining music cue at <span class="timecode">5:10</span> by at least <strong>–1 dB</strong>. Ensure it doesn't drown out Robert's narration. Make the final call on exact dB.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-text">
+          Bounce final as <em>V2A</em>. Keep train sound design and ocean SFX — those were confirmed good.
+        </div>
+      </li>
+    </ul>
+    <div class="session-note"><strong>Source:</strong> 16:40 PDT session. Music removal at 1:08 was done live — confirm it's saved. Music level at 5:10 is a Jasmine note carried over.</div>
+  </div>
+</div>
+
+<!-- CHAPTER 9 -->
+<div class="chapter-card normal" id="c-ch9">
+  <div class="card-header" onclick="toggleCard('c-ch9')">
+    <div>
+      <div class="card-title">Chapter 9</div>
+    </div>
+    <div class="card-meta">
+      <span class="badge badge-count">2 steps</span>
+      <span class="badge badge-import">import pickup</span>
+      <span class="chevron" id="ch-c-ch9">▸</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-c-ch9">
+    <ul class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-text">
+          Locate new Bob recording for Ch9 in <span class="file">Dropbox / Giorgio Bertuccelli / BOB BOOK / Pick Ups April 2026 /</span> — not yet imported.
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-text">
+          Import the pickup WAV into the Ch9 ProTools session, edit in, and bounce updated Ch9.
+        </div>
+      </li>
+    </ul>
+    <div class="session-note"><strong>Source:</strong> Task list (SOTE_TaskList_ForDan.docx). New Bob recording in Pick Ups folder not yet imported into Ch9 session.</div>
+  </div>
+</div>
+
+<div class="footer">SHAPING SOUNDS · Work Order · Opening Credits → Chapter 9 · April 13, 2026 · 1:30pm Session</div>
+
+<script>
+function toggleCard(id) {
+  const body = document.getElementById('body-' + id);
+  const chev = document.getElementById('ch-' + id);
+  if (!body || !chev) return;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.textContent = isOpen ? '▸' : '▾';
+}
+
+function openCard(id) {
+  const body = document.getElementById('body-' + id);
+  const chev = document.getElementById('ch-' + id);
+  if (!body || !chev) return;
+  body.classList.add('open');
+  chev.textContent = '▾';
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+<style>#bth{position:fixed;bottom:24px;right:24px;z-index:9999;background:#ff3366;color:#fff;text-decoration:none;font-family:-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:30px;box-shadow:0 4px 20px rgba(255,51,102,0.4);transition:all 0.2s;}#bth:hover{background:#ff1a55;transform:translateY(-2px);}</style><a id="bth" href="index.html">&larr; Hub</a></body>
+</html>
